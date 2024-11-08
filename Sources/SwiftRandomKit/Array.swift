@@ -1,13 +1,14 @@
 extension RandomGenerators {
     public struct Array<Upstream: RandomGenerator>: RandomGenerator {
-        let upstream: Upstream
-        let count: Int
+        public let upstream: Upstream
+        public let count: Int
 
         public init(_ upstream: Upstream, _ count: Int) {
             self.upstream = upstream
             self.count = count
         }
 
+@inlinable
         public func run<RNG: RandomNumberGenerator>(using rng: inout RNG) -> [Upstream.Element] {
             (0..<count).map { _ in upstream.run(using: &rng) }
         }
@@ -15,6 +16,7 @@ extension RandomGenerators {
 }
 
 extension RandomGenerator {
+    @inlinable
     public func array(_ count: Int) -> RandomGenerators.Array<Self> {
         .init(self, count)
     }
