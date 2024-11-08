@@ -9,16 +9,14 @@ public struct IntGenerator<Element>: RandomGenerator where Element: FixedWidthIn
         self.init(in: openRange.toClosedRange())
     }
 
-    public init(range: Range<Element>) {
-        self.init(in: range.toClosedRange())
-    }
-
+    @inlinable
     public func run<RNG: RandomNumberGenerator>(using rng: inout RNG) -> Element {
         Element.random(in: closedRange, using: &rng)
     }
 }
 
 extension RandomGenerator where Element: FixedWidthInteger {
+    @inlinable
     public static func int(in closedRange: ClosedRange<Element>) -> IntGenerator<Element> {
         .init(in: closedRange)
     }

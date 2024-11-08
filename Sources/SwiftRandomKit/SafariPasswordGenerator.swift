@@ -16,3 +16,7 @@ public struct SafariPasswordGenerator: RandomGenerator {
         return password.run(using: &rng)
     }
 }
+
+func charsToString(_ chars: [Character]) -> String {
+    chars.map(String.init).joined()
+}
