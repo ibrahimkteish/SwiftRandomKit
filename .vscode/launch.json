@@ -1,0 +1,76 @@
+{
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:Random}",
+            "name": "Debug Random",
+            "program": "${workspaceFolder:Random}/.build/debug/Random",
+            "preLaunchTask": "swift: Build Debug Random"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:Random}",
+            "name": "Release Random",
+            "program": "${workspaceFolder:Random}/.build/release/Random",
+            "preLaunchTask": "swift: Build Release Random"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:Random}",
+            "name": "Debug Generators",
+            "program": "${workspaceFolder:Random}/.build/debug/Generators",
+            "preLaunchTask": "swift: Build Debug Generators"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:Random}",
+            "name": "Release Generators",
+            "program": "${workspaceFolder:Random}/.build/release/Generators",
+            "preLaunchTask": "swift: Build Release Generators"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:Random}",
+            "name": "Debug GeneratorsExample",
+            "program": "${workspaceFolder:Random}/.build/debug/GeneratorsExample",
+            "preLaunchTask": "swift: Build Debug GeneratorsExample"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:Random}",
+            "name": "Release GeneratorsExample",
+            "program": "${workspaceFolder:Random}/.build/release/GeneratorsExample",
+            "preLaunchTask": "swift: Build Release GeneratorsExample"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:SwiftRandomKit}",
+            "name": "Debug SwiftRandomKitExample",
+            "program": "${workspaceFolder:SwiftRandomKit}/.build/debug/SwiftRandomKitExample",
+            "preLaunchTask": "swift: Build Debug SwiftRandomKitExample"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:SwiftRandomKit}",
+            "name": "Release SwiftRandomKitExample",
+            "program": "${workspaceFolder:SwiftRandomKit}/.build/release/SwiftRandomKitExample",
+            "preLaunchTask": "swift: Build Release SwiftRandomKitExample"
+        }
+    ]
+}
