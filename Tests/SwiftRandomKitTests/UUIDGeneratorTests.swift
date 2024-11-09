@@ -7,7 +7,7 @@ final class UUIDGeneratorTests: XCTestCase {
         var rng = LCRNG(seed: 1)
 
         let realUUID = UUID.init(uuidString: uuidGenerator.run(using: &rng))
-        XCTAssertEqual("2AD041E8-7E86-F421-7536-B5783931DA00", realUUID?.uuidString)
+        XCTAssertEqual("2AAF20CD-C6DB-4C59-A2C7-D8A53E73D4B1", realUUID?.uuidString)
         XCTAssertNotNil(realUUID)
     }
 }
