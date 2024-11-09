@@ -11,7 +11,7 @@ extension RandomGenerator {
 
 // Void Generator
 extension RandomGenerators {
-    public struct VoidGenerator: RandomGenerator {
+    public struct VoidGenerator<Element>: RandomGenerator {
         public init() {}
         public func run<RNG: RandomNumberGenerator>(using rng: inout RNG) -> Void { () }
     }

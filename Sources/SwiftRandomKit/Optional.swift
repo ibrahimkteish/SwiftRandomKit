@@ -1,7 +1,6 @@
 extension RandomGenerators {
     public struct OptionalGenerator<R: RandomGenerator>: RandomGenerator {
         public typealias Element = Optional<R.Element>
-
         private let generator: R
 
         public init(_ generator: R) {
@@ -15,6 +14,7 @@ extension RandomGenerators {
 }
 
 extension RandomGenerator {
+    @inline(__always)
     public func optional() -> RandomGenerators.OptionalGenerator<Self> {
         .init(self)
     }

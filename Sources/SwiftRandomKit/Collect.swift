@@ -16,6 +16,7 @@ extension RandomGenerators {
 }
 
 public extension Array where Element: RandomGenerator {
+    @inlinable
     func collect() -> RandomGenerators.Collect<Element> {
         .init(self)
     }

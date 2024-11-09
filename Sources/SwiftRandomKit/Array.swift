@@ -8,7 +8,7 @@ extension RandomGenerators {
             self.count = count
         }
 
-@inlinable
+        @inlinable
         public func run<RNG: RandomNumberGenerator>(using rng: inout RNG) -> [Upstream.Element] {
             (0..<count).map { _ in upstream.run(using: &rng) }
         }
@@ -16,7 +16,7 @@ extension RandomGenerators {
 }
 
 extension RandomGenerator {
-    @inlinable
+    @inline(__always)
     public func array(_ count: Int) -> RandomGenerators.Array<Self> {
         .init(self, count)
     }
