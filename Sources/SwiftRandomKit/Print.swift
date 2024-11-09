@@ -19,6 +19,7 @@ extension RandomGenerators {
 }
 
 extension RandomGenerator {
+    @inlinable
     public func print(_ prefix: String) -> RandomGenerators.Print<Self> {
         .init(self, prefix: prefix)
     }
