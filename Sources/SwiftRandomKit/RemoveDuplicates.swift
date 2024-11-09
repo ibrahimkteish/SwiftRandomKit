@@ -1,39 +1,37 @@
 
 extension RandomGenerators {
-    public struct RemoveDuplicates<G: RandomGenerator>: RandomGenerator {
-        public typealias Element = G.Element
+    public struct RemoveDuplicates<Upstream: RandomGenerator>: RandomGenerator {
+        public typealias Element = Upstream.Element
         
         private final class Storage {
-            var lastValue: G.Element?
+            var lastValue: Upstream.Element?
             
             fileprivate init() {
                 self.lastValue = nil
             }
         }
     
-        private var generator: G
+        private var generator: Upstream
         private let storage: Storage
         private let predicate: (Element, Element) -> Bool
 
-        public init(_ generator: G, predicate: @escaping (Element, Element) -> Bool) {
+        public init(_ generator: Upstream, predicate: @escaping (Element, Element) -> Bool) {
             self.generator = generator
             self.storage = Storage()
             self.predicate = predicate
         }
     
-        public func run<RNG: RandomNumberGenerator>(using rng: inout RNG) -> G.Element {
+        public func run<RNG: RandomNumberGenerator>(using rng: inout RNG) -> Upstream.Element {
             guard let lastValue = storage.lastValue else {
                 let last =  generator.run(using: &rng)
                 storage.lastValue = last
                 return last
             }
-
-
-            var nextValue: G.Element
-                repeat {
-                    nextValue = generator.run(using: &rng)
-                } while predicate(nextValue, lastValue)
-                storage.lastValue = nextValue
+            var nextValue: Upstream.Element
+            repeat {
+                nextValue = generator.run(using: &rng)
+            } while predicate(nextValue, lastValue)
+            storage.lastValue = nextValue
             return nextValue
         }
     }
