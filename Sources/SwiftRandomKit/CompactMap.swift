@@ -1,9 +1,9 @@
-public struct CompactMap<G: RandomGenerator, T>: RandomGenerator {
+public struct CompactMap<Upstream: RandomGenerator, T>: RandomGenerator {
     public typealias Element = T
-    let generator: G
-    let transform: (G.Element) -> T?
+    let generator: Upstream
+    let transform: (Upstream.Element) -> T?
 
-    public init(_ generator: G, _ transform: @escaping (G.Element) -> T?) {
+    public init(_ generator: Upstream, _ transform: @escaping (Upstream.Element) -> T?) {
         self.generator = generator
         self.transform = transform
     }

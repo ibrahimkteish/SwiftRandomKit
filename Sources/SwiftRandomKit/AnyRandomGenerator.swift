@@ -1,7 +1,7 @@
 public struct AnyRandomGenerator<Element>: RandomGenerator {
     private let _run: (inout any RandomNumberGenerator) -> Element
     
-    public init<G: RandomGenerator>(_ generator: G) where G.Element == Element {
+    public init<Upstream: RandomGenerator>(_ generator: Upstream) where Upstream.Element == Element {
         self._run = { rng in
             generator.run(using: &rng)
         }

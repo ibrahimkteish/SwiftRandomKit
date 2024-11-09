@@ -1,11 +1,11 @@
 extension RandomGenerators {
-    public struct Print<G: RandomGenerator>: RandomGenerator {
-        public typealias Element = G.Element
+    public struct Print<Upstream: RandomGenerator>: RandomGenerator {
+        public typealias Element = Upstream.Element
 
-        let generator: G
+        let generator: Upstream
         let prefix: String
 
-        public init(_ generator: G, prefix: String) {
+        public init(_ generator: Upstream, prefix: String) {
             self.generator = generator
             self.prefix = prefix
         }
