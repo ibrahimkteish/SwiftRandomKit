@@ -1,11 +1,11 @@
 
 extension RandomGenerators {
-    public struct Collect<G: RandomGenerator>: RandomGenerator {
-        public typealias Element = [G.Element]
+    public struct Collect<Upstream: RandomGenerator>: RandomGenerator {
+        public typealias Element = [Upstream.Element]
 
-        let generators: [G]
+        let generators: [Upstream]
 
-        public init(_ generators: [G]) {
+        public init(_ generators: [Upstream]) {
             self.generators = generators
         }
 
