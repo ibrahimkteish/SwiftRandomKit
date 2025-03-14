@@ -11,9 +11,17 @@ extension RandomGenerators {
         }
 
         public func run<RNG: RandomNumberGenerator>(using rng: inout RNG) -> Swift.UnicodeScalar {
-            IntGenerator<UInt32>(in: closedRange.lowerBound.value...closedRange.upperBound.value)
-            .compactMap(Swift.UnicodeScalar.init)
-            .run(using: &rng)
+            // Generate random UInt32 values until we find a valid Unicode scalar
+            var value: UInt32
+            var scalar: Swift.UnicodeScalar?
+            
+            repeat {
+                value = UInt32.random(in: closedRange.lowerBound.value...closedRange.upperBound.value, using: &rng)
+                scalar = Swift.UnicodeScalar(value)
+            } while scalar == nil
+            
+            // Force unwrap is safe here because we only exit the loop when scalar is non-nil
+            return scalar!
         }
     }
 }
