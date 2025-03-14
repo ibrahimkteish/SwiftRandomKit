@@ -18,10 +18,10 @@ public enum CreditCardType {
     
     var length: [Int] {
         switch self {
-        case .visa:  [ 16 ]
-        case .mastercard:  [16]
-        case .amex:  [15]
-        case .discover:  [16]
+        case .visa: [16]
+        case .mastercard: [16]
+        case .amex: [15]
+        case .discover: [16]
         }
     }
 }
@@ -35,52 +35,68 @@ public struct CreditCardGenerator: RandomGenerator {
         self.type = type
     }
     
-    func lengthOfInt(_ number: Int) -> Int {
-    guard number != 0 else { return 1 } // Handle the case where the number is 0
-
-    var num = abs(number) // Work with the absolute value to handle negative numbers
-    var count = 0
-
-    while num > 0 {
-        num /= 10
-        count += 1
-    }
-
-    return count
-}
-
-    private func calculateLuhnCheckDigit(_ number: [Int]) -> Int {
-        let reversedDigits = number.reversed()
-        var sum = 0
-        for (index, digit) in reversedDigits.enumerated() {
-            if index % 2 == 0 {
-                sum += digit
-            } else {
-                let doubled = digit * 2
-                sum += (doubled > 9) ? (doubled - 9) : doubled
-            }
+    private func digitsFrom(number: Int) -> [Int] {
+        var num = number
+        var digits: [Int] = []
+        
+        if num == 0 {
+            return [0]
         }
+        
+        while num > 0 {
+            digits.insert(num % 10, at: 0)
+            num /= 10
+        }
+        
+        return digits
+    }
+    
+    /// Calculate check digit using the Luhn algorithm
+    private func calculateLuhnCheckDigit(_ digits: [Int]) -> Int {
+        // Create a copy of digits for manipulation
+        var workingDigits = digits
+        
+        // Double every second digit from the right
+        for i in stride(from: workingDigits.count - 1, through: 0, by: -2) {
+            var doubled = workingDigits[i] * 2
+            // If doubling results in a two-digit number, subtract 9
+            if doubled > 9 {
+                doubled -= 9
+            }
+            workingDigits[i] = doubled
+        }
+        
+        // Sum all digits
+        let sum = workingDigits.reduce(0, +)
+        
+        // Calculate check digit: the digit that needs to be added to make sum divisible by 10
         return (10 - (sum % 10)) % 10
     }
 
     public func run<RNG: RandomNumberGenerator>(using rng: inout RNG) -> String {
         // Get random prefix for the card type
-        guard let prefix = type.prefix.element().run(using: &rng),
-              let length = type.length.randomElement() else {
+        let prefixes = type.prefix.run(using: &rng)
+        guard let prefixValue = prefixes.randomElement(using: &rng),
+              let cardLength = type.length.randomElement(using: &rng) else {
             fatalError("Invalid card type configuration")
         }
         
-        // Generate random digits for the number (excluding the last digit)
-        var cardNumber = prefix
-        let remainingLength = length - lengthOfInt(prefix) - 1
+        let prefixDigits = digitsFrom(number: prefixValue)
         
-       var remainingDigits: [Int] = IntGenerator(in: 0...9).array(remainingLength).run(using: &rng)
+        // Generate random digits for the number (excluding the check digit)
+        let remainingLength = cardLength - prefixDigits.count - 1
         
-        // Calculate the Luhn check digit
-        let checkDigit = calculateLuhnCheckDigit([prefix] + remainingDigits)
-
+        let remainingDigits: [Int] = IntGenerator(in: 0...9).array(remainingLength).run(using: &rng)
         
-        return ([prefix] + remainingDigits + [checkDigit]).map { String($0) }.joined()
+        // Combine prefix digits and remaining digits
+        let allDigitsExceptCheck = prefixDigits + remainingDigits
+        
+        // Apply Luhn algorithm to calculate the check digit
+        let checkDigit = calculateLuhnCheckDigit(allDigitsExceptCheck)
+        
+        // Form the complete card number
+        let allDigits = allDigitsExceptCheck + [checkDigit]
+        return allDigits.map { String($0) }.joined()
     }
 }
 
