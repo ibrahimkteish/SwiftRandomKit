@@ -3,8 +3,13 @@ import Foundation
 extension RandomGenerators {
     /// A generator that avoids returning the same value twice in a row.
     ///
-    /// WARNING: This generator maintains state between runs and is not thread-safe.
-    /// Do not use this generator in concurrent contexts without proper synchronization.
+    /// This generator maintains state between runs. Basic thread safety is implemented 
+    /// to protect access to the internal state, but the overall duplicate-avoidance behavior
+    /// may not work as expected in highly concurrent scenarios where multiple threads
+    /// are simultaneously generating values from the same instance.
+    /// 
+    /// For best results in multi-threaded environments, create separate generator
+    /// instances for each thread.
     public struct RemoveDuplicates<Upstream: RandomGenerator>: RandomGenerator {
         public typealias Element = Upstream.Element
         
@@ -29,9 +34,44 @@ extension RandomGenerators {
                 defer { lock.unlock() }
                 lastValue = value
             }
+            
+            /// Atomically generates a new value that avoids duplicating the last value
+            fileprivate func generateNonDuplicateValue<RNG: RandomNumberGenerator>(
+                using generator: Upstream,
+                rng: inout RNG,
+                predicate: (Element, Element) -> Bool,
+                maxAttempts: Int
+            ) -> Element {
+                lock.lock()
+                defer { lock.unlock() }
+                
+                // If no previous value, simply generate and store
+                if lastValue == nil {
+                    let newValue = generator.run(using: &rng)
+                    lastValue = newValue
+                    return newValue
+                }
+                
+                // Try to generate a non-duplicate
+                var nextValue: Element
+                var attempts = 0
+                
+                repeat {
+                    nextValue = generator.run(using: &rng)
+                    attempts += 1
+                    // Give up after maxAttempts and just return the value even if duplicate
+                    if attempts >= maxAttempts {
+                        break
+                    }
+                } while lastValue != nil && predicate(nextValue, lastValue!)
+                
+                // Update stored value and return
+                lastValue = nextValue
+                return nextValue
+            }
         }
     
-        private var generator: Upstream
+        private let generator: Upstream
         private let storage = Storage()
         private let predicate: (Element, Element) -> Bool
         private let maxAttempts: Int
@@ -49,26 +89,13 @@ extension RandomGenerators {
         }
     
         public func run<RNG: RandomNumberGenerator>(using rng: inout RNG) -> Upstream.Element {
-            guard let lastValue = storage.getLastValue() else {
-                let last = generator.run(using: &rng)
-                storage.setLastValue(last)
-                return last
-            }
-            
-            var nextValue: Upstream.Element
-            var attempts = 0
-            
-            repeat {
-                nextValue = generator.run(using: &rng)
-                attempts += 1
-                // Give up after maxAttempts and just return the value even if duplicate
-                if attempts >= maxAttempts {
-                    break
-                }
-            } while predicate(nextValue, lastValue)
-            
-            storage.setLastValue(nextValue)
-            return nextValue
+            // Use the thread-safe method to generate a non-duplicate value
+            return storage.generateNonDuplicateValue(
+                using: generator,
+                rng: &rng,
+                predicate: predicate,
+                maxAttempts: maxAttempts
+            )
         }
     }
 }
