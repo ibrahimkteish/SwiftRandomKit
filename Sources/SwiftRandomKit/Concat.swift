@@ -24,9 +24,12 @@ extension RandomGenerators {
 
 extension RandomGenerator {
     @inlinable
-    public func concat<NewOutput: RandomGenerator>(_ other: NewOutput, separator: Element) -> RandomGenerators.Concat<Self, NewOutput> {
+    public func concat<NewOutput: RandomGenerator>(_ other: NewOutput, separator: Element) -> RandomGenerators.Concat<Self, NewOutput> where NewOutput.Element == Element, Element: Concatable {
         .init(self, other, separator: separator)
     }
 }
 
+// Even though String already has a + operator, we need to explicitly declare
+// conformance to our Concatable protocol for the type system to recognize it.
+// This doesn't introduce any new functionality, it just formalizes the relationship.
 extension String: Concatable {}
