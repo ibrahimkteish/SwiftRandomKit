@@ -16,6 +16,6 @@ let package = Package(
         
         .executableTarget(name: "SwiftRandomKitExample", dependencies: ["SwiftRandomKit", "SwiftRandomKitGenerators"]),
 
-        .testTarget(name: "SwiftRandomKitTests", dependencies: ["SwiftRandomKit"])
+        .testTarget(name: "SwiftRandomKitTests", dependencies: ["SwiftRandomKit", "SwiftRandomKitGenerators"])
     ]
 )

@@ -1,5 +1,6 @@
 import XCTest
 import SwiftRandomKit
+import SwiftRandomKitGenerators
 
 final class UUIDGeneratorTests: XCTestCase {
     func testUUID() {

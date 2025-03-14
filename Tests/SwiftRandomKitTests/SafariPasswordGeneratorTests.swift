@@ -1,5 +1,6 @@
 import XCTest
 import SwiftRandomKit
+import SwiftRandomKitGenerators
 
 final class SafariPasswordGeneratorTests: XCTestCase {
     func testSafariPassword() {
