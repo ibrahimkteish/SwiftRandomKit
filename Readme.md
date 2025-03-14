@@ -9,6 +9,8 @@ SwiftRandomKit is a powerful Swift library that provides a composable, protocol-
 - 🎯 Type-safe operations
 - 📦 Rich set of built-in generators
 - 🛠 Extensible architecture
+- 🧵 Thread-safe options
+- 🔄 Enhanced generator combinations
 
 ## Installation
 
@@ -18,7 +20,7 @@ Add the following to your `Package.swift` file:
 
 ```swift
 dependencies: [
-.package(url: "https://github.com/yourusername/SwiftRandomKit.git", from: "1.0.0")
+.package(url: "https://github.com/ibrahimkteish/SwiftRandomKit.git", from: "1.0.0")
 ]
 ```
 
@@ -27,12 +29,22 @@ dependencies: [
 ```swift
 // Create a simple random number generator
 let diceRoll = Dice()
-let result = diceRoll.run(using: &SystemRandomNumberGenerator())
+
+// Simplified usage (uses SystemRandomNumberGenerator internally)
+let result = diceRoll.run()
+
+// Or specify a custom random number generator
+let customResult = diceRoll.run(using: &myCustomRandomNumberGenerator)
+
 // Generate random characters
-let letter = RandomGenerators.letter.run(using: &SystemRandomNumberGenerator())
-let digit = RandomGenerators.number.run(using: &SystemRandomNumberGenerator())
+let letter = RandomGenerators.letter.run() // Simplified
+let digit = RandomGenerators.number.run() // Simplified
+
 // Generate arrays of random values
 let numbers = IntGenerator(in: 1...100).array(5)
+
+// Ensure no consecutive duplicates
+let uniqueNumbers = IntGenerator(in: 1...10).removeDuplicates()
 ```
 
 ## Built-in Generators
