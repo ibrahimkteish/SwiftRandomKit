@@ -1,3 +1,5 @@
+import SwiftRandomKit
+
 public struct Dice: RandomGenerator {
     public typealias Element = Int
     public init() {}

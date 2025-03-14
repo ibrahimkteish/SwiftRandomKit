@@ -12,8 +12,8 @@ extension RandomGenerators {
 
         public func run<RNG: RandomNumberGenerator>(using rng: inout RNG) -> Swift.UnicodeScalar {
             IntGenerator<UInt32>(in: closedRange.lowerBound.value...closedRange.upperBound.value)
-                .map { Swift.UnicodeScalar($0)! }
-                .run(using: &rng)
+            .compactMap(Swift.UnicodeScalar.init)
+            .run(using: &rng)
         }
     }
 }
