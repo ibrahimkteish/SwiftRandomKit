@@ -2,7 +2,6 @@ import SwiftRandomKit
 import Foundation
 import SwiftRandomKitGenerators
 // var rng = SystemRandomNumberGenerator()
-var rng = LCRNG(seed: 1)
 
 // var clock = ContinuousClock()
 // let uuidGenerator = UUIDGenerator()
@@ -48,8 +47,37 @@ var rng = LCRNG(seed: 1)
 // let creditCard = CreditCardGenerator(type: .visa).array(10)
 // Swift.print(creditCard.run(using: &rng))
 
-let diceRoll = Dice()
+// example of flatMap using Always as condition 
+// it should be .flatmap { value in if value { Always(true) } else { Always(false) } }
 
-// Simplified usage (uses SystemRandomNumberGenerator internally)
-let result = diceRoll.array(2).run()
+// Generate a dictionary of string keys and integer values
+let pairGen =
+    ["name", "age", "score", "level"].randomGeneratorElement().zip(IntGenerator(in: 1...100))
+let dictGen = pairGen.dictionary(Always(3))
+let result = dictGen.run() // e.g., ["name": 42, "level": 87, "score": 13]
 print(result)
+
+// Example of string concatenation with non-optional values
+let firstNameGen = Always("John")
+let lastNameGen = Always("Smith")
+let fullNameGen = firstNameGen.concat(lastNameGen, separator: " ")
+let fullName = fullNameGen.run() // "John Smith"
+print("Full name: \(fullName)")
+
+// Example with optional values - manual handling
+let optFirstNameGen = Always(["John", "Jane", "Alex", "Sarah"]).element()
+let optLastNameGen = Always(["Smith", "Johnson", "Williams", "Brown"]).element()
+
+// Run the generators to get the values
+let firstName = optFirstNameGen.run()
+let lastName = optLastNameGen.run()
+
+// Combine the names manually
+let optFullName: String
+if let first = firstName, let last = lastName {
+    optFullName = "\(first) \(last)"
+} else {
+    optFullName = "No name generated"
+}
+
+print("Optional full name: \(optFullName)")
