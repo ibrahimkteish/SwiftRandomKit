@@ -23,7 +23,7 @@ extension RandomGenerators {
 
 
 extension RandomGenerator {
-    public func dictionary<C: RandomGenerator<Int>, K: Hashable, V: RandomGenerator>(_ countGenerator: C) -> RandomGenerators.Dictionary<Self, C, K, V> {
+    public func dictionary<C: RandomGenerator<Int>, K: Hashable, V>(_ countGenerator: C) -> RandomGenerators.Dictionary<Self, C, K, V> {
         .init(self, countGenerator)
     }
 }
