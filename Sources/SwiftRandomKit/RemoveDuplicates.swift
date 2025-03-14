@@ -12,12 +12,11 @@ extension RandomGenerators {
         }
     
         private var generator: Upstream
-        private let storage: Storage
+        private let storage = Storage()
         private let predicate: (Element, Element) -> Bool
 
         public init(_ generator: Upstream, predicate: @escaping (Element, Element) -> Bool) {
             self.generator = generator
-            self.storage = Storage()
             self.predicate = predicate
         }
     

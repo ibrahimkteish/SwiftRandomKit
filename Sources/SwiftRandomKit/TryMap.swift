@@ -21,7 +21,7 @@ extension RandomGenerators {
 }
 
 extension RandomGenerator {
-    @inline(__always)
+    @inlinable
     public func tryMap<ElementOfResult>(
         _ transform: @escaping (Element) throws -> ElementOfResult
     ) -> RandomGenerators.TryMap<Self, ElementOfResult> {

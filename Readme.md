@@ -1,130 +1,67 @@
 # SwiftRandomKit
 
-A powerful and flexible Swift library for generating random data with composable generators.
+SwiftRandomKit is a powerful Swift library that provides a composable, protocol-based approach to random value generation. It offers a flexible and type-safe way to create and combine random generators for various data types.
 
 ## Features
 
-- 🎲 Type-safe random generators
-- 🧩 Composable and chainable API
-- 🔄 Support for custom random number generators
+- 🎲 Composable random generators
+- 🔄 Chainable transformations
+- 🎯 Type-safe operations
 - 📦 Rich set of built-in generators
-- 🛠 Extensive collection of combinators
+- 🛠 Extensible architecture
 
 ## Installation
 
 ### Swift Package Manager
 
-Add the following to your `Package.swift`:
+Add the following to your `Package.swift` file:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/yourusername/SwiftRandomKit.git", from: "1.0.0")
+.package(url: "https://github.com/yourusername/SwiftRandomKit.git", from: "1.0.0")
 ]
 ```
 
 ## Basic Usage
 
-### Simple Generators
-
 ```swift
-import SwiftRandomKit
-
-// Initialize a random number generator
-var rng = SystemRandomNumberGenerator() // or LCRNG(seed: 1) for deterministic results
-
-// Generate random integers
-let diceRoll = Dice().run(using: &rng) // 1...6
-
-// Generate random floats
-let probability = FloatGenerator(in: 0...1).run(using: &rng)
-
-// Generate random booleans
-let coinFlip = BoolRandomGenerator().run(using: &rng)
+// Create a simple random number generator
+let diceRoll = Dice()
+let result = diceRoll.run(using: &SystemRandomNumberGenerator())
+// Generate random characters
+let letter = RandomGenerators.letter.run(using: &SystemRandomNumberGenerator())
+let digit = RandomGenerators.number.run(using: &SystemRandomNumberGenerator())
+// Generate arrays of random values
+let numbers = IntGenerator(in: 1...100).array(5)
 ```
 
-### Advanced Generators
+## Built-in Generators
 
-```swift
-// Generate UUIDs
-let uuidGen = UUIDGenerator()
-let uuid = uuidGen.run(using: &rng)
+### Basic Types
+- `IntGenerator`: Generate random integers within a range
+- `FloatGenerator`: Generate random floating-point numbers
+- `BoolRandomGenerator`: Generate random boolean values
+- `UUIDGenerator`: Generate random UUIDs
 
-// Generate random colors
-let colorGen = RandomGenerators.ColorGenerator()
-let color = colorGen.run(using: &rng)
-
-// Generate Safari-style passwords
-let passwordGen = SafariPasswordGenerator()
-let password = passwordGen.run(using: &rng) // e.g., "huwKun-1zyjxi-nyxseh"
-```
-
-### Combinators
-
-SwiftRandomKit provides powerful combinators to compose generators:
-
-```swift
-// Map values
-let doubledDice = Dice().map { $0 * 2 }
-
-// Generate arrays
-let tenDiceRolls = Dice().array(10)
-
-// Filter values
-let evenDice = Dice().filter { $0 % 2 == 0 }
-
-// Zip multiple generators
-let colorAndDice = ColorGenerator()
-    .zip(Dice()) { color, number in 
-        (color: color, roll: number)
-    }
-```
+### Character and String
+- `letter`: Random letters (a-z, A-Z)
+- `number`: Random digits (0-9)
+- `letterOrNumber`: Random alphanumeric characters
+- `ascii`: Random ASCII characters
+- `latin1`: Random Latin-1 characters
 
 ### Collections
+- `Array`: Generate arrays of random elements
+- `Dictionary`: Generate dictionaries with random key-value pairs
+- `Element`: Pick random elements from collections
 
-```swift
-// Generate arrays
-let numbers = IntGenerator(in: 1...100).array(5)
+### Special Generators
+- `ColorGenerator`: Generate random colors (supports UIKit and SwiftUI)
+- `SafariPasswordGenerator`: Generate Safari-style passwords
+- `SudokuGenerator`: Generate Sudoku puzzles with varying difficulty
 
-// Generate sets
-let uniqueNumbers = IntGenerator(in: 1...100).set(count: Always(10))
+## Transformations
 
-// Generate dictionaries
-let keyValuePairs = IntGenerator(in: 1...5)
-    .zip(BoolRandomGenerator())
-    .dictionary(Always(3))
-```
+SwiftRandomKit provides various transformations to modify and combine generators:
 
-## Advanced Features
 
-### Custom Generators
-
-Create your own generators by conforming to the `RandomGenerator` protocol:
-
-```swift
-struct CustomGenerator: RandomGenerator {
-    typealias Element = String
-    
-    func run<RNG: RandomNumberGenerator>(using rng: inout RNG) -> String {
-        // Your implementation here
-    }
-}
-```
-
-### Frequency-based Generation
-
-```swift
-let weighted = Dice().frequency([
-    (2, Dice().map { $0 * 2 }), // Double weight for even numbers
-    (1, Dice())                 // Normal weight for regular numbers
-])
-```
-
-### Distinct Values
-
-```swift
-let distinctNumbers = IntGenerator(in: 1...10).distinct()
-```
-
-## License
-
-This library is released under the MIT License. See LICENSE file for details.

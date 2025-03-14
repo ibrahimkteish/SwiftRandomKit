@@ -9,15 +9,16 @@ public struct CompactMap<Upstream: RandomGenerator, T>: RandomGenerator {
     }
 
     public func run<RNG: RandomNumberGenerator>(using rng: inout RNG) -> T {
-        while true {
-            if let value = transform(self.generator.run(using: &rng)) {
-                return value
-            }
-        }
+        var value: T?
+        repeat {
+            value = transform(generator.run(using: &rng))
+        } while value == nil
+        return value!
     }
 }
 
 public extension RandomGenerator {
+    @inlinable
     func compactMap<T>(_ transform: @escaping (Element) -> T?) -> CompactMap<Self, T> {
         .init(self, transform)
     }

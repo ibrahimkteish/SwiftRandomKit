@@ -1,3 +1,5 @@
+import SwiftRandomKit
+
 public struct UUIDGenerator: RandomGenerator {
     public init() {}
 

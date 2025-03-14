@@ -13,6 +13,7 @@ extension RandomGenerators {
 }
 
 extension RandomGenerator {
+    @inlinable
     public func tuple() -> RandomGenerators.Tuple<Self> {
         .init(self)
     }

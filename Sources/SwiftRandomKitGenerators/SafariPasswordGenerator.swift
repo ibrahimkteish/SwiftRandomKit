@@ -1,3 +1,4 @@
+import SwiftRandomKit
 
 public struct SafariPasswordGenerator: RandomGenerator {
     public init() {}
@@ -17,6 +18,6 @@ public struct SafariPasswordGenerator: RandomGenerator {
     }
 }
 
-func charsToString(_ chars: [Character]) -> String {
+fileprivate func charsToString(_ chars: [Character]) -> String {
     chars.map(String.init).joined()
 }

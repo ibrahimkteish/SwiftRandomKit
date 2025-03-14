@@ -16,7 +16,7 @@ extension RandomGenerators {
 }
 
 extension RandomGenerator {
-    @inline(__always)
+    @inlinable
     public func array(_ count: Int) -> RandomGenerators.Array<Self> {
         .init(self, count)
     }

@@ -23,6 +23,7 @@ extension RandomGenerators {
 }
 
 extension RandomGenerator {
+    @inlinable
     public func concat<NewOutput: RandomGenerator>(_ other: NewOutput, separator: Element) -> RandomGenerators.Concat<Self, NewOutput> {
         .init(self, other, separator: separator)
     }

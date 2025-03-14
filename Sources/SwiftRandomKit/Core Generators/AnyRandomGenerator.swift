@@ -1,5 +1,5 @@
 public struct AnyRandomGenerator<Element>: RandomGenerator {
-    private let _run: (inout any RandomNumberGenerator) -> Element
+    public let _run: (inout any RandomNumberGenerator) -> Element
     
     public init<Upstream: RandomGenerator>(_ generator: Upstream) where Upstream.Element == Element {
         self._run = { rng in
@@ -11,6 +11,8 @@ public struct AnyRandomGenerator<Element>: RandomGenerator {
         self._run = run
     }
     
+    @inlinable
+    @inline(__always)
     public func run<RNG: RandomNumberGenerator>(using rng: inout RNG) -> Element {
         var anyRNG: any RandomNumberGenerator = rng
         return _run(&anyRNG)
@@ -22,6 +24,7 @@ public struct AnyRandomGenerator<Element>: RandomGenerator {
 }
 
 extension RandomGenerator {
+    @inlinable
     public func eraseToAnyRandomGenerator() -> AnyRandomGenerator<Element> {
         .init(self)
     }
