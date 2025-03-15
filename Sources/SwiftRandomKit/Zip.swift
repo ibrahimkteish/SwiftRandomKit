@@ -68,6 +68,25 @@ extension RandomGenerators {
     }
 }
 
+// MARK: - Variadic Support
+
+// A generator that produces arrays of elements
+extension RandomGenerators {
+    public struct ZipArrayGenerator<G: RandomGenerator>: RandomGenerator {
+        public typealias Element = [G.Element]
+        
+        let generators: [G]
+        
+        public init(generators: [G]) {
+            self.generators = generators
+        }
+        
+        public func run<RNG: RandomNumberGenerator>(using rng: inout RNG) -> [G.Element] {
+            generators.map { $0.run(using: &rng) }
+        }
+    }
+}
+
 extension RandomGenerator {
    public func zip<R: RandomGenerator>(_ other: R) -> RandomGenerators.Zip<Self, R> {
         .init(self, other)
@@ -104,3 +123,16 @@ extension RandomGenerator {
         .init(.init(self, other1, other2, other3), transform)
     }
 }
+
+// Variadic array support
+extension Array where Element: RandomGenerator {
+    // Create a generator that produces arrays from multiple generators of the same type
+    public func zipAll() -> RandomGenerators.ZipArrayGenerator<Element> {
+        RandomGenerators.ZipArrayGenerator(generators: self)
+    }
+}
+
+// Factory function for combining any number of generators of the same type
+public func zipGenerators<G: RandomGenerator>(_ generators: G...) -> RandomGenerators.ZipArrayGenerator<G> {
+    RandomGenerators.ZipArrayGenerator(generators: generators)
+} 

@@ -1,6 +1,6 @@
 # SwiftRandomKit
 
-A powerful and flexible Swift library for generating random data with composable generators.
+SwiftRandomKit is a powerful Swift library that provides a composable, protocol-based approach to random value generation. It offers a flexible and type-safe way to create and combine random generators for various data types.
 
 ## Features
 
@@ -14,117 +14,232 @@ A powerful and flexible Swift library for generating random data with composable
 
 ### Swift Package Manager
 
-Add the following to your `Package.swift`:
+Add the following to your `Package.swift` file:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/yourusername/SwiftRandomKit.git", from: "1.0.0")
+.package(url: "https://github.com/ibrahimkteish/SwiftRandomKit.git", from: "1.0.0")
 ]
 ```
 
 ## Basic Usage
 
-### Simple Generators
-
 ```swift
 import SwiftRandomKit
 
-// Initialize a random number generator
-var rng = SystemRandomNumberGenerator() // or LCRNG(seed: 1) for deterministic results
+// Create a simple random number generator
+let diceGen = IntGenerator(in: 1...6)
+let roll = diceGen.run() // e.g., 4
 
-// Generate random integers
-let diceRoll = Dice().run(using: &rng) // 1...6
+// Generate random characters
+let letterGen = RandomGenerators.letter
+let letter = letterGen.run() // Random letter (a-z, A-Z)
 
-// Generate random floats
-let probability = FloatGenerator(in: 0...1).run(using: &rng)
+let digitGen = RandomGenerators.number
+let digit = digitGen.run() // Random digit (0-9)
 
-// Generate random booleans
-let coinFlip = BoolRandomGenerator().run(using: &rng)
+// Generate arrays of random values
+let fiveRolls = diceGen.array(5).run() // e.g., [3, 1, 6, 2, 5]
+
+// Use a custom random number generator
+var myRNG = MyCustomRandomNumberGenerator()
+let customRoll = diceGen.run(using: &myRNG)
 ```
 
-### Advanced Generators
+## Built-in Generators
 
-```swift
-// Generate UUIDs
-let uuidGen = UUIDGenerator()
-let uuid = uuidGen.run(using: &rng)
+### Core Generators
+- `IntGenerator`: Generate random integers within a range
+- `FloatGenerator`: Generate random floating-point numbers
+- `BoolRandomGenerator`: Generate random boolean values
+- `AnyRandomGenerator`: Type-erased container for any random generator
 
-// Generate random colors
-let colorGen = RandomGenerators.ColorGenerator()
-let color = colorGen.run(using: &rng)
-
-// Generate Safari-style passwords
-let passwordGen = SafariPasswordGenerator()
-let password = passwordGen.run(using: &rng) // e.g., "huwKun-1zyjxi-nyxseh"
-```
-
-### Combinators
-
-SwiftRandomKit provides powerful combinators to compose generators:
-
-```swift
-// Map values
-let doubledDice = Dice().map { $0 * 2 }
-
-// Generate arrays
-let tenDiceRolls = Dice().array(10)
-
-// Filter values
-let evenDice = Dice().filter { $0 % 2 == 0 }
-
-// Zip multiple generators
-let colorAndDice = ColorGenerator()
-    .zip(Dice()) { color, number in 
-        (color: color, roll: number)
-    }
-```
+### Character and String
+- `RandomGenerators.letter`: Random letters (a-z, A-Z)
+- `RandomGenerators.number`: Random digits (0-9)
+- `RandomGenerators.letterOrNumber`: Random alphanumeric characters
+- `RandomGenerators.uppercaseLetter`: Random uppercase letters (A-Z)
+- `RandomGenerators.lowercaseLetter`: Random lowercase letters (a-z)
+- `RandomGenerators.ascii`: Random ASCII characters
+- `RandomGenerators.latin1`: Random Latin-1 characters
+- `RandomGenerators.character(in:)`: Custom range of characters
 
 ### Collections
+- `Array`: Generate arrays of random elements with fixed size
+- `ArrayGenerator`: Generate arrays with random size
+- `Dictionary`: Generate dictionaries with random key-value pairs
+- `Element`: Pick random elements from collections
+- `Set`: Generate sets of random elements
+- `Collection`: Generate custom collections of random elements
+- `Shuffled`: Generate shuffled versions of collections
+
+### General Purpose Generators
+- `Always`: Always produce the same value
+- `LCRNG`: Linear Congruential Random Number Generator
+
+### Transformers and Combinators
+- `Map`: Transform the output of a generator
+- `FlatMap`: Create generators that depend on previous random values
+- `Concat`: Concatenate the output of multiple generators
+- `Zip`: Combine multiple generators into tuples
+- `Collect`: Collect results from multiple generators
+- `Print`: Debug generator outputs
+- `RemoveDuplicates`: Remove duplicate values from a generator
+- `TryMap`: Transform with operations that might fail
+- `Frequency`: Weight outputs by frequency
+- `Optional`: Generate optional values from a generator
+- `Tuple`: Create tuples from a generator's output
+
+### Special Generators
+
+Additional generators available in the SwiftRandomKitGenerators product:
+
+- `ColorGenerator`: Generate random colors (supports UIKit and SwiftUI)
+- `CreditCardGenerator`: Generate valid credit card numbers for different card types
+- `Dice`: Generate random dice rolls of various types
+- `IPAddressGenerator`: Generate random IP addresses (IPv4 or IPv6)
+- `LatLongGenerator`: Generate random geographic coordinates (latitude and longitude)
+- `SafariPasswordGenerator`: Generate strong passwords following Safari's pattern
+- `SudokuGenerator`: Generate valid Sudoku puzzles with varying difficulty
+- `UUIDGenerator`: Generate random UUID strings in standard format
+- `VersionNumberGenerator`: Generate random semantic version numbers
+
+## Transformations and Combinations
+
+SwiftRandomKit provides various transformations to modify and combine generators:
+
+### Mapping and Transforming
 
 ```swift
-// Generate arrays
-let numbers = IntGenerator(in: 1...100).array(5)
+// Transform values with map
+let diceGen = IntGenerator(in: 1...6)
+let doubledDice = diceGen.map { $0 * 2 }
+let result = doubledDice.run() // 2, 4, 6, 8, 10, or 12
 
-// Generate sets
-let uniqueNumbers = IntGenerator(in: 1...100).set(count: Always(10))
-
-// Generate dictionaries
-let keyValuePairs = IntGenerator(in: 1...5)
-    .zip(BoolRandomGenerator())
-    .dictionary(Always(3))
-```
-
-## Advanced Features
-
-### Custom Generators
-
-Create your own generators by conforming to the `RandomGenerator` protocol:
-
-```swift
-struct CustomGenerator: RandomGenerator {
-    typealias Element = String
-    
-    func run<RNG: RandomNumberGenerator>(using rng: inout RNG) -> String {
-        // Your implementation here
-    }
+// Use flatMap for dependent generators
+let coinFlip = BoolRandomGenerator()
+let weightedDice = coinFlip.flatMap { isHeads in
+    isHeads ? IntGenerator(in: 1...6) : IntGenerator(in: 4...9)
 }
 ```
 
-### Frequency-based Generation
+### Collecting and Combining
 
 ```swift
-let weighted = Dice().frequency([
-    (2, Dice().map { $0 * 2 }), // Double weight for even numbers
-    (1, Dice())                 // Normal weight for regular numbers
-])
+// Fixed-size arrays
+let fiveDice = IntGenerator(in: 1...6).array(5)
+
+// Variable-size arrays
+let countGen = IntGenerator(in: 3...7) 
+let variableDice = IntGenerator(in: 1...6).arrayGenerator(countGen)
+
+// Collect results from different generators
+let smallNumberGen = IntGenerator(in: 1...10)
+let mediumNumberGen = IntGenerator(in: 11...50)
+let largeNumberGen = IntGenerator(in: 51...100)
+
+let mixedNumbers = [smallNumberGen, mediumNumberGen, largeNumberGen].collect().run()
+// e.g., [7, 23, 86]
 ```
 
-### Distinct Values
+### Constant and Always Generators
 
 ```swift
-let distinctNumbers = IntGenerator(in: 1...10).distinct()
+// Always produce the same value
+let alwaysSix = Always(6)
+
+// Can be combined with other generators using flatMap
+let loadedDice = BoolRandomGenerator().flatMap { isLoaded in
+    isLoaded ? Always(6).eraseToAnyRandomGenerator() : IntGenerator(in: 1...6).eraseToAnyRandomGenerator()
+}
+
+print(loadedDice.run())
+```
+
+### Type Erasure
+
+```swift
+// Erase the concrete type for API simplicity
+func createDiceGenerator() -> AnyRandomGenerator<Int> {
+    return IntGenerator(in: 1...6).eraseToAnyRandomGenerator()
+}
+
+// Store different generator types in a collection
+let generators: [AnyRandomGenerator<Any>] = [
+    IntGenerator(in: 1...100).map { $0 as Any }.eraseToAnyRandomGenerator(),
+    BoolRandomGenerator().map { $0 as Any }.eraseToAnyRandomGenerator()
+]
+
+print(generators.collect().run())
+```
+
+## Advanced Examples
+
+### Create a Password Generator
+
+```swift
+// Generate a secure password with specific requirements
+let passwordGen = RandomGenerators.uppercaseLetter
+    .array(2).flatMap { uppercase in
+        RandomGenerators.lowercaseLetter.array(5).flatMap { lowercase in
+            RandomGenerators.number.array(2).flatMap { digits in
+                Always(Array("!@#$%^&*")).element().map { special in
+                    let allChars = uppercase + lowercase + digits + (special != nil ? [special!] : [])
+                    return String(allChars)
+                }
+            }
+        }
+    }
+
+let securePassword = passwordGen.run() // e.g., "KTabnre45$"
+```
+
+A simpler approach using the zip operator:
+
+```swift
+// A simpler way to generate a random password
+let simplePasswordGen = RandomGenerators.uppercaseLetter.array(2)
+    .zip(RandomGenerators.lowercaseLetter.array(5))
+    .zip(RandomGenerators.number.array(2)) 
+    .zip(Always(Array("!@#$%^&*")).element())
+    .map { (components, special) in
+        let (upperAndLower, digits) = components
+        let (upper, lower) = upperAndLower
+        let chars = upper + lower + digits + (special != nil ? [special!] : [])
+        return String(chars)
+    }
+
+let password = simplePasswordGen.run() // e.g., "ABcdefg12#"
+```
+
+### Create a Custom Generator
+
+```swift
+// Create a custom dice that can be loaded
+struct LoadedDiceGenerator: RandomGenerator {
+    let bias: Int
+    let probability: Double
+    
+    init(bias: Int, probability: Double = 0.7) {
+        self.bias = bias
+        self.probability = probability
+    }
+    
+    func run<RNG: RandomNumberGenerator>(using rng: inout RNG) -> Int {
+        if Double.random(in: 0...1, using: &rng) < probability {
+            return bias
+        } else {
+            return Int.random(in: 1...6, using: &rng)
+        }
+    }
+}
+
+let loadedDice = LoadedDiceGenerator(bias: 6)
+let roll = loadedDice.run() // 6 with 70% probability
 ```
 
 ## License
 
-This library is released under the MIT License. See LICENSE file for details.
+This project is available under the MIT license. See the LICENSE file for more info.
+
+

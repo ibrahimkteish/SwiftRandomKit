@@ -1,4 +1,5 @@
 import Foundation
+import SwiftRandomKit
 
 public struct SudokuGenerator: RandomGenerator {
     public typealias Element = [[Int]]

@@ -1,5 +1,5 @@
 extension RandomGenerators {
-    public struct Set<Upstream: RandomGenerator, S: SetAlgebra, Count: RandomGenerator<Int>>: RandomGenerator where S.Element == Upstream.Element {
+    public struct Set<Upstream: RandomGenerator, S: SetAlgebra, Count: RandomGenerator>: RandomGenerator where S.Element == Upstream.Element, Count.Element == Int {
         public typealias Element = S
 
         let generator: Upstream
@@ -21,7 +21,7 @@ extension RandomGenerators {
 }
 
 extension RandomGenerator where Element: SetAlgebra {
-    public func set<C: RandomGenerator<Int>>(count: C) -> RandomGenerators.Set<Self, Element, C> {
+    public func set<C: RandomGenerator>(count: C) -> RandomGenerators.Set<Self, Element, C> where C.Element == Int {
         .init(self, count: count)
     }
 }

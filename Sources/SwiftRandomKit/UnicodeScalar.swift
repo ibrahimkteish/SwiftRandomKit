@@ -11,9 +11,11 @@ extension RandomGenerators {
         }
 
         public func run<RNG: RandomNumberGenerator>(using rng: inout RNG) -> Swift.UnicodeScalar {
-            IntGenerator<UInt32>(in: closedRange.lowerBound.value...closedRange.upperBound.value)
-                .map { Swift.UnicodeScalar($0)! }
+            let value = IntGenerator<UInt32>(in: closedRange.lowerBound.value...closedRange.upperBound.value)
                 .run(using: &rng)
+            
+            // Create UnicodeScalar from UInt32, defaulting to the lower bound if invalid
+            return Swift.UnicodeScalar(value) ?? closedRange.lowerBound
         }
     }
 }
