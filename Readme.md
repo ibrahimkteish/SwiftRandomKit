@@ -4,13 +4,11 @@ SwiftRandomKit is a powerful Swift library that provides a composable, protocol-
 
 ## Features
 
-- 🎲 Composable random generators
-- 🔄 Chainable transformations
-- 🎯 Type-safe operations
+- 🎲 Type-safe random generators
+- 🧩 Composable and chainable API
+- 🔄 Support for custom random number generators
 - 📦 Rich set of built-in generators
-- 🛠 Extensible architecture
-- 🧵 Thread-safe options
-- 🔄 Enhanced generator combinations
+- 🛠 Extensive collection of combinators
 
 ## Installation
 
