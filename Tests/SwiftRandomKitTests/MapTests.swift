@@ -1,22 +1,25 @@
-import XCTest
+import Testing
 import SwiftRandomKit
 
-final class MapTests: XCTestCase {
+@Suite("Map Transformation Tests")
+struct MapTests {
+    @Test("Map can transform integer values")
     func testMap() {
         let intGenerator = IntGenerator<Int>(in: 0...10)
         let mapped = intGenerator.map { $0 * 2 }
         var rng = LCRNG(seed: 1)
 
-        XCTAssertEqual(mapped.run(using: &rng), 2)
-        XCTAssertEqual(mapped.run(using: &rng), 14)
+        #expect(mapped.run(using: &rng) == 2)
+        #expect(mapped.run(using: &rng) == 14)
     }
 
-     func testMapString() {
+    @Test("Map can transform integers to strings")
+    func testMapString() {
         let intGenerator = IntGenerator<Int>(in: 0...10)
         let mapped = intGenerator.map { String($0) }
         var rng = LCRNG(seed: 1)
 
-        XCTAssertEqual(mapped.run(using: &rng), "1")
-        XCTAssertEqual(mapped.run(using: &rng), "7")
+        #expect(mapped.run(using: &rng) == "1")
+        #expect(mapped.run(using: &rng) == "7")
     }
 }
