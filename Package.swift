@@ -10,9 +10,6 @@ let package = Package(
         .library(name: "SwiftRandomKit", targets: ["SwiftRandomKit"]),
         .library(name: "SwiftRandomKitGenerators", targets: ["SwiftRandomKitGenerators"])
     ],
-    dependencies: [
-        .package(url: "https://github.com/apple/swift-testing.git", from: "0.9.0")
-    ],
     targets: [
         .target(name: "SwiftRandomKit"),
         .target(name: "SwiftRandomKitGenerators", dependencies: ["SwiftRandomKit"]),
@@ -23,8 +20,7 @@ let package = Package(
             name: "SwiftRandomKitTests", 
             dependencies: [
                 "SwiftRandomKit", 
-                "SwiftRandomKitGenerators",
-                .product(name: "Testing", package: "swift-testing")
+                "SwiftRandomKitGenerators"
             ]
         )
     ]
