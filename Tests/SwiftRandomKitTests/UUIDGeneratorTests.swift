@@ -13,7 +13,7 @@ struct UUIDGeneratorTests {
         let uuid = uuidGenerator.run(using: &rng)
         let realUUID = UUID.init(uuidString: uuid)
         
-        #expect(uuid == "2AAF20CD-C6DB-4C59-A2C7-D8A53E73D4B1")
+        #expect(uuid == "2aaf20cd-c6db-4c59-a2c7-d8a53e73d4b1")
         #expect(realUUID != nil)
     }
 }

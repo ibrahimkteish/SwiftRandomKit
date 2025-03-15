@@ -11,7 +11,7 @@ let package = Package(
         .library(name: "SwiftRandomKitGenerators", targets: ["SwiftRandomKitGenerators"])
     ],
     dependencies: [
-        .package(url: "https://github.com/apple/swift-testing.git", from: "0.6.0")
+        .package(url: "https://github.com/apple/swift-testing.git", from: "0.9.0")
     ],
     targets: [
         .target(name: "SwiftRandomKit"),
