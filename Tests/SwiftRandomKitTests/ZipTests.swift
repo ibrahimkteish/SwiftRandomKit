@@ -1,10 +1,8 @@
-import Testing
+import XCTest
 @testable import SwiftRandomKit
 
-@Suite("Zip Combinators Tests")
-struct ZipTests {
+final class ZipTests: XCTestCase {
     
-    @Test("Zip two generators using Zip")
     func testZipTwoGenerators() {
         var rng = LCRNG(seed: 1)
         
@@ -16,11 +14,10 @@ struct ZipTests {
         let result = zipGenerator.run(using: &rng)
         
         // Expected values based on the seed
-        #expect(result.0 == 16)
-        #expect(result.1 == "N")
+        XCTAssertEqual(result.0, 16)
+        XCTAssertEqual(result.1, "N")
     }
     
-    @Test("Zip three generators using Zip3")
     func testZipThreeGenerators() {
         var rng = LCRNG(seed: 1)
         
@@ -32,12 +29,11 @@ struct ZipTests {
         
         let result = zipGenerator.run(using: &rng)
         
-        #expect(result.0 == 16)
-        #expect(result.1 == 0.6390517027105214)
-        #expect(result.2 == false)
+        XCTAssertEqual(result.0, 16)
+        XCTAssertEqual(result.1, 0.6390517027105214)
+        XCTAssertEqual(result.2, false)
     }
     
-    @Test("Zip four generators using Zip4")
     func testZipFourGenerators() {
         var rng = LCRNG(seed: 1)
         
@@ -50,13 +46,12 @@ struct ZipTests {
         
         let result = zipGenerator.run(using: &rng)
         
-        #expect(result.0 == 16)
-        #expect(result.1 == 0.6390517027105214)
-        #expect(result.2 == "2")
-        #expect(result.3 == false)
+        XCTAssertEqual(result.0, 16)
+        XCTAssertEqual(result.1, 0.6390517027105214)
+        XCTAssertEqual(result.2, "2")
+        XCTAssertEqual(result.3, false)
     }
 
-    @Test("Use zip extension method with two generators")
     func testZipExtensionMethod() {
         var rng = LCRNG(seed: 1)
         
@@ -67,11 +62,10 @@ struct ZipTests {
         
         let result = zipGenerator.run(using: &rng)
         
-        #expect(result.0 == 16)
-        #expect(result.1 == 0.6390517027105214)
+        XCTAssertEqual(result.0, 16)
+        XCTAssertEqual(result.1, 0.6390517027105214)
     }
     
-    @Test("Use zip extension method with a transform")
     func testZipWithTransform() {
         var rng = LCRNG(seed: 1)
         
@@ -84,10 +78,9 @@ struct ZipTests {
         
         let result = zipGenerator.run(using: &rng)
         
-        #expect(result == "16: 0.6390517027105214")
+        XCTAssertEqual(result, "16: 0.6390517027105214")
     }
         
-    @Test("Use zip3 with transform")
     func testZip3WithTransform() {
         var rng = LCRNG(seed: 1)
         
@@ -101,10 +94,9 @@ struct ZipTests {
         
         let result = zipGenerator.run(using: &rng)
         
-        #expect(result == "16: 0.6390517027105214: false")
+        XCTAssertEqual(result, "16: 0.6390517027105214: false")
     }
     
-    @Test("Use zip4 with transform")
     func testZip4WithTransform() {
         var rng = LCRNG(seed: 1)
         
@@ -119,10 +111,9 @@ struct ZipTests {
         
         let result = zipGenerator.run(using: &rng)
         
-        #expect(result == "16: 0.6390517027105214: 2: false")
+        XCTAssertEqual(result, "16: 0.6390517027105214: 2: false")
     }
     
-    @Test("Zip generators with the same type")
     func testZipSameTypeGenerators() {
         var rng = LCRNG(seed: 1)
         
@@ -133,7 +124,7 @@ struct ZipTests {
         
         let result = zipGenerator.run(using: &rng)
         
-        #expect(result.0 == 8)
-        #expect(result.1 == 82)
+        XCTAssertEqual(result.0, 8)
+        XCTAssertEqual(result.1, 82)
     }
 }
