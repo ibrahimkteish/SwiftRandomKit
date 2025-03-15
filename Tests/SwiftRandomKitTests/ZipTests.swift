@@ -1,9 +1,10 @@
-import XCTest
+import Testing
 @testable import SwiftRandomKit
 
-final class ZipTests: XCTestCase {
+@Suite("Zip Combinators Tests")
+struct ZipTests {
     
-    /// Test zipping two generators using `Zip`
+    @Test("Zip two generators using Zip")
     func testZipTwoGenerators() {
         var rng = LCRNG(seed: 1)
         
@@ -15,11 +16,11 @@ final class ZipTests: XCTestCase {
         let result = zipGenerator.run(using: &rng)
         
         // Expected values based on the seed
-        XCTAssertEqual(result.0, 16)
-        XCTAssertEqual(result.1, "N")
+        #expect(result.0 == 16)
+        #expect(result.1 == "N")
     }
     
-    /// Test zipping three generators using `Zip3`
+    @Test("Zip three generators using Zip3")
     func testZipThreeGenerators() {
         var rng = LCRNG(seed: 1)
         
@@ -31,12 +32,12 @@ final class ZipTests: XCTestCase {
         
         let result = zipGenerator.run(using: &rng)
         
-        XCTAssertEqual(result.0, 16)
-        XCTAssertEqual(result.1, 0.6390517027105214)
-        XCTAssertEqual(result.2, false)
+        #expect(result.0 == 16)
+        #expect(result.1 == 0.6390517027105214)
+        #expect(result.2 == false)
     }
     
-    /// Test zipping four generators using `Zip4`
+    @Test("Zip four generators using Zip4")
     func testZipFourGenerators() {
         var rng = LCRNG(seed: 1)
         
@@ -49,13 +50,13 @@ final class ZipTests: XCTestCase {
         
         let result = zipGenerator.run(using: &rng)
         
-        XCTAssertEqual(result.0, 16)
-        XCTAssertEqual(result.1, 0.6390517027105214)
-        XCTAssertEqual(result.2, "2")
-        XCTAssertEqual(result.3, false)
+        #expect(result.0 == 16)
+        #expect(result.1 == 0.6390517027105214)
+        #expect(result.2 == "2")
+        #expect(result.3 == false)
     }
 
-  /// Test the `zip` extension method with two generators
+    @Test("Use zip extension method with two generators")
     func testZipExtensionMethod() {
         var rng = LCRNG(seed: 1)
         
@@ -66,11 +67,11 @@ final class ZipTests: XCTestCase {
         
         let result = zipGenerator.run(using: &rng)
         
-        XCTAssertEqual(result.0, 16)
-        XCTAssertEqual(result.1, 0.6390517027105214)
+        #expect(result.0 == 16)
+        #expect(result.1 == 0.6390517027105214)
     }
     
-    /// Test the `zip` extension method with a transform
+    @Test("Use zip extension method with a transform")
     func testZipWithTransform() {
         var rng = LCRNG(seed: 1)
         
@@ -83,10 +84,10 @@ final class ZipTests: XCTestCase {
         
         let result = zipGenerator.run(using: &rng)
         
-        XCTAssertEqual(result, "16: 0.6390517027105214")
+        #expect(result == "16: 0.6390517027105214")
     }
         
-        /// Test the `zip` extension method with three generators and a transform
+    @Test("Use zip3 with transform")
     func testZip3WithTransform() {
         var rng = LCRNG(seed: 1)
         
@@ -100,10 +101,10 @@ final class ZipTests: XCTestCase {
         
         let result = zipGenerator.run(using: &rng)
         
-        XCTAssertEqual(result, "16: 0.6390517027105214: false")
+        #expect(result == "16: 0.6390517027105214: false")
     }
     
-        /// Test the `zip` extension method with four generators and a transform
+    @Test("Use zip4 with transform")
     func testZip4WithTransform() {
         var rng = LCRNG(seed: 1)
         
@@ -118,10 +119,10 @@ final class ZipTests: XCTestCase {
         
         let result = zipGenerator.run(using: &rng)
         
-        XCTAssertEqual(result, "16: 0.6390517027105214: 2: false")
+        #expect(result == "16: 0.6390517027105214: 2: false")
     }
     
-    /// Test zipping generators with the same type using `zip` method
+    @Test("Zip generators with the same type")
     func testZipSameTypeGenerators() {
         var rng = LCRNG(seed: 1)
         
@@ -132,7 +133,7 @@ final class ZipTests: XCTestCase {
         
         let result = zipGenerator.run(using: &rng)
         
-        XCTAssertEqual(result.0, 8)
-        XCTAssertEqual(result.1, 82)
+        #expect(result.0 == 8)
+        #expect(result.1 == 82)
     }
 }
