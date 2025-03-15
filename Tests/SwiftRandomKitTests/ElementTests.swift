@@ -11,20 +11,25 @@ final class ElementTests: XCTestCase {
         var rng = LCRNG(seed: 42)
         let selectedFruit = fruitGen.run(using: &rng)
         
-        // Verify a fruit was selected
-        XCTAssertNotNil(selectedFruit)
-        XCTAssertTrue(fruits.contains(selectedFruit!))
+        // With LCRNG seed 42, we should get a specific fruit
+        XCTAssertEqual(selectedFruit, "orange", "LCRNG with seed 42 should deterministically select 'orange'")
         
-        // Test multiple selections to ensure different items can be chosen
+        // Rather than testing a sequence, verify we get a different value with a different seed
+        var rng2 = LCRNG(seed: 43)
+        let selectedFruit2 = fruitGen.run(using: &rng2)
+        XCTAssertNotEqual(selectedFruit, selectedFruit2, "Different seeds should produce different results")
+        
+        // Also verify we can get all fruits over time
+        var rngForFullTest = LCRNG(seed: 123) // Different seed for this part
         var uniqueSelections = Set<String>()
         for _ in 1...20 {
-            if let fruit = fruitGen.run(using: &rng) {
+            if let fruit = fruitGen.run(using: &rngForFullTest) {
                 uniqueSelections.insert(fruit)
             }
         }
         
-        // With 20 selections from 5 items, we should get at least 3 unique items
-        XCTAssertGreaterThanOrEqual(uniqueSelections.count, 3)
+        // With 20 selections from 5 items, we should get all 5 items
+        XCTAssertEqual(uniqueSelections.count, 5, "All fruits should be selected with enough iterations")
     }
     
     func testElementFromEmptyCollection() {
@@ -44,9 +49,13 @@ final class ElementTests: XCTestCase {
         let singleItemGen = Always(singleItem).element()
         
         var rng = LCRNG(seed: 42)
-        for _ in 1...10 {
-            let result = singleItemGen.run(using: &rng)
-            XCTAssertEqual(result, "only option")
+        let result = singleItemGen.run(using: &rng)
+        
+        XCTAssertEqual(result, "only option", "Single item collection should always return that item")
+        
+        // Verify multiple runs also return the same item
+        for _ in 1...5 {
+            XCTAssertEqual(singleItemGen.run(using: &rng), "only option")
         }
     }
     
@@ -55,41 +64,26 @@ final class ElementTests: XCTestCase {
         // We'll use a fixed seed so we can predict the results
         var rng = LCRNG(seed: 42)
         
-        // For this test, let's use a more predictable approach
-        for size in 1...5 {
-            // Create a fixed array of this size
-            let array = Array(1...size)
-            let arrayGen = Always(array)
-            let elementGen = arrayGen.element()
-            
-            // Select a random element and verify it's within the valid range
-            if let selectedElement = elementGen.run(using: &rng) {
-                XCTAssertGreaterThanOrEqual(selectedElement, 1)
-                XCTAssertLessThanOrEqual(selectedElement, size)
-            } else {
-                XCTFail("Should have selected an element from non-empty array")
-            }
-        }
+        // For this test, use fixed arrays with fixed seeds for predictable results
+        let array1 = Array(1...3)
+        let elementGen1 = Always(array1).element()
+        let firstSelection = elementGen1.run(using: &rng)
+        XCTAssertEqual(firstSelection, 2, "With LCRNG seed 42 on array [1,2,3], should select 2")
         
-        // Also test a truly dynamic array generation
+        let array2 = Array(1...5)
+        let elementGen2 = Always(array2).element()
+        let secondSelection = elementGen2.run(using: &rng)
+        XCTAssertEqual(secondSelection, 5, "Next value in sequence should be 5")
+        
+        // Also test with an array generator, but still verify exact results
         let dynamicArrayGen = IntGenerator(in: 1...5).map { Array(1...$0) }
-        var resultValues = [Int]()
         
-        // Run several times to collect some results
-        for _ in 1...10 {
-            let array = dynamicArrayGen.run(using: &rng)
-            let randomElement = array.randomElement(using: &rng)
-            
-            if let element = randomElement {
-                // Verify the element is valid for the array that was generated
-                XCTAssertGreaterThanOrEqual(element, 1)
-                XCTAssertLessThanOrEqual(element, array.count)
-                resultValues.append(element)
-            }
-        }
+        // With seed 42, let's verify what IntGenerator(1...5) produces
+        let arrayResult = dynamicArrayGen.run(using: &rng)
+        XCTAssertEqual(arrayResult, [1, 2, 3], "IntGenerator with seed 42 and next LCRNG value produces [1,2,3]")
         
-        // We should have collected some values
-        XCTAssertFalse(resultValues.isEmpty)
+        let elementResult = arrayResult.randomElement(using: &rng)
+        XCTAssertEqual(elementResult, 3, "randomElement on [1,2,3] with next LCRNG value selects 3")
     }
     
     func testElementDistribution() {
@@ -97,7 +91,20 @@ final class ElementTests: XCTestCase {
         let options = [1, 2, 3, 4, 5]
         let optionsGen = Always(options).element()
         
-        var rng = LCRNG(seed: 123)
+        // For distribution test, use large number of iterations
+        // But first verify deterministic behavior with a fixed seed
+        var rng1 = LCRNG(seed: 123)
+        var rng2 = LCRNG(seed: 123)
+        
+        // Same seed should produce the same results
+        for _ in 1...5 {
+            let value1 = optionsGen.run(using: &rng1)
+            let value2 = optionsGen.run(using: &rng2)
+            XCTAssertEqual(value1, value2, "Same seed should produce same results")
+        }
+        
+        // Now check overall distribution with many iterations
+        var rng = LCRNG(seed: 456) // Different seed for distribution test
         var counts = [1: 0, 2: 0, 3: 0, 4: 0, 5: 0]
         
         // Generate a large number of elements to check distribution
@@ -108,11 +115,10 @@ final class ElementTests: XCTestCase {
         }
         
         // In a uniform distribution with 1000 samples and 5 options,
-        // each option should appear approximately 200 times (1000/5)
-        // Allow for some variation with a reasonable margin
+        // each option should appear approximately 200 times
         for count in counts.values {
-            XCTAssertGreaterThan(count, 150, "Each option should be selected approximately 200 times (with a reasonable margin)")
-            XCTAssertLessThan(count, 250, "Each option should be selected approximately 200 times (with a reasonable margin)")
+            XCTAssertGreaterThan(count, 150, "Each option should be selected approximately 200 times")
+            XCTAssertLessThan(count, 250, "Each option should be selected approximately 200 times")
         }
     }
     
@@ -129,17 +135,14 @@ final class ElementTests: XCTestCase {
         var rng = LCRNG(seed: 42)
         let selectedArray = nestedGen.run(using: &rng)
         
-        XCTAssertNotNil(selectedArray)
-        XCTAssertTrue(nestedArrays.contains(selectedArray!))
+        // With seed 42, we know exactly which array should be selected
+        XCTAssertEqual(selectedArray!, [4, 5], "LCRNG with seed 42 should select the second array")
         
-        // Now select from the selected array
-        if let array = selectedArray {
-            let innerGen = Always(array).element()
-            let innerElement = innerGen.run(using: &rng)
-            
-            XCTAssertNotNil(innerElement)
-            XCTAssertTrue(array.contains(innerElement!))
-        }
+        // Now select from the selected array with the next LCRNG value
+        let innerGen = Always([4, 5]).element()
+        let innerElement = innerGen.run(using: &rng)
+        
+        XCTAssertEqual(innerElement, 5, "Next LCRNG value should select the element 5")
     }
     
     func testElementWithRandomGeneratorElement() {
@@ -150,7 +153,11 @@ final class ElementTests: XCTestCase {
         var rng = LCRNG(seed: 42)
         let selectedNumber = numberGen.run(using: &rng)
         
-        XCTAssertNotNil(selectedNumber)
-        XCTAssertTrue(numbers.contains(selectedNumber!))
+        // With seed 42, verify exact result
+        XCTAssertEqual(selectedNumber, 30, "LCRNG with seed 42 should select 30 from the array")
+        
+        // Verify the next few values in sequence
+        XCTAssertEqual(numberGen.run(using: &rng), 50, "Next value should be 50")
+        XCTAssertEqual(numberGen.run(using: &rng), 30, "Next value should be 30")
     }
 } 
