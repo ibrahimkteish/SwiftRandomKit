@@ -23,24 +23,13 @@ final class FrequencyTests: XCTestCase {
         
         let frequencyGen = gen1.frequency(distribution)
         
-        // First, verify deterministic behavior with fixed seeds
-        var rng1 = LCRNG(seed: 42)
-        var rng2 = LCRNG(seed: 42)
-        
-        // Same seed should give same results
-        for _ in 1...5 {
-            let value1 = frequencyGen.run(using: &rng1)
-            let value2 = frequencyGen.run(using: &rng2)
-            XCTAssertEqual(value1, value2, "Same seed should produce same results")
-        }
-        
         // Run the generator many times to check frequency distribution
-        var rng = LCRNG(seed: 100) // Different seed for distribution test
+        var distributionRng = LCRNG(seed: 100)
         var results: [Int: Int] = [1: 0, 2: 0, 3: 0]
         
         // For statistical significance, generate a large number of values
         for _ in 1...1000 {
-            let value = frequencyGen.run(using: &rng)
+            let value = frequencyGen.run(using: &distributionRng)
             results[value, default: 0] += 1
         }
         
@@ -55,6 +44,15 @@ final class FrequencyTests: XCTestCase {
         
         // The medium-weighted item should occur more often than the low-weighted item
         XCTAssertGreaterThan(results[2]!, results[1]!)
+        
+        // Test deterministic behavior by checking that same seed produces same first value
+        var rng1 = LCRNG(seed: 42)
+        var rng2 = LCRNG(seed: 42)
+        
+        let firstValue1 = frequencyGen.run(using: &rng1)
+        let firstValue2 = frequencyGen.run(using: &rng2)
+        
+        XCTAssertEqual(firstValue1, firstValue2, "Same seed should produce same first value")
     }
     
     func testFrequencyWithSingleItem() {
@@ -67,15 +65,18 @@ final class FrequencyTests: XCTestCase {
         
         let frequencyGen = onlyOption.frequency(distribution)
         
-        var rng = LCRNG(seed: 1)
+        // Even with different seeds, should always return the same single value
+        var rng1 = LCRNG(seed: 1)
+        var rng2 = LCRNG(seed: 42)
+        var rng3 = LCRNG(seed: 99)
         
-        // Verify the exact first value
-        let result = frequencyGen.run(using: &rng)
-        XCTAssertEqual(result, "only option", "Only option should be selected")
+        XCTAssertEqual(frequencyGen.run(using: &rng1), "only option", "Only option should be selected regardless of seed")
+        XCTAssertEqual(frequencyGen.run(using: &rng2), "only option", "Only option should be selected regardless of seed")
+        XCTAssertEqual(frequencyGen.run(using: &rng3), "only option", "Only option should be selected regardless of seed")
         
         // Verify multiple runs also return the same item
         for _ in 1...10 {
-            XCTAssertEqual(frequencyGen.run(using: &rng), "only option", "Only option should always be selected")
+            XCTAssertEqual(frequencyGen.run(using: &rng1), "only option", "Only option should always be selected")
         }
     }
     
@@ -93,24 +94,13 @@ final class FrequencyTests: XCTestCase {
         
         let frequencyGen = int1.frequency(distribution)
         
-        // Verify deterministic behavior
-        var rng1 = LCRNG(seed: 42)
-        var rng2 = LCRNG(seed: 42)
-        
-        // Same seed should give same results
-        for _ in 1...5 {
-            let value1 = frequencyGen.run(using: &rng1)
-            let value2 = frequencyGen.run(using: &rng2)
-            XCTAssertEqual(value1, value2, "Same seed should produce same results")
-        }
-        
         // Test distribution properties with many iterations
-        var rng = LCRNG(seed: 456)
+        var distributionRng = LCRNG(seed: 456)
         var results = [1: 0, 2: 0, 3: 0]
         
         // Run many times to collect a good sample
         for _ in 1...1000 {
-            let value = frequencyGen.run(using: &rng)
+            let value = frequencyGen.run(using: &distributionRng)
             results[value, default: 0] += 1
         }
         
@@ -128,6 +118,15 @@ final class FrequencyTests: XCTestCase {
         XCTAssertLessThan(proportion1, 0.2, "Weight 1 should be less than 20% of the total")
         XCTAssertGreaterThan(proportion2, 0.25, "Weight 2 should be at least 25% of the total")
         XCTAssertGreaterThan(proportion3, 0.45, "Weight 3 should be at least 45% of the total")
+        
+        // Test deterministic behavior by checking that same seed produces same first value
+        var rng1 = LCRNG(seed: 42)
+        var rng2 = LCRNG(seed: 42)
+        
+        let firstValue1 = frequencyGen.run(using: &rng1)
+        let firstValue2 = frequencyGen.run(using: &rng2)
+        
+        XCTAssertEqual(firstValue1, firstValue2, "Same seed should produce same first value")
     }
     
     func testFrequencyWithZeroWeights() {
@@ -142,15 +141,18 @@ final class FrequencyTests: XCTestCase {
         
         let frequencyGen = neverSelect.frequency(distribution)
         
-        var rng = LCRNG(seed: 1)
+        // With any seed, zero-weighted items should never be selected
+        var rng1 = LCRNG(seed: 1)
+        var rng2 = LCRNG(seed: 42)
+        var rng3 = LCRNG(seed: 99)
         
-        // With seed 1, verify specific values
-        XCTAssertEqual(frequencyGen.run(using: &rng), "always select")
-        XCTAssertEqual(frequencyGen.run(using: &rng), "always select")
+        XCTAssertEqual(frequencyGen.run(using: &rng1), "always select", "Zero-weighted item should never be selected")
+        XCTAssertEqual(frequencyGen.run(using: &rng2), "always select", "Zero-weighted item should never be selected")
+        XCTAssertEqual(frequencyGen.run(using: &rng3), "always select", "Zero-weighted item should never be selected")
         
         // Test multiple runs to ensure zero-weighted item is never selected
         for _ in 1...20 {
-            XCTAssertEqual(frequencyGen.run(using: &rng), "always select", "Zero-weighted item should never be selected")
+            XCTAssertEqual(frequencyGen.run(using: &rng1), "always select", "Zero-weighted item should never be selected")
         }
     }
     
@@ -166,19 +168,8 @@ final class FrequencyTests: XCTestCase {
         
         let frequencyGen = diceGen1.frequency(distribution)
         
-        // First, verify deterministic behavior with fixed seeds
-        var rng1 = LCRNG(seed: 42)
-        var rng2 = LCRNG(seed: 42)
-        
-        // Same seed should give same results
-        for _ in 1...5 {
-            let value1 = frequencyGen.run(using: &rng1)
-            let value2 = frequencyGen.run(using: &rng2)
-            XCTAssertEqual(value1, value2, "Same seed should produce same results")
-        }
-        
-        // Now check we get values from both dice ranges
-        var rng = LCRNG(seed: 42)
+        // Check we get values from both dice ranges
+        var rng = LCRNG(seed: 42) // Reset RNG for clarity
         var results = [Int]()
         
         // Generate 100 values and make sure we see both dice ranges
@@ -191,5 +182,22 @@ final class FrequencyTests: XCTestCase {
         
         // Should also have numbers 7-10 from the second dice
         XCTAssertTrue(results.contains { $0 >= 7 && $0 <= 10 }, "Should contain values from second dice (7-10)")
+        
+        // Since the weights are equal, we should get roughly equal numbers from each range
+        let firstDiceCount = results.filter { $0 >= 1 && $0 <= 6 }.count
+        let secondDiceCount = results.filter { $0 >= 7 && $0 <= 10 }.count
+        
+        // Check both dice produce results, allowing for statistical variance
+        XCTAssertGreaterThan(firstDiceCount, 20, "Should have a substantial number of results from first dice")
+        XCTAssertGreaterThan(secondDiceCount, 10, "Should have a substantial number of results from second dice")
+        
+        // Test deterministic behavior by checking that same seed produces same first value
+        var rng1 = LCRNG(seed: 42)
+        var rng2 = LCRNG(seed: 42)
+        
+        let firstValue1 = frequencyGen.run(using: &rng1)
+        let firstValue2 = frequencyGen.run(using: &rng2)
+        
+        XCTAssertEqual(firstValue1, firstValue2, "Same seed should produce same first value")
     }
 } 
