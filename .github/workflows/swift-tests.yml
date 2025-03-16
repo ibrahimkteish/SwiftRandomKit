@@ -2,9 +2,9 @@ name: Swift Tests
 
 on:
   push:
-    branches: [ main, master, develop, testing ]
+    branches: [ develop ]
   pull_request:
-    branches: [ main, master, develop, testing ]
+    branches: [ develop ]
 
 jobs:
   test:
