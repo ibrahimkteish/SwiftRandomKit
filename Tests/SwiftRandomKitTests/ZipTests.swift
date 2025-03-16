@@ -25,7 +25,7 @@ final class ZipTests: XCTestCase {
         let doubleGenerator = FloatGenerator<Double>(in: 0.0...1.0)
         let boolGenerator = BoolRandomGenerator()
         
-        let zipGenerator = RandomGenerators.Zip3(intGenerator, doubleGenerator, boolGenerator)
+        let zipGenerator = RandomGenerators.Zip(intGenerator, doubleGenerator, boolGenerator)
         
         let result = zipGenerator.run(using: &rng)
         
@@ -42,7 +42,7 @@ final class ZipTests: XCTestCase {
         let charGenerator = RandomGenerators.letterOrNumber
         let boolGenerator = BoolRandomGenerator()
         
-        let zipGenerator = RandomGenerators.Zip4(intGenerator, doubleGenerator, charGenerator, boolGenerator)
+        let zipGenerator = RandomGenerators.Zip(intGenerator, doubleGenerator, charGenerator, boolGenerator)
         
         let result = zipGenerator.run(using: &rng)
         
@@ -88,7 +88,7 @@ final class ZipTests: XCTestCase {
         let doubleGenerator = FloatGenerator<Double>(in: 0.0...1.0)
         let boolGenerator = BoolRandomGenerator()
         
-        let zipGenerator = RandomGenerators.Zip3(intGenerator, doubleGenerator, boolGenerator).map { intVal, doubleVal, boolVal in
+        let zipGenerator = RandomGenerators.Zip(intGenerator, doubleGenerator, boolGenerator).map { intVal, doubleVal, boolVal in
             return "\(intVal): \(doubleVal): \(boolVal)"
         }
         
@@ -105,7 +105,7 @@ final class ZipTests: XCTestCase {
         let charGenerator = RandomGenerators.letterOrNumber
         let boolGenerator = BoolRandomGenerator()
         
-        let zipGenerator = RandomGenerators.Zip4(intGenerator, doubleGenerator, charGenerator, boolGenerator).map { intVal, doubleVal, charVal, boolVal in
+        let zipGenerator = RandomGenerators.Zip(intGenerator, doubleGenerator, charGenerator, boolGenerator).map { intVal, doubleVal, charVal, boolVal in
             return "\(intVal): \(doubleVal): \(charVal): \(boolVal)"
         }
         
