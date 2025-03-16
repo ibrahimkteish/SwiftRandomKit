@@ -36,6 +36,7 @@ extension RandomGenerators {
         /// Runs the generator using the provided random number generator.
         /// - Parameter rng: The random number generator to use.
         /// - Returns: A Result containing either the successfully transformed element or an error.
+        @inlinable
         public func run<RNG: RandomNumberGenerator>(using rng: inout RNG) -> Element {
             do {
                 return .success(try transform(generator.run(using: &rng)))

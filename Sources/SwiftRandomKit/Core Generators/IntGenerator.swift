@@ -46,6 +46,7 @@ public struct IntGenerator<Element>: RandomGenerator where Element: FixedWidthIn
     /// - Parameter rng: The random number generator to use.
     /// - Returns: A random integer value within the specified range.
     @inlinable
+    @inline(__always)
     public func run<RNG: RandomNumberGenerator>(using rng: inout RNG) -> Element {
         Element.random(in: closedRange, using: &rng)
     }

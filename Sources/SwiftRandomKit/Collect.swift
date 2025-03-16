@@ -26,7 +26,7 @@ extension RandomGenerators {
         public typealias Element = [Upstream.Element]
 
         /// The array of generators whose outputs will be collected.
-        let generators: [Upstream]
+        public let generators: [Upstream]
 
         /// Creates a new collect generator from an array of generators.
         ///
@@ -40,6 +40,7 @@ extension RandomGenerators {
         ///
         /// - Parameter rng: The random number generator to use.
         /// - Returns: An array containing one random element from each generator, in order.
+        @inlinable
         public func run<RNG: RandomNumberGenerator>(using rng: inout RNG) -> Element {
             return generators.map { $0.run(using: &rng) }
         }
