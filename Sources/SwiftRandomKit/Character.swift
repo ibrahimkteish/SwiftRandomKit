@@ -7,10 +7,10 @@ extension RandomGenerators {
         public typealias Element = Swift.Character
 
         /// The upstream generator that produces characters.
-        let generator: Upstream
+        public let generator: Upstream
         
         /// The range of characters to generate from.
-        let closedRange: ClosedRange<Swift.Character>
+        public let closedRange: ClosedRange<Swift.Character>
 
         /// Creates a new character generator with the specified range.
         ///
@@ -26,6 +26,7 @@ extension RandomGenerators {
         ///
         /// - Parameter rng: The random number generator to use.
         /// - Returns: A random character within the specified range.
+        @inlinable
         public func run<RNG: RandomNumberGenerator>(using rng: inout RNG) -> Swift.Character {
             // Map the Character generator to a UnicodeScalar generator
             let unicodeGenerator = generator.map { $0.unicodeScalars.first! }

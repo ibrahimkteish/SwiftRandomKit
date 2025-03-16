@@ -5,7 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "SwiftRandomKit",
-    platforms: [.iOS(.v13), .macOS(.v13)],
+    platforms: [.iOS(.v13), .macOS(.v14)],
     products: [
         .library(name: "SwiftRandomKit", targets: ["SwiftRandomKit"]),
         .library(name: "SwiftRandomKitGenerators", targets: ["SwiftRandomKitGenerators"])
@@ -16,6 +16,12 @@ let package = Package(
         
         .executableTarget(name: "SwiftRandomKitExample", dependencies: ["SwiftRandomKit", "SwiftRandomKitGenerators"]),
 
-        .testTarget(name: "SwiftRandomKitTests", dependencies: ["SwiftRandomKit", "SwiftRandomKitGenerators"])
+        .testTarget(
+            name: "SwiftRandomKitTests", 
+            dependencies: [
+                "SwiftRandomKit", 
+                "SwiftRandomKitGenerators"
+            ]
+        )
     ]
 )
