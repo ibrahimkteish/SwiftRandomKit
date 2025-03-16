@@ -86,6 +86,7 @@ extension RandomGenerators {
         /// Runs the generator using the provided random number generator.
         /// - Parameter rng: The random number generator to use.
         /// - Returns: The concatenated values from the first and second generators, with the separator in between.
+        @inlinable
         public func run<RNG: RandomNumberGenerator>(using rng: inout RNG) -> Element {
             first.run(using: &rng) + separator + second.run(using: &rng)
         }

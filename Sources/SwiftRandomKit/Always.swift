@@ -21,7 +21,7 @@ extension RandomGenerators {
     /// ```
     public struct Always<Element>: RandomGenerator {
         /// The value that this generator will always produce
-        let value: Element
+        public let value: Element
 
         /// Creates a generator that always produces the given value.
         ///
@@ -34,6 +34,8 @@ extension RandomGenerators {
         ///
         /// - Parameter rng: The random number generator (unused in this implementation).
         /// - Returns: The stored value.
+        @inlinable
+        @inline(__always)
         public func run<RNG: RandomNumberGenerator>(using rng: inout RNG) -> Element {
             value
         }

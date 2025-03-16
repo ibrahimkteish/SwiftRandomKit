@@ -86,10 +86,10 @@ extension RandomGenerators {
     /// ```
     public struct ArrayGenerator<Upstream: RandomGenerator, C: RandomGenerator>: RandomGenerator where C.Element == Int {
         /// The generator that produces individual elements for the array.
-        let upstream: Upstream
+        public let upstream: Upstream
         
         /// The generator that determines how many elements to include in the array.
-        let countGenerator: C
+        public let countGenerator: C
 
         /// Creates a new array generator with variable size.
         ///
@@ -105,6 +105,7 @@ extension RandomGenerators {
         ///
         /// - Parameter rng: The random number generator to use.
         /// - Returns: An array of randomly generated elements with variable size.
+        @inlinable
         public func run<RNG: RandomNumberGenerator>(using rng: inout RNG) -> [Upstream.Element] {
             let size = countGenerator.run(using: &rng)
             guard size > 0 else { return [] }
@@ -135,6 +136,8 @@ extension RandomGenerator {
     ///
     /// - Parameter countGenerator: A generator that produces the count of elements to include.
     /// - Returns: A generator that produces arrays of variable size.
+    @inlinable
+    @inline(__always)
     public func arrayGenerator<C: RandomGenerator>(_ countGenerator: C) -> RandomGenerators.ArrayGenerator<Self, C> {
         .init(self, countGenerator)
     }
