@@ -127,4 +127,93 @@ final class ZipTests: XCTestCase {
         XCTAssertEqual(result.0, 8)
         XCTAssertEqual(result.1, 82)
     }
+    
+    // MARK: - New tests for 100% coverage
+    
+    func testZipArrayGenerator() {
+        var rng = LCRNG(seed: 1)
+        
+        // Create an array of generators of the same type
+        let generators = [
+            IntGenerator(in: 1...10),
+            IntGenerator(in: 11...20),
+            IntGenerator(in: 21...30)
+        ]
+        
+        // Create a ZipArrayGenerator directly
+        let zipArrayGenerator = RandomGenerators.ZipArrayGenerator(generators: generators)
+        
+        // Run the generator
+        let result = zipArrayGenerator.run(using: &rng)
+        
+        // Verify the result
+        XCTAssertEqual(result.count, 3)
+        XCTAssertEqual(result[0], 2)
+        XCTAssertEqual(result[1], 17)
+        XCTAssertEqual(result[2], 29)
+    }
+    
+    func testArrayZipAllExtension() {
+        var rng = LCRNG(seed: 1)
+        
+        // Create an array of generators of the same type
+        let generators = [
+            IntGenerator(in: 1...10),
+            IntGenerator(in: 11...20),
+            IntGenerator(in: 21...30)
+        ]
+        
+        // Use the zipAll extension method
+        let zipGenerator = generators.zipAll()
+        
+        // Run the generator
+        let result = zipGenerator.run(using: &rng)
+        
+        // Verify the result
+        XCTAssertEqual(result.count, 3)
+        XCTAssertEqual(result[0], 2)
+        XCTAssertEqual(result[1], 17)
+        XCTAssertEqual(result[2], 29)
+    }
+    
+    func testZipGeneratorsFactoryFunction() {
+        var rng = LCRNG(seed: 1)
+        
+        // Use the zipGenerators factory function
+        let zipGenerator = zipGenerators(
+            IntGenerator(in: 1...10),
+            IntGenerator(in: 11...20),
+            IntGenerator(in: 21...30)
+        )
+        
+        // Run the generator
+        let result = zipGenerator.run(using: &rng)
+        
+        // Verify the result
+        XCTAssertEqual(result.count, 3)
+        XCTAssertEqual(result[0], 2)
+        XCTAssertEqual(result[1], 17)
+        XCTAssertEqual(result[2], 29)
+    }
+    
+    func testZipGeneratorsWithEmptyArray() {
+        // Create a single generator to use as a reference type
+        let singleGenerator = IntGenerator(in: 1...10)
+        
+        // Test the zipAll extension method with a single generator
+        var rng1 = LCRNG(seed: 1)
+        let singleGeneratorArray = [singleGenerator]
+        let zipGenerator = singleGeneratorArray.zipAll()
+        let result = zipGenerator.run(using: &rng1)
+        XCTAssertEqual(result.count, 1)
+        XCTAssertEqual(result[0], 2) // With seed 1, should get 2
+        
+        // Test the zipGenerators factory function with a single generator
+        // Use a fresh RNG with the same seed
+        var rng2 = LCRNG(seed: 1)
+        let factoryGenerator = zipGenerators(singleGenerator)
+        let factoryResult = factoryGenerator.run(using: &rng2)
+        XCTAssertEqual(factoryResult.count, 1)
+        XCTAssertEqual(factoryResult[0], 2) // With seed 1, should get 2
+    }
 }
