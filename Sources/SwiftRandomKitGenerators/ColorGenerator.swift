@@ -1,5 +1,8 @@
 import SwiftRandomKit
 
+#if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
+import CoreGraphics
+
 public struct ColorGenerator: RandomGenerator {
     public typealias Element = (red: CGFloat, green: CGFloat, blue: CGFloat, alpha: CGFloat)
 
@@ -16,7 +19,6 @@ public struct ColorGenerator: RandomGenerator {
         return (red: red, green: green, blue: blue, alpha: self.alpha)
     }
 }
-
 
 extension RandomGenerator {
     @inlinable
@@ -41,7 +43,8 @@ import SwiftUI
 extension ColorGenerator {
     public func swiftUIColor(alpha: CGFloat = 1, using rng: inout some RandomNumberGenerator) -> Color {
         let (red, green, blue, alpha) = self.run(using: &rng)
-        return Color(red: red, green: green, blue: blue, opacity: alpha)
+        return Color(red: Double(red), green: Double(green), blue: Double(blue), opacity: Double(alpha))
     }
 }
 #endif
+#endif // End of Apple platforms
