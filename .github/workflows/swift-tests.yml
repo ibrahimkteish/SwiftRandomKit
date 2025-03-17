@@ -34,6 +34,8 @@ jobs:
     
     - name: Run tests with code coverage
       run: swift test --enable-code-coverage
+      env:
+        TOOLCHAINS: swift
     
     - name: Generate code coverage report
       run: |
@@ -41,6 +43,8 @@ jobs:
           .build/debug/SwiftRandomKitPackageTests.xctest/Contents/MacOS/SwiftRandomKitPackageTests \
           -instr-profile .build/debug/codecov/default.profdata \
           > coverage.lcov
+      env:
+        TOOLCHAINS: swift
     
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
