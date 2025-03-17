@@ -1,5 +1,16 @@
 import SwiftRandomKit
 
+#if canImport(CoreGraphics)
+import CoreGraphics
+#endif
+
+#if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
+// CGFloat is available via CoreGraphics on Apple platforms
+#elseif os(Linux) || os(Windows)
+// Define CGFloat as Double on non-Apple platforms
+public typealias CGFloat = Double
+#endif
+
 public struct ColorGenerator: RandomGenerator {
     public typealias Element = (red: CGFloat, green: CGFloat, blue: CGFloat, alpha: CGFloat)
 
@@ -41,7 +52,7 @@ import SwiftUI
 extension ColorGenerator {
     public func swiftUIColor(alpha: CGFloat = 1, using rng: inout some RandomNumberGenerator) -> Color {
         let (red, green, blue, alpha) = self.run(using: &rng)
-        return Color(red: red, green: green, blue: blue, opacity: alpha)
+        return Color(red: Double(red), green: Double(green), blue: Double(blue), opacity: Double(alpha))
     }
 }
 #endif
