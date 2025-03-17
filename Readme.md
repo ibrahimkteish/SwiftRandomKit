@@ -14,6 +14,13 @@ SwiftRandomKit is a powerful Swift library that provides a composable, protocol-
 - 📦 Rich set of built-in generators
 - 🛠 Extensive collection of combinators
 
+## Concurrency Safety
+
+SwiftRandomKit is designed with Swift's concurrency model in mind:
+
+- ✅ All generators conform to `Sendable` for safe use in concurrent contexts
+- 🔒 You can enable strict concurrency checking while using it
+
 ## Installation
 
 ### Swift Package Manager
@@ -22,7 +29,7 @@ Add the following to your `Package.swift` file:
 
 ```swift
 dependencies: [
-.package(url: "https://github.com/ibrahimkteish/SwiftRandomKit.git", from: "1.0.0")
+.package(url: "https://github.com/ibrahimkteish/SwiftRandomKit.git", from: "1.1.0")
 ]
 ```
 
@@ -49,6 +56,29 @@ let fiveRolls = diceGen.array(5).run() // e.g., [3, 1, 6, 2, 5]
 var myRNG = MyCustomRandomNumberGenerator()
 let customRoll = diceGen.run(using: &myRNG)
 ```
+
+## Function Call Syntax
+
+SwiftRandomKit supports Swift's function call syntax, allowing you to call generators directly as functions:
+
+```swift
+import SwiftRandomKit
+
+// Create a random number generator
+let diceGen = IntGenerator(in: 1...6)
+
+// Traditional way
+let roll1 = diceGen.run() 
+
+// Function call syntax - more concise!
+let roll2 = diceGen()
+
+// Works with custom RNGs too
+var myRNG = MyCustomRandomNumberGenerator()
+let roll3 = diceGen(using: &myRNG)
+```
+
+This syntax provides a more concise and natural way to generate random values, making your code cleaner and more expressive.
 
 ## Built-in Generators
 
@@ -154,10 +184,10 @@ let alwaysSix = Always(6)
 
 // Can be combined with other generators using flatMap
 let loadedDice = BoolRandomGenerator().flatMap { isLoaded in
-    isLoaded ? Always(6).eraseToAnyRandomGenerator() : IntGenerator(in: 1...6).eraseToAnyRandomGenerator()
+    isLoaded ? alwaysSix.eraseToAnyRandomGenerator() : IntGenerator(in: 1...6).eraseToAnyRandomGenerator()
 }
 
-print(loadedDice.run())
+print(loadedDice())
 ```
 
 ### Type Erasure

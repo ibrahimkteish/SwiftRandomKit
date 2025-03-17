@@ -128,8 +128,6 @@ final class ZipTests: XCTestCase {
         XCTAssertEqual(result.1, 82)
     }
     
-    // MARK: - New tests for 100% coverage
-    
     func testZipArrayGenerator() {
         var rng = LCRNG(seed: 1)
         

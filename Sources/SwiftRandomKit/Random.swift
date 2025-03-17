@@ -42,3 +42,32 @@ extension RandomGenerator {
         return run(using: &generator)
     }
 }
+
+extension RandomGenerator {
+  /// Allows calling the generator directly as a function without explicitly using the `run()` method.
+  /// 
+  /// This provides a convenient shorthand syntax for generating random values. 
+  /// Instead of writing `generator.run()`, you can simply write `generator()`.
+  ///
+  /// - Returns: A randomly generated element of type `Element`.
+  ///
+  /// Example:
+  /// ```swift
+  /// let diceRoll = IntGenerator(in: 1...6)()  // Same as diceRoll.run()
+  /// ```
+  public func callAsFunction() -> Element {
+    self.run()
+  }
+
+  /// Allows calling the generator directly as a function with a custom random number generator.
+  ///
+  /// This provides a convenient shorthand syntax for generating random values using a specific random number generator.
+  /// Instead of writing `generator.run(using: &rng)`, you can simply write `generator(using: &rng)`.
+  ///
+  /// - Parameters:
+  ///   - rng: The random number generator to use.
+  /// - Returns: A randomly generated element of type `Element`.
+  public func callAsFunction<RNG: RandomNumberGenerator>(using rng: inout RNG) -> Element {
+    self.run(using: &rng)
+  }
+}
