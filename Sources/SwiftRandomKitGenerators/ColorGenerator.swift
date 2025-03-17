@@ -1,15 +1,7 @@
 import SwiftRandomKit
 
-#if canImport(CoreGraphics)
-import CoreGraphics
-#endif
-
 #if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
-// CGFloat is available via CoreGraphics on Apple platforms
-#elseif os(Linux) || os(Windows)
-// Define CGFloat as Double on non-Apple platforms
-public typealias CGFloat = Double
-#endif
+import CoreGraphics
 
 public struct ColorGenerator: RandomGenerator {
     public typealias Element = (red: CGFloat, green: CGFloat, blue: CGFloat, alpha: CGFloat)
@@ -27,7 +19,6 @@ public struct ColorGenerator: RandomGenerator {
         return (red: red, green: green, blue: blue, alpha: self.alpha)
     }
 }
-
 
 extension RandomGenerator {
     @inlinable
@@ -56,3 +47,4 @@ extension ColorGenerator {
     }
 }
 #endif
+#endif // End of Apple platforms
