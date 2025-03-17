@@ -8,7 +8,6 @@ on:
 
 jobs:
   test:
-    id: swift_tests
     name: Test on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
