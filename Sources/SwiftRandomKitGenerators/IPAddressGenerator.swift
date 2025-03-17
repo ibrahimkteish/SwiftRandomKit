@@ -3,7 +3,7 @@ import SwiftRandomKit
 public struct IPAddressGenerator: RandomGenerator {
     public typealias Element = String
     
-    public enum Version {
+  public enum Version: Sendable {
         case v4, v6
     }
     

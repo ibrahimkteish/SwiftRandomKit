@@ -7,12 +7,12 @@
 /// - Return a generator from a function without exposing its implementation details
 /// - Reduce generic complexity in your code
 /// 
-public struct AnyRandomGenerator<Element>: RandomGenerator {
+public struct AnyRandomGenerator<Element: Sendable>: RandomGenerator {
     /// The function that will be called to generate random values.
     ///
     /// This property stores the type-erased generation logic from the original generator.
-    public let _run: (inout any RandomNumberGenerator) -> Element
-    
+    public let _run: @Sendable (inout any RandomNumberGenerator) -> Element
+
     /// Creates a type-erased generator from another random generator.
     ///
     /// This initializer takes any generator that produces the same element type
@@ -39,7 +39,7 @@ public struct AnyRandomGenerator<Element>: RandomGenerator {
     /// ```
     ///
     /// - Parameter run: A function that takes a random number generator and returns a random value.
-    public init(_ run: @escaping (inout any RandomNumberGenerator) -> Element) {
+    public init(_ run: @Sendable @escaping (inout any RandomNumberGenerator) -> Element) {
         self._run = run
     }
     

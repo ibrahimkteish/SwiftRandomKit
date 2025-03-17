@@ -1,7 +1,7 @@
 import Foundation
 import SwiftRandomKit
 
-public enum CreditCardType {
+public enum CreditCardType: Sendable {
     case visa
     case mastercard
     case amex

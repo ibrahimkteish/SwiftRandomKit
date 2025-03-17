@@ -17,9 +17,9 @@
 /// // Use with an open range
 /// let openRangeGen = IntGenerator(in: 0..<10) // Equivalent to 0...9
 /// ```
-public struct IntGenerator<Element>: RandomGenerator where Element: FixedWidthInteger {
+public struct IntGenerator<Element: Sendable>: RandomGenerator where Element: FixedWidthInteger {
     /// The closed range from which random values will be generated.
-    public let closedRange: ClosedRange<Element>
+  public let closedRange: ClosedRange<Element>
 
     /// Creates a generator that produces random integers within the specified closed range.
     ///

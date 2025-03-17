@@ -4,7 +4,7 @@ import SwiftRandomKit
 public struct SudokuGenerator: RandomGenerator {
     public typealias Element = [[Int]]
 
-    public enum Difficulty {
+  public enum Difficulty: Sendable {
         case easy      // 35-40 givens
         case medium    // 30-34 givens
         case hard      // 25-29 givens
