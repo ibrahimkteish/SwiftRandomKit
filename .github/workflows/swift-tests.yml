@@ -1,0 +1,59 @@
+name: Swift Tests
+
+# Prevent duplicate builds when a PR is created from a branch in the same repo
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - '*'
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  macos:
+    name: macOS (Swift ${{ matrix.swift }})
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        swift: ['6.0.2']
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Swift
+        uses: swift-actions/setup-swift@v2
+        with:
+          swift-version: ${{ matrix.swift }}
+      
+      - name: Build
+        run: swift build -v
+      
+      - name: Run tests
+        run: swift test -v
+      
+      - name: Run tests (release)
+        run: swift test -c release -v
+
+  ubuntu:
+    name: Ubuntu (Swift ${{ matrix.swift }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        swift: ['6.0.2']
+    container: swift:${{ matrix.swift }}
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Build
+        run: swift build -v
+      
+      - name: Run tests
+        run: swift test --parallel
+      
+      - name: Run tests (release)
+        run: swift test -c release --parallel 
