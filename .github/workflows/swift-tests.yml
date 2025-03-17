@@ -16,13 +16,13 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest]
-        swift: ["5.9.2"]
+        swift: ["6.0.3"]
 
     steps:
     - uses: actions/checkout@v3
     
     - name: Setup Swift
-      uses: swift-actions/setup-swift@v1
+      uses: swift-actions/setup-swift@v2
       with:
         swift-version: ${{ matrix.swift }}
     
