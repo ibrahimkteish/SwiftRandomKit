@@ -32,18 +32,71 @@ jobs:
     - name: Run tests
       run: swift test -v
     
-    - name: Generate code coverage
+    - name: Create Xcode project
+      run: swift package generate-xcodeproj
+      
+    - name: Run tests with coverage
       run: |
-        swift test --enable-code-coverage
-        xcrun llvm-cov report \
-          .build/debug/SwiftRandomKitPackageTests.xctest/Contents/MacOS/SwiftRandomKitPackageTests \
-          -instr-profile .build/debug/codecov/default.profdata \
-          -use-color=false
-        xcrun llvm-cov export \
-          -format="lcov" \
-          .build/debug/SwiftRandomKitPackageTests.xctest/Contents/MacOS/SwiftRandomKitPackageTests \
-          -instr-profile .build/debug/codecov/default.profdata \
-          > coverage.lcov
+        xcodebuild test \
+          -project SwiftRandomKit.xcodeproj \
+          -scheme SwiftRandomKit-Package \
+          -enableCodeCoverage YES \
+          -resultBundlePath TestResults
+    
+    - name: Convert coverage to LCOV
+      run: |
+        xcrun xcresultool export \
+          --type cobertura \
+          --output coverage.xml \
+          TestResults.xcresult
+          
+        # Install lcov if needed
+        if ! command -v lcov &> /dev/null; then
+          brew install lcov
+        fi
+        
+        # Convert Cobertura XML to LCOV format
+        python3 -c "
+import xml.etree.ElementTree as ET
+import os
+
+tree = ET.parse('coverage.xml')
+root = tree.getroot()
+packages = root.findall('.//package')
+
+with open('coverage.lcov', 'w') as lcov_file:
+    for package in packages:
+        for cls in package.findall('classes/class'):
+            filename = cls.get('filename')
+            lcov_file.write(f'SF:{filename}\\n')
+            
+            for method in cls.findall('methods/method'):
+                name = method.get('name')
+                line = method.get('line')
+                lcov_file.write(f'FN:{line},{name}\\n')
+            
+            for method in cls.findall('methods/method'):
+                name = method.get('name')
+                hits = method.get('hits', '0')
+                lcov_file.write(f'FNDA:{hits},{name}\\n')
+            
+            methods_count = len(cls.findall('methods/method'))
+            methods_hit = len([m for m in cls.findall('methods/method') if int(m.get('hits', '0')) > 0])
+            lcov_file.write(f'FNF:{methods_count}\\n')
+            lcov_file.write(f'FNH:{methods_hit}\\n')
+            
+            for line in cls.findall('lines/line'):
+                line_num = line.get('number')
+                hits = line.get('hits', '0')
+                lcov_file.write(f'DA:{line_num},{hits}\\n')
+            
+            lines_count = len(cls.findall('lines/line'))
+            lines_hit = len([l for l in cls.findall('lines/line') if int(l.get('hits', '0')) > 0])
+            lcov_file.write(f'LF:{lines_count}\\n')
+            lcov_file.write(f'LH:{lines_hit}\\n')
+            
+            lcov_file.write('end_of_record\\n')
+        "
     
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
