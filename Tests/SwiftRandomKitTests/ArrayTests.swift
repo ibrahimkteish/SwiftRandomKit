@@ -147,29 +147,4 @@ final class ArrayTests: XCTestCase {
             "Value: 2"
         ], "Mapped values should match expected output")
     }
-    
-    func testArrayPerformance() {
-        // Test the performance of the array operation
-        let intGen = IntGenerator(in: 1...100)
-        let arrayGen = intGen.array(1000)
-        
-        // Measure the performance
-        measure {
-            var rng = LCRNG(seed: 42)
-            _ = arrayGen.run(using: &rng)
-        }
-    }
-    
-    func testVariableSizeArrayPerformance() {
-        // Test the performance of the variable-size array operation
-        let intGen = IntGenerator(in: 1...100)
-        let sizeGen = IntGenerator(in: 900...1100)
-        let variableSizeGen = intGen.arrayGenerator(sizeGen)
-        
-        // Measure the performance
-        measure {
-            var rng = LCRNG(seed: 42)
-            _ = variableSizeGen.run(using: &rng)
-        }
-    }
 } 

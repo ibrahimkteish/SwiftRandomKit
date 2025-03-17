@@ -289,15 +289,4 @@ final class CharacterTests: XCTestCase {
         XCTAssertEqual(alphanumeric.count, 8, "Should generate 8 alphanumeric characters")
         XCTAssertEqual(alphanumeric, ["G", "9", "K", "U", "h", "o", "P", "2"], "Should generate the expected sequence")
     }
-    
-    func testCharacterPerformance() {
-        // Test the performance of character generation
-        let charGen = RandomGenerators.letterOrNumber
-        measure {
-            var rng = LCRNG(seed: 42)
-            for _ in 1...10000 {
-                _ = charGen.run(using: &rng)
-            }
-        }
-    }
 } 

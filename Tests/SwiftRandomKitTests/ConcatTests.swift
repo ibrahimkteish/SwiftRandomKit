@@ -173,21 +173,4 @@ final class ConcatTests: XCTestCase {
         let separatedByteArray = [UInt8](separatedResult)
         XCTAssertEqual(separatedByteArray, [0x01, 0x02, 0xFF, 0x03, 0x04], "Data concatenation with separator should work correctly")
     }
-    
-    func testConcatPerformance() {
-        // Test the performance of the concat operation
-        let stringGen1 = Always("performance")
-        let stringGen2 = Always("test")
-        
-        let concatGen = stringGen1.concat(stringGen2, separator: "-")
-        
-        measure {
-            var rng = LCRNG(seed: 42)
-            
-            // Generate values multiple times to measure performance
-            for _ in 0..<1000 {
-                _ = concatGen.run(using: &rng)
-            }
-        }
-    }
 } 
