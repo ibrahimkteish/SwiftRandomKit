@@ -1,8 +1,7 @@
 # SwiftRandomKit
 
 [![Swift Tests](https://github.com/ibrahimkteish/SwiftRandomKit/actions/workflows/swift-tests.yml/badge.svg)](https://github.com/ibrahimkteish/SwiftRandomKit/actions/workflows/swift-tests.yml)
-[![codecov](https://codecov.io/gh/ibrahimkteish/SwiftRandomKit/branch/main/graph/badge.svg)](https://codecov.io/gh/ibrahimkteish/SwiftRandomKit)
-[![Swift 5.9](https://img.shields.io/badge/Swift-5.9-orange.svg)](https://swift.org)
+[![Swift 6.0.2](https://img.shields.io/badge/Swift-6.0.2-orange.svg)](https://swift.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 SwiftRandomKit is a powerful Swift library that provides a composable, protocol-based approach to random value generation. It offers a flexible and type-safe way to create and combine random generators for various data types.
