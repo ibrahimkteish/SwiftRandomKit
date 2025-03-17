@@ -33,13 +33,13 @@ extension RandomGenerators {
         let upstream: Upstream
         
         /// The transformation function that converts the upstream's output into a new generator.
-        let transform: (Upstream.Element) -> NewOutput
+        let transform: @Sendable (Upstream.Element) -> NewOutput
 
         /// Initializes a new flat-map generator with the given upstream generator and transformation.
         /// - Parameters:
         ///   - upstream: The generator whose output will be transformed into a new generator.
         ///   - transform: A closure that takes the upstream generator's output and returns a new generator.
-        public init(_ upstream: Upstream, _ transform: @escaping (Upstream.Element) -> NewOutput) {
+        public init(_ upstream: Upstream, _ transform: @Sendable @escaping (Upstream.Element) -> NewOutput) {
             self.upstream = upstream
             self.transform = transform
         }
@@ -62,7 +62,7 @@ extension RandomGenerator {
     ///
     /// - Parameter transform: A closure that takes the output of this generator and returns a new generator.
     /// - Returns: A generator that produces values by transforming the output into a new generator and running it.
-    public func flatMap<NewOutput: RandomGenerator>(_ transform: @escaping (Element) -> NewOutput) -> RandomGenerators.FlatMap<Self, NewOutput> {
+    public func flatMap<NewOutput: RandomGenerator>(_ transform: @Sendable @escaping (Element) -> NewOutput) -> RandomGenerators.FlatMap<Self, NewOutput> {
         .init(self, transform)
     }
 }

@@ -19,10 +19,10 @@
 /// let lengthGen = wordGen.map { $0.count }
 /// let length = lengthGen.run() // 3
 /// ```
-public protocol RandomGenerator<Element> {
+public protocol RandomGenerator<Element>: Sendable {
     /// The type of value this generator produces.
-    associatedtype Element
-    
+  associatedtype Element: Sendable
+
     /// Generates a random value using the provided random number generator.
     /// - Parameter rng: The random number generator to use.
     /// - Returns: A randomly generated value of type `Element`.

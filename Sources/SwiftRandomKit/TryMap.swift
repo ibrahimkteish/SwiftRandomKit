@@ -14,7 +14,7 @@ extension RandomGenerators {
     /// 
     /// let result = intGen.run() // Returns .success(123) or .failure(error)
     /// ```
-    public struct TryMap<Upstream: RandomGenerator, ElementOfResult>: RandomGenerator {
+  public struct TryMap<Upstream: RandomGenerator, ElementOfResult: Sendable>: RandomGenerator {
         /// The type of elements produced by this generator, wrapped in a Result type.
         public typealias Element = Result<ElementOfResult, Error>
         
@@ -22,13 +22,13 @@ extension RandomGenerators {
         public let generator: Upstream
         
         /// The transformation function that may throw an error.
-        public let transform: (Upstream.Element) throws -> ElementOfResult
+    public let transform: @Sendable (Upstream.Element) throws -> ElementOfResult
 
         /// Initializes a new try-map generator with the given upstream generator and transformation.
         /// - Parameters:
         ///   - generator: The upstream generator to transform elements from.
         ///   - transform: A function that attempts to transform elements, potentially throwing an error.
-        public init(_ generator: Upstream, _ transform: @escaping (Upstream.Element) throws -> ElementOfResult) {
+    public init(_ generator: Upstream, _ transform: @Sendable @escaping (Upstream.Element) throws -> ElementOfResult) {
             self.generator = generator
             self.transform = transform
         }
@@ -53,7 +53,7 @@ extension RandomGenerator {
     /// - Returns: A generator that produces Results of either successfully transformed elements or errors.
     @inlinable
     public func tryMap<ElementOfResult>(
-        _ transform: @escaping (Element) throws -> ElementOfResult
+      _ transform: @Sendable @escaping (Element) throws -> ElementOfResult
     ) -> RandomGenerators.TryMap<Self, ElementOfResult> {
         return .init(self, transform)
     }

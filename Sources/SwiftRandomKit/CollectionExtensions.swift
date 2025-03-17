@@ -1,7 +1,7 @@
 import Foundation
 
 /// Extensions to make working with collections and generators more convenient.
-extension Collection {
+extension Collection where Self: Sendable, Element: Sendable {
     /// Converts a collection to an Always generator that produces this collection.
     ///
     /// This is a convenience method that wraps the collection in an `Always` generator,

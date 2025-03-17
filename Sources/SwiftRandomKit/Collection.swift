@@ -21,7 +21,7 @@ extension RandomGenerators {
     ///
     /// - Note: The collection type must conform to `RangeReplaceableCollection` to allow
     ///   for element-by-element construction.
-    public struct Collection<Upstream: RandomGenerator, C: RandomGenerator, ResultCollection: RangeReplaceableCollection>: RandomGenerator where C.Element == Int, ResultCollection.Element == Upstream.Element {
+    public struct Collection<Upstream: RandomGenerator, C: RandomGenerator, ResultCollection: RangeReplaceableCollection & Sendable>: RandomGenerator where C.Element == Int, ResultCollection.Element == Upstream.Element {
         /// The generator that produces individual elements for the collection.
         let upstream: Upstream
         

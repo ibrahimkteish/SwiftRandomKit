@@ -29,7 +29,7 @@ extension RandomGenerators {
     ///     print("Collection was empty")
     /// }
     /// ```
-    public struct Element<Upstream: RandomGenerator>: RandomGenerator where Upstream.Element: Swift.Collection {
+  public struct Element<Upstream: RandomGenerator>: RandomGenerator where Upstream.Element: Swift.Collection, Upstream.Element.Element: Sendable {
         /// The type of elements produced by this generator, which is an optional element from the upstream collection.
         public typealias Element = Upstream.Element.Element?
         
@@ -54,7 +54,7 @@ extension RandomGenerators {
     }
 }
 
-extension RandomGenerator where Element: Swift.Collection {
+extension RandomGenerator where Element: Swift.Collection, Element.Element: Sendable {
     /// Creates a generator that selects a random element from each generated collection.
     ///
     /// This method is useful when you have a generator that produces collections and you want
