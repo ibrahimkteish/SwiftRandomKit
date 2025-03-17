@@ -14,7 +14,7 @@ extension RandomGenerators {
         public typealias Element = Upstream.Element
         
         /// Storage class to hold the last value generated
-        private final class Storage {
+      private final class Storage: @unchecked Sendable {
             var lastValue: Upstream.Element?
             // Use a lock for thread safety
             let lock = NSLock()
@@ -73,7 +73,7 @@ extension RandomGenerators {
     
         private let generator: Upstream
         private let storage = Storage()
-        private let predicate: (Element, Element) -> Bool
+        private let predicate: @Sendable (Element, Element) -> Bool
         private let maxAttempts: Int
         
         /// Creates a generator that avoids returning consecutive duplicate values
@@ -82,7 +82,7 @@ extension RandomGenerators {
         ///   - generator: The upstream generator
         ///   - predicate: A function that returns true if two values are considered equal
         ///   - maxAttempts: Maximum number of attempts to generate a non-duplicate value before giving up
-        public init(_ generator: Upstream, predicate: @escaping (Element, Element) -> Bool, maxAttempts: Int = 100) {
+        public init(_ generator: Upstream, predicate: @Sendable @escaping (Element, Element) -> Bool, maxAttempts: Int = 100) {
             self.generator = generator
             self.predicate = predicate
             self.maxAttempts = maxAttempts > 0 ? maxAttempts : 100
@@ -106,7 +106,8 @@ public extension RandomGenerator where Self.Element: Equatable {
     /// - Parameter maxAttempts: Maximum number of attempts to generate a non-duplicate value before giving up. Default is 100.
     /// - Returns: A generator that tries to avoid duplicates
     func removeDuplicates(maxAttempts: Int = 100) -> RandomGenerators.RemoveDuplicates<Self> {
-        RandomGenerators.RemoveDuplicates(self, predicate: ==, maxAttempts: maxAttempts)
+
+        return RandomGenerators.RemoveDuplicates(self, predicate: { @Sendable in $0 == $1 }, maxAttempts: maxAttempts)
     }
 }
 
@@ -117,7 +118,7 @@ public extension RandomGenerator {
     ///   - predicate: A function that returns true if two values are considered equal
     ///   - maxAttempts: Maximum number of attempts to generate a non-duplicate value before giving up. Default is 100.
     /// - Returns: A generator that tries to avoid duplicates
-    func removeDuplicates(by predicate: @escaping (Element, Element) -> Bool, maxAttempts: Int = 100) -> RandomGenerators.RemoveDuplicates<Self> {
+    func removeDuplicates(by predicate: @Sendable @escaping (Element, Element) -> Bool, maxAttempts: Int = 100) -> RandomGenerators.RemoveDuplicates<Self> {
         RandomGenerators.RemoveDuplicates(self, predicate: predicate, maxAttempts: maxAttempts)
     }
 }

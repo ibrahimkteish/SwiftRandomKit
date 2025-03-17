@@ -18,7 +18,7 @@
 /// let floatGen = FloatGenerator<Float>(in: -1...1)
 /// let normalizedValue = floatGen.run() // e.g., -0.42
 /// ```
-public struct FloatGenerator<Element>: RandomGenerator where Element: BinaryFloatingPoint, Element.RawSignificand: FixedWidthInteger {
+public struct FloatGenerator<Element: Sendable>: RandomGenerator where Element: BinaryFloatingPoint, Element.RawSignificand: FixedWidthInteger {
     /// The closed range from which random values will be generated.
     public let range: ClosedRange<Element>
     

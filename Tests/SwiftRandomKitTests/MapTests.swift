@@ -19,9 +19,7 @@ final class MapTests: XCTestCase {
         XCTAssertEqual(mapped.run(using: &rng), "1")
         XCTAssertEqual(mapped.run(using: &rng), "7")
     }
-    
-    // MARK: - New tests for 100% coverage
-    
+        
     func testMapChaining() {
         // Test the optimized map chaining method on RandomGenerators.Map
         let intGenerator = IntGenerator<Int>(in: 0...10)
@@ -36,8 +34,8 @@ final class MapTests: XCTestCase {
         var rng = LCRNG(seed: 1)
         
         // Verify the results
-        XCTAssertEqual(formattedGenerator.run(using: &rng), "Value: 2")
-        XCTAssertEqual(formattedGenerator.run(using: &rng), "Value: 14")
+        XCTAssertEqual(formattedGenerator(using: &rng), "Value: 2")
+        XCTAssertEqual(formattedGenerator(using: &rng), "Value: 14")
     }
     
     func testMultipleMapChaining() {

@@ -1,6 +1,8 @@
 import XCTest
 import SwiftRandomKit
 
+typealias AnySendable = Any & Sendable
+
 final class CollectTests: XCTestCase {
     
     func testCollectSameTypeGenerators() {
@@ -81,9 +83,9 @@ final class CollectTests: XCTestCase {
     
     func testCollectDifferentTypes() {
         // Test collecting values from generators of different types using type erasure and Any
-        let intGen = IntGenerator(in: 1...100).map { $0 as Any }.eraseToAnyRandomGenerator()
-        let boolGen = BoolRandomGenerator().map { $0 as Any }.eraseToAnyRandomGenerator()
-        let stringGen = Always("random").map { $0 as Any }.eraseToAnyRandomGenerator()
+        let intGen = IntGenerator(in: 1...100).map { $0 as AnySendable}.eraseToAnyRandomGenerator()
+        let boolGen = BoolRandomGenerator().map { $0 as AnySendable}.eraseToAnyRandomGenerator()
+        let stringGen = Always("random").map { $0 as AnySendable}.eraseToAnyRandomGenerator()
         
         let generators = [intGen, boolGen, stringGen]
         let collectGenerator = generators.collect()

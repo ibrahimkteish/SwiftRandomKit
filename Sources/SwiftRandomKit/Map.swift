@@ -26,18 +26,18 @@ extension RandomGenerators {
     ///     .map { "Value: \($0)" }
     /// let output = complexGen.run() // "Value: 84"
     /// ```
-    public struct Map<Upstream: RandomGenerator, NewOutput>: RandomGenerator {
+  public struct Map<Upstream: RandomGenerator, NewOutput: Sendable>: RandomGenerator {
         /// The generator from which this generator receives its output.
         public let upstream: Upstream
         /// The transformation to apply to the upstream's output.
-        public let transform: (Upstream.Element) -> NewOutput
+        public let transform: @Sendable (Upstream.Element) -> NewOutput
 
         /// Initializes a new map generator with the given upstream generator and transformation.
         /// - Parameters:
         ///   - upstream: The generator whose output will be transformed.
         ///   - transform: A closure that transforms the upstream generator's output to a new type.
         @inlinable
-        public init(_ upstream: Upstream, _ transform: @escaping (Upstream.Element) -> NewOutput) {
+        public init(_ upstream: Upstream, _ transform: @Sendable @escaping (Upstream.Element) -> NewOutput) {
             self.upstream = upstream
             self.transform = transform
         }
@@ -63,7 +63,7 @@ extension RandomGenerator {
     /// - Parameter transform: A closure that takes the output of this generator and returns a transformed value.
     /// - Returns: A generator that produces the transformed values.
     @inlinable
-    public func map<NewOutput>(_ transform: @escaping (Element) -> NewOutput) -> RandomGenerators.Map<Self, NewOutput> {
+    public func map<NewOutput>(_ transform: @Sendable @escaping (Element) -> NewOutput) -> RandomGenerators.Map<Self, NewOutput> {
         .init(self, transform)
     }
 }
@@ -78,7 +78,7 @@ extension RandomGenerators.Map {
     /// - Parameter transform: A closure that takes the output of this generator and returns a new transformed value.
     /// - Returns: A generator that applies both transformations in sequence.
     @inlinable
-    public func map<New>(_ transform: @escaping (Element) -> New) -> RandomGenerators.Map<Upstream, New> {
+    public func map<New>(_ transform: @Sendable @escaping (Element) -> New) -> RandomGenerators.Map<Upstream, New> {
         .init(self.upstream) { element in
             transform(self.transform(element))
         }

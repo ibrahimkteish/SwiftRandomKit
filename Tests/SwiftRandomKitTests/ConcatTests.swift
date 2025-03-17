@@ -28,20 +28,20 @@ final class ConcatTests: XCTestCase {
         var rng = LCRNG(seed: 42)
         
         // Create a generator that switches between two fixed values
-        var usedFirst = false
+        let usedFirst = LockIsolated(false)
         let adjectiveGen = AnyRandomGenerator<String> { _ in
-            if !usedFirst {
-                usedFirst = true
+            if !usedFirst.value {
+              usedFirst.withValue { $0 = true }
                 return "Wise"
             } else {
                 return "Bold"
             }
         }
         
-        var usedFirstNoun = false
+        let usedFirstNoun = LockIsolated(false)
         let nounGen = AnyRandomGenerator<String> { _ in
-            if !usedFirstNoun {
-                usedFirstNoun = true
+            if !usedFirstNoun.value {
+                usedFirstNoun.withValue { $0 = true }
                 return "Developer"
             } else {
                 return "Engineer"
@@ -106,10 +106,10 @@ final class ConcatTests: XCTestCase {
         let wordGen2 = Always("world")
         
         // Create a custom generator that alternates between separators
-        var usedFirst = false
+        let usedFirst = LockIsolated(false)
         let separatorGen = AnyRandomGenerator<String> { _ in
-            if !usedFirst {
-                usedFirst = true
+            if !usedFirst.value {
+                usedFirst.withValue { $0 = true }
                 return ":"
             } else {
                 return "-"

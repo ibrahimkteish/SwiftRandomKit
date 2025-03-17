@@ -38,7 +38,7 @@ extension RandomGenerator {
     .init(self, other)
   }
 
-  public func zip<R: RandomGenerator, T>(_ other: R, _ transform: @escaping (Self.Element, R.Element) -> T) -> RandomGenerators.Map<RandomGenerators.Zip<Self, R>, T> {
+  public func zip<R: RandomGenerator, T>(_ other: R, _ transform: @Sendable @escaping (Self.Element, R.Element) -> T) -> RandomGenerators.Map<RandomGenerators.Zip<Self, R>, T> {
     .init(.init(self, other), transform)
   }
 }
