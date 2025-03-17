@@ -1,10 +1,13 @@
 name: Swift Tests
 
+# Prevent duplicate builds when a PR is created from a branch in the same repo
 on:
   push:
-    branches: [ '*' ]
+    branches-ignore:
+      - develop  # Exclude the develop branch to avoid duplicate runs with PRs
   pull_request:
-    branches: [ develop ]
+    branches: 
+      - develop  # Only run on PRs targeting develop
 
 jobs:
   test:
@@ -13,7 +16,7 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest]
-        swift: ["5.9"]
+        swift: ["5.10.0"]
 
     steps:
     - uses: actions/checkout@v3
