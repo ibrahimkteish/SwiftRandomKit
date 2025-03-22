@@ -202,9 +202,9 @@ func createDiceGenerator() -> AnyRandomGenerator<Int> {
 }
 
 // Store different generator types in a collection
-let generators: [AnyRandomGenerator<Any>] = [
-    IntGenerator(in: 1...100).map { $0 as Any }.eraseToAnyRandomGenerator(),
-    BoolRandomGenerator().map { $0 as Any }.eraseToAnyRandomGenerator()
+let generators: [AnyRandomGenerator<Int>] = [
+    IntGenerator(in: 1...100).eraseToAnyRandomGenerator(),
+    BoolRandomGenerator().map { $0 == true ? 1 : 0 }.eraseToAnyRandomGenerator()
 ]
 
 print(generators.collect().run())
