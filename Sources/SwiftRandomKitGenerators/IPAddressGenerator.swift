@@ -24,9 +24,3 @@ public struct IPAddressGenerator: RandomGenerator {
         }
     }
 }
-
-public struct IPAddress: Equatable {
-    let mask: Int
-    let address: String
-}
-
