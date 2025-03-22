@@ -251,21 +251,22 @@ let password = simplePasswordGen.run() // e.g., "ABcdefg12#"
 ```swift
 // Create a custom dice that can be loaded
 struct LoadedDiceGenerator: RandomGenerator {
-    let bias: Int
-    let probability: Double
-    
-    init(bias: Int, probability: Double = 0.7) {
-        self.bias = bias
-        self.probability = probability
-    }
-    
-    func run<RNG: RandomNumberGenerator>(using rng: inout RNG) -> Int {
-        if Double.random(in: 0...1, using: &rng) < probability {
-            return bias
-        } else {
-            return Int.random(in: 1...6, using: &rng)
-        }
-    }
+  let bias: Int
+  let probability: Double
+
+  init(bias: Int, probability: Double = 0.7) {
+    self.bias = bias
+    self.probability = probability
+  }
+
+  func run<RNG: RandomNumberGenerator>(using rng: inout RNG) -> Int {
+    FloatGenerator<Double>(in: 0...1)
+      .flatMap {
+        $0 < probability ? Always(bias).eraseToAnyRandomGenerator()
+        : IntGenerator(in: 1...6).eraseToAnyRandomGenerator()
+      }
+      .run(using: &rng)
+  }
 }
 
 let loadedDice = LoadedDiceGenerator(bias: 6)
