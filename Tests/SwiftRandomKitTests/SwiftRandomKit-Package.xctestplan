@@ -1,0 +1,37 @@
+{
+  "configurations" : [
+    {
+      "id" : "1065DCEF-9BF4-4EAC-9933-95B07122D0ED",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : {
+      "targets" : [
+        {
+          "containerPath" : "container:",
+          "identifier" : "SwiftRandomKit",
+          "name" : "SwiftRandomKit"
+        }
+      ]
+    },
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:",
+      "identifier" : "SwiftRandomKitExample",
+      "name" : "SwiftRandomKitExample"
+    }
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "SwiftRandomKitTests",
+        "name" : "SwiftRandomKitTests"
+      }
+    }
+  ],
+  "version" : 1
+}
