@@ -119,7 +119,7 @@ extension Always {
     /// - Parameter transform: A function that transforms the generator's value.
     /// - Returns: A new Always generator that produces the transformed value.
     public func map<ElementOfResult: Sendable>(
-        _ transform: (Element) -> ElementOfResult
+      _ transform: @Sendable (Element) -> ElementOfResult
     ) -> Always<ElementOfResult> {
         return .init(transform(value))
     }
