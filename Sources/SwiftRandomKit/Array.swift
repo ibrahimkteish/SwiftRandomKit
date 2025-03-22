@@ -84,12 +84,10 @@ extension RandomGenerators {
     /// // Generate a random array with random size
     /// let randomArray = randomArrayGen.run() // e.g., [42, 17, 83, 5] (size of 4)
     /// ```
+    /// - Note: Implemented internally using the more generic `Collection` generator.
     public struct ArrayGenerator<Upstream: RandomGenerator, C: RandomGenerator>: RandomGenerator where C.Element == Int {
-        /// The generator that produces individual elements for the array.
-        public let upstream: Upstream
-        
-        /// The generator that determines how many elements to include in the array.
-        public let countGenerator: C
+        /// The internal collection generator that powers this array generator.
+        public let collectionGenerator: Collection<Upstream, C, [Upstream.Element]>
 
         /// Creates a new array generator with variable size.
         ///
@@ -97,8 +95,7 @@ extension RandomGenerators {
         ///   - upstream: The generator that produces individual elements.
         ///   - countGenerator: The generator that determines the array size.
         public init(_ upstream: Upstream, _ countGenerator: C) {
-            self.upstream = upstream
-            self.countGenerator = countGenerator
+            self.collectionGenerator = Collection(upstream, countGenerator)
         }
 
         /// Generates a random array with size determined by the count generator.
@@ -107,12 +104,7 @@ extension RandomGenerators {
         /// - Returns: An array of randomly generated elements with variable size.
         @inlinable
         public func run<RNG: RandomNumberGenerator>(using rng: inout RNG) -> [Upstream.Element] {
-            let size = countGenerator.run(using: &rng)
-            guard size > 0 else { return [] }
-            var array: [Upstream.Element] = .init()
-            array.reserveCapacity(size)
-            (0..<size).forEach { _ in array.append(upstream.run(using: &rng)) }
-            return array
+            collectionGenerator.run(using: &rng)
         }
     }
 }

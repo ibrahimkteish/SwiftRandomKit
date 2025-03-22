@@ -29,7 +29,7 @@ Add the following to your `Package.swift` file:
 
 ```swift
 dependencies: [
-.package(url: "https://github.com/ibrahimkteish/SwiftRandomKit.git", from: "1.1.0")
+    .package(url: "https://github.com/ibrahimkteish/SwiftRandomKit.git", from: "1.2.0")
 ]
 ```
 
@@ -119,6 +119,9 @@ This syntax provides a more concise and natural way to generate random values, m
 - `Collect`: Collect results from multiple generators
 - `Print`: Debug generator outputs
 - `RemoveDuplicates`: Remove duplicate values from a generator
+- `Filter`: Generate only values that satisfy a predicate
+- `Retry`: Retry generation until a condition is met
+- `AttemptBounded`: Limit generation attempts with configurable fallback strategies
 - `TryMap`: Transform with operations that might fail
 - `Frequency`: Weight outputs by frequency
 - `Optional`: Generate optional values from a generator
@@ -199,9 +202,9 @@ func createDiceGenerator() -> AnyRandomGenerator<Int> {
 }
 
 // Store different generator types in a collection
-let generators: [AnyRandomGenerator<Any>] = [
-    IntGenerator(in: 1...100).map { $0 as Any }.eraseToAnyRandomGenerator(),
-    BoolRandomGenerator().map { $0 as Any }.eraseToAnyRandomGenerator()
+let generators: [AnyRandomGenerator<Int>] = [
+    IntGenerator(in: 1...100).eraseToAnyRandomGenerator(),
+    BoolRandomGenerator().map { $0 == true ? 1 : 0 }.eraseToAnyRandomGenerator()
 ]
 
 print(generators.collect().run())
@@ -246,26 +249,70 @@ let simplePasswordGen = RandomGenerators.uppercaseLetter.array(2)
 let password = simplePasswordGen.run() // e.g., "ABcdefg12#"
 ```
 
+### Using Filter, Retry, and AttemptBounded Generators
+
+```swift
+// Generate only even numbers
+let evenNumbers = IntGenerator(in: 1...100).filter { $0.isMultiple(of: 2) }
+let evenNumber = evenNumbers.run() // Always an even number
+
+// Retry until a condition is met
+let diceGen = IntGenerator(in: 1...6)
+let sixGenerator = diceGen.retry(until: { $0 == 6 }, maxAttempts: 10)
+let result = sixGenerator.run() // Will be 6 if found within 10 attempts
+
+// Filter with fallback for maximum attempts
+let primeGen = IntGenerator(in: 1...100).attemptBounded(
+    maxAttempts: 20,
+    condition: { number in
+        // Check if number is prime (simplified)
+        if number <= 1 { return false }
+        if number <= 3 { return true }
+        if number.isMultiple(of: 2) || number.isMultiple(of: 3) { return false }
+        var i = 5
+        while i * i <= number {
+            if number.isMultiple(of: i) || number.isMultiple(of: (i + 2)) { return false }
+            i += 6
+        }
+        return true
+    },
+    fallbackStrategy: .useDefault(17) // Default to 17 if no prime found in 20 attempts
+)
+
+let prime = primeGen.run() // A prime number or 17 if none found
+
+// Using a different generator as fallback
+let highRoll = diceGen.attemptBounded(
+    maxAttempts: 3,
+    condition: { $0 > 4 },
+    fallbackStrategy: .useAnotherGenerator { Always(6).run() }
+)
+let highDiceRoll = highRoll.run() // 5 or 6, or always 6 if not found in 3 attempts
+```
+
+> ⚠️ **Warning**: Be careful when using the `.keepTrying` fallback strategy, as it can lead to infinite loops if the condition can never be satisfied. For example, `Always(5).retry(until: { $0.isMultiple(of: 2) })` will hang indefinitely.
+
 ### Create a Custom Generator
 
 ```swift
 // Create a custom dice that can be loaded
 struct LoadedDiceGenerator: RandomGenerator {
-    let bias: Int
-    let probability: Double
-    
-    init(bias: Int, probability: Double = 0.7) {
-        self.bias = bias
-        self.probability = probability
-    }
-    
-    func run<RNG: RandomNumberGenerator>(using rng: inout RNG) -> Int {
-        if Double.random(in: 0...1, using: &rng) < probability {
-            return bias
-        } else {
-            return Int.random(in: 1...6, using: &rng)
-        }
-    }
+  let bias: Int
+  let probability: Double
+
+  init(bias: Int, probability: Double = 0.7) {
+    self.bias = bias
+    self.probability = probability
+  }
+
+  func run<RNG: RandomNumberGenerator>(using rng: inout RNG) -> Int {
+    FloatGenerator<Double>(in: 0...1)
+      .flatMap {
+        $0 < probability ? Always(bias).eraseToAnyRandomGenerator()
+        : IntGenerator(in: 1...6).eraseToAnyRandomGenerator()
+      }
+      .run(using: &rng)
+  }
 }
 
 let loadedDice = LoadedDiceGenerator(bias: 6)
