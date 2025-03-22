@@ -14,7 +14,7 @@ extension RandomGenerators {
         public typealias Element = Upstream.Element
         
         /// Storage class to hold the last value generated
-      private final class Storage: @unchecked Sendable {
+        private final class Storage: @unchecked Sendable {
             var lastValue: Upstream.Element?
             // Use a lock for thread safety
             let lock = NSLock()
@@ -33,41 +33,6 @@ extension RandomGenerators {
                 lock.lock()
                 defer { lock.unlock() }
                 lastValue = value
-            }
-            
-            /// Atomically generates a new value that avoids duplicating the last value
-            fileprivate func generateNonDuplicateValue<RNG: RandomNumberGenerator>(
-                using generator: Upstream,
-                rng: inout RNG,
-                predicate: (Element, Element) -> Bool,
-                maxAttempts: Int
-            ) -> Element {
-                lock.lock()
-                defer { lock.unlock() }
-                
-                // If no previous value, simply generate and store
-                if lastValue == nil {
-                    let newValue = generator.run(using: &rng)
-                    lastValue = newValue
-                    return newValue
-                }
-                
-                // Try to generate a non-duplicate
-                var nextValue: Element
-                var attempts = 0
-                
-                repeat {
-                    nextValue = generator.run(using: &rng)
-                    attempts += 1
-                    // Give up after maxAttempts and just return the value even if duplicate
-                    if attempts >= maxAttempts {
-                        break
-                    }
-                } while lastValue != nil && predicate(nextValue, lastValue!)
-                
-                // Update stored value and return
-                lastValue = nextValue
-                return nextValue
             }
         }
     
@@ -89,13 +54,32 @@ extension RandomGenerators {
         }
     
         public func run<RNG: RandomNumberGenerator>(using rng: inout RNG) -> Upstream.Element {
-            // Use the thread-safe method to generate a non-duplicate value
-            return storage.generateNonDuplicateValue(
-                using: generator,
-                rng: &rng,
-                predicate: predicate,
-                maxAttempts: maxAttempts
+            // Get the last value (thread-safe)
+            let lastValue = storage.getLastValue()
+            
+            // If no previous value, simply generate and store
+            if lastValue == nil {
+                let newValue = generator.run(using: &rng)
+                storage.setLastValue(newValue)
+                return newValue
+            }
+            
+            // Use AttemptBounded to generate a non-duplicate value
+            let boundedGenerator = generator.attemptBounded(
+                maxAttempts: maxAttempts,
+                condition: { newValue in
+                    // Only accept values that don't match the last value
+                    lastValue.map { !self.predicate(newValue, $0) } ?? true
+                },
+                fallbackStrategy: .useLast // Accept duplicates after maxAttempts
             )
+            
+            // Generate the next value
+            let nextValue = boundedGenerator.run(using: &rng)
+            
+            // Save and return the new value
+            storage.setLastValue(nextValue)
+            return nextValue
         }
     }
 }
@@ -106,7 +90,6 @@ public extension RandomGenerator where Self.Element: Equatable {
     /// - Parameter maxAttempts: Maximum number of attempts to generate a non-duplicate value before giving up. Default is 100.
     /// - Returns: A generator that tries to avoid duplicates
     func removeDuplicates(maxAttempts: Int = 100) -> RandomGenerators.RemoveDuplicates<Self> {
-
         return RandomGenerators.RemoveDuplicates(self, predicate: { @Sendable in $0 == $1 }, maxAttempts: maxAttempts)
     }
 }
