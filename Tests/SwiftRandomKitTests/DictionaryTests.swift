@@ -1,6 +1,7 @@
 import XCTest
 import SwiftRandomKit
 
+@available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
 final class DictionaryTests: XCTestCase {
     func testDictionaryWithFixedCount() {
         // Create a generator for key-value pairs
