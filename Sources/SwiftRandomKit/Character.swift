@@ -1,49 +1,31 @@
 extension RandomGenerators {
-    /// A generator that produces random characters.
+    /// A generator that produces random characters within a range.
     ///
-    /// The `Character` generator creates random characters within a specified range.
-    /// It works by mapping the unicode scalar values to characters.
-    public struct Character<Upstream: RandomGenerator>: RandomGenerator where Upstream.Element == Swift.Character {
+    /// The range is interpreted through the first Unicode scalar of each bound, so it
+    /// is best suited to single-scalar characters like `"a"..."z"` or `"0"..."9"`.
+    /// Surrogate code points inside the range are skipped.
+    public struct Character: RandomGenerator {
         public typealias Element = Swift.Character
 
-        /// The upstream generator that produces characters.
-        public let generator: Upstream
-        
-        /// The range of characters to generate from.
-        public let closedRange: ClosedRange<Swift.Character>
+        /// The underlying scalar generator.
+        let scalars: UnicodeScalar
 
-        /// Creates a new character generator with the specified range.
+        /// Creates a generator that produces characters within the given range.
         ///
-        /// - Parameters:
-        ///   - generator: The upstream generator that produces characters.
-        ///   - range: The range of characters to generate from.
-        public init(_ generator: Upstream, in range: ClosedRange<Swift.Character>) {
-            self.generator = generator
-            self.closedRange = range
+        /// - Parameter range: The range of characters to generate from.
+        public init(in range: ClosedRange<Swift.Character>) {
+            self.scalars = UnicodeScalar(
+                in: range.lowerBound.unicodeScalars.first!...range.upperBound.unicodeScalars.first!
+            )
         }
 
         /// Generates a random character.
         ///
         /// - Parameter rng: The random number generator to use.
         /// - Returns: A random character within the specified range.
-        @inlinable
         public func run<RNG: RandomNumberGenerator>(using rng: inout RNG) -> Swift.Character {
-            // Map the Character generator to a UnicodeScalar generator
-            let unicodeGenerator = generator.map { $0.unicodeScalars.first! }
-            let scalarGenerator = RandomGenerators.UnicodeScalar(unicodeGenerator, in: closedRange.lowerBound.unicodeScalars.first!...closedRange.upperBound.unicodeScalars.last!)
-            let scalar = scalarGenerator.run(using: &rng)
-            return Swift.Character(scalar)
+            Swift.Character(scalars.run(using: &rng))
         }
-    }
-}
-
-public extension RandomGenerator where Element == Swift.Character {
-    /// Creates a generator that produces characters within a specified range.
-    ///
-    /// - Parameter range: The range of characters to generate from.
-    /// - Returns: A generator that produces random characters within the specified range.
-    func character(in range: ClosedRange<Swift.Character>) -> RandomGenerators.Character<Self> {
-        .init(self, in: range)
     }
 }
 
@@ -52,11 +34,8 @@ extension RandomGenerators {
     ///
     /// - Parameter range: The range in which to create a random character. `range` must be finite.
     /// - Returns: A generator of random characters within the bounds of range.
-    @inlinable
-    public static func character(in range: ClosedRange<Swift.Character>) -> AnyRandomGenerator<Swift.Character> {
-        return IntGenerator<UInt32>(in: range.lowerBound.unicodeScalars.first!.value...range.upperBound.unicodeScalars.last!.value)
-            .map { Swift.Character(Swift.UnicodeScalar($0)!) }
-            .eraseToAnyRandomGenerator()
+    public static func character(in range: ClosedRange<Swift.Character>) -> Character {
+        Character(in: range)
     }
 
     /// A generator of random numeric digits.

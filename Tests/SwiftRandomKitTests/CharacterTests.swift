@@ -251,17 +251,15 @@ final class CharacterTests: XCTestCase {
         }
     }
     
-    func testCharacterExtensionMethod() {
-        // Test the character() extension method on RandomGenerator
+    func testCharacterGeneratorStruct() {
+        // Test constructing the Character generator directly
         var rng = LCRNG(seed: 42)
-        
-        // Create a custom Character generator and use the extension method
-        let baseGen = Always(Character("x"))
-        let rangeGen = baseGen.character(in: Character("a")...Character("z"))
-        
+
+        let rangeGen = RandomGenerators.Character(in: Character("a")...Character("z"))
+
         // Run the generator and verify the output
         let result = rangeGen.run(using: &rng)
-        
+
         XCTAssertEqual(result, "z", "Character generator with seed 42 should produce 'z'")
     }
     
