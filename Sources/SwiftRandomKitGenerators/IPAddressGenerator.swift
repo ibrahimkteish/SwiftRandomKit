@@ -1,3 +1,7 @@
+// String(format:) requires Foundation; without this import the file only
+// compiles via member-import leakage from other files in the module, which
+// MemberImportVisibility (Swift 7 default) rejects.
+import Foundation
 import SwiftRandomKit
 
 public struct IPAddressGenerator: RandomGenerator {
