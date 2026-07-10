@@ -88,53 +88,6 @@ extension RandomGenerators.Zip {
   }
 }
 
-// MARK: - Variadic Support
-
-extension RandomGenerators {
-    /// A generator that produces arrays of elements from multiple generators of the same type.
-    ///
-    /// Unlike the regular `Zip` generator which produces tuples, `ZipArrayGenerator` combines
-    /// multiple generators of the same type and produces an array of their results.
-    /// This is useful when you need to collect random values from a variable number of generators.
-    ///
-    /// Example usage:
-    /// ```swift
-    /// // Create several dice generators
-    /// let d6 = IntGenerator(in: 1...6)
-    /// let d8 = IntGenerator(in: 1...8)
-    /// let d10 = IntGenerator(in: 1...10)
-    ///
-    /// // Combine them with zipGenerators
-    /// let dicePool = zipGenerators(d6, d8, d10)
-    ///
-    /// // Run to get an array of dice rolls
-    /// let rolls = dicePool.run() // e.g., [4, 7, 3]
-    ///
-    /// // You can also use an array of generators
-    /// let manyDice = Array(repeating: d6, count: 5).zipAll()
-    /// let fiveRolls = manyDice.run() // e.g., [3, 5, 2, 6, 1]
-    /// ```
-    public struct ZipArrayGenerator<G: RandomGenerator>: RandomGenerator {
-        public typealias Element = [G.Element]
-        
-        /// The generators to zip together.
-        let generators: [G]
-        
-        /// Creates a new array zip generator with the provided generators.
-        /// - Parameter generators: An array of generators of the same type.
-        public init(generators: [G]) {
-            self.generators = generators
-        }
-        
-        /// Generates an array containing results from each of the constituent generators.
-        /// - Parameter rng: The random number generator to use.
-        /// - Returns: An array where each element is the result of running a corresponding generator.
-        public func run<RNG: RandomNumberGenerator>(using rng: inout RNG) -> [G.Element] {
-            generators.map { $0.run(using: &rng) }
-        }
-    }
-}
-
 extension RandomGenerator {
   /// Combines this generator with another generator to produce tuples of their results.
   ///
@@ -156,32 +109,3 @@ extension RandomGenerator {
     .init(.init(self, other), transform)
   }
 }
-
-extension Array where Element: RandomGenerator {
-    /// Creates a generator that produces arrays from multiple generators of the same type.
-    ///
-    /// - Returns: A generator that runs all generators in the array and collects their results.
-    public func zipAll() -> RandomGenerators.ZipArrayGenerator<Element> {
-        RandomGenerators.ZipArrayGenerator(generators: self)
-    }
-}
-
-/// Combines any number of generators of the same type into a single generator that produces arrays.
-///
-/// This is a convenience function for creating a `ZipArrayGenerator` with variadic parameters.
-///
-/// Example:
-/// ```swift
-/// let diceRolls = zipGenerators(
-///     IntGenerator(in: 1...6),
-///     IntGenerator(in: 1...6),
-///     IntGenerator(in: 1...6)
-/// )
-/// let result = diceRolls.run() // e.g., [2, 5, 3]
-/// ```
-///
-/// - Parameter generators: One or more generators of the same type.
-/// - Returns: A generator that produces arrays of values from all the provided generators.
-public func zipGenerators<G: RandomGenerator>(_ generators: G...) -> RandomGenerators.ZipArrayGenerator<G> {
-    RandomGenerators.ZipArrayGenerator(generators: generators)
-} 
