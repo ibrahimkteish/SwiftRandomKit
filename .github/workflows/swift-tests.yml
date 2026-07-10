@@ -18,13 +18,20 @@ concurrency:
 jobs:
   macos:
     name: macOS (Swift ${{ matrix.swift }})
-    runs-on: macos-latest
+    runs-on: ${{ matrix.runner }}
     strategy:
+      fail-fast: false
       matrix:
         # 'system' uses the Xcode toolchain preinstalled on macos-latest,
         # so breakage on current compilers surfaces even while the pinned
         # version keeps validating the minimum supported toolchain.
-        swift: ['6.0.2', 'system']
+        # The pinned toolchain must run on an older image: Swift 6.0.2
+        # cannot compile against the newer SDKs of current Xcode.
+        include:
+          - swift: '6.0.2'
+            runner: macos-14
+          - swift: 'system'
+            runner: macos-latest
     steps:
       - uses: actions/checkout@v4
 
