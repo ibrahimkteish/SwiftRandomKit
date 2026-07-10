@@ -21,11 +21,15 @@ jobs:
     runs-on: macos-latest
     strategy:
       matrix:
-        swift: ['6.0.2']
+        # 'system' uses the Xcode toolchain preinstalled on macos-latest,
+        # so breakage on current compilers surfaces even while the pinned
+        # version keeps validating the minimum supported toolchain.
+        swift: ['6.0.2', 'system']
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Swift
+        if: matrix.swift != 'system'
         uses: swift-actions/setup-swift@v2
         with:
           swift-version: ${{ matrix.swift }}
@@ -44,7 +48,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        swift: ['6.0.2']
+        # 'latest' tracks the newest stable Swift release image.
+        swift: ['6.0.2', 'latest']
     container: swift:${{ matrix.swift }}
     steps:
       - uses: actions/checkout@v4
