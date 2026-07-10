@@ -73,36 +73,35 @@ extension RandomGenerator {
         )
     }
     
-    /// Returns a generator that filters out nil values after transformation.
+    /// Returns a generator that transforms values, retrying while the transformation returns nil.
     ///
     /// This method is similar to `compactMap` in Swift's standard library. It applies
-    /// a transformation to each generated value and only includes non-nil results.
+    /// a transformation to each generated value and retries until the transformation
+    /// produces a non-nil result or the attempt budget is exhausted. With the default
+    /// `.useLast` fallback, exhausting the attempts produces `nil`.
     ///
     /// Example usage:
     /// ```swift
     /// // Generate random strings and parse them as integers
     /// let stringGen = ["123", "abc", "456", "xyz"].element()
-    /// let intGen = stringGen.compactMap { Int($0) }
+    /// let intGen = stringGen.compactMap { $0.flatMap(Int.init) }
+    /// let value = intGen.run() // e.g., 456, or nil if no attempt succeeded
     /// ```
     ///
     /// - Parameters:
     ///   - maxAttempts: Maximum number of attempts before giving up.
     ///   - fallbackStrategy: What to do if max attempts are reached without success.
     ///   - transform: A closure that transforms values and can return nil.
-    /// - Returns: A generator that produces non-nil transformed values.
-    public func compactMap<Output>(
+    /// - Returns: A generator that produces the transformed value, or nil when no attempt succeeded.
+    public func compactMap<Output: Sendable>(
         maxAttempts: Int = 100,
-        fallbackStrategy: RandomGenerators.AttemptBounded<Self>.FallbackStrategy = .useLast,
+        fallbackStrategy: RandomGenerators.AttemptBounded<RandomGenerators.Map<Self, Output?>>.FallbackStrategy = .useLast,
         _ transform: @Sendable @escaping (Element) -> Output?
-    ) -> RandomGenerators.Map<RandomGenerators.Filter<Self>, Output> {
-        // First filter to only values that transform to non-nil
-        let filteredGen = self.filter(
+    ) -> RandomGenerators.Retry<RandomGenerators.Map<Self, Output?>> {
+        self.map(transform).retry(
             maxAttempts: maxAttempts,
-            { transform($0) != nil },
-            fallbackStrategy: fallbackStrategy
+            fallbackStrategy: fallbackStrategy,
+            until: { $0 != nil }
         )
-        
-        // Then map to extract the non-nil value
-        return filteredGen.map { transform($0)! }
     }
 }

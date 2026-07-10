@@ -127,13 +127,13 @@ final class RetryTests: XCTestCase {
         XCTAssertEqual(result, 456)
     }
     
-    func testRetryThrowing() {
+    func testRetryThrowing() throws {
         // Define a simple error
         enum TestError: Error { case notEven }
-        
+
         // Create a generator for integers
         let intGenerator = IntGenerator(in: 1...10)
-        
+
         // Use retryThrowing to get only even numbers
         let evenGenerator = intGenerator.retryThrowing { value in
             guard value % 2 == 0 else {
@@ -141,24 +141,39 @@ final class RetryTests: XCTestCase {
             }
             return value
         }
-        
+
         // Test with a deterministic RNG
         var rng = LCRNG(seed: 42)
-        
+
         // Generate values and verify they're all even
-        let result1 = evenGenerator.run(using: &rng)
-        let result2 = evenGenerator.run(using: &rng)
-        let result3 = evenGenerator.run(using: &rng)
-        
+        let result1 = try evenGenerator.run(using: &rng).get()
+        let result2 = try evenGenerator.run(using: &rng).get()
+        let result3 = try evenGenerator.run(using: &rng).get()
+
         // Verify all results are even
         XCTAssertEqual(result1 % 2, 0)
         XCTAssertEqual(result2 % 2, 0)
         XCTAssertEqual(result3 % 2, 0)
-        
+
         // Verify the expected sequence
         XCTAssertEqual(result1, 6)
         XCTAssertEqual(result2, 10)
         XCTAssertEqual(result3, 6)
+    }
+
+    func testRetryThrowingReturnsFailureWhenAttemptsExhausted() {
+        // A transform that always throws used to hit a fatalError; it now
+        // surfaces the last failure as a Result once attempts are exhausted.
+        enum TestError: Error { case alwaysFails }
+
+        let alwaysFailing = IntGenerator(in: 1...10).retryThrowing(maxAttempts: 5) { _ -> Int in
+            throw TestError.alwaysFails
+        }
+
+        var rng = LCRNG(seed: 1)
+        let result = alwaysFailing.run(using: &rng)
+
+        XCTAssertThrowsError(try result.get())
     }
     
     // MARK: - Complex Scenarios

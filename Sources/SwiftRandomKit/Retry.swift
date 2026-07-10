@@ -87,38 +87,39 @@ extension RandomGenerator {
     /// Returns a generator that retries until a non-nil value is produced.
     ///
     /// This is useful when working with transformations that might return nil.
+    /// With the default `.useLast` fallback, exhausting the attempts produces `nil`.
     ///
     /// Example usage:
     /// ```swift
     /// // Parse a random string as an integer, retrying if parsing fails
     /// let stringGen = ["123", "abc", "456", "xyz"].element()
-    /// let intGen = stringGen.retryMap(maxAttempts: 5) { Int($0) }
+    /// let intGen = stringGen.retryMap(maxAttempts: 5) { $0.flatMap(Int.init) }
+    /// let value = intGen.run() // e.g., 123, or nil if no attempt succeeded
     /// ```
     ///
     /// - Parameters:
     ///   - maxAttempts: Maximum number of retry attempts.
     ///   - fallbackStrategy: What to do if max attempts are reached without success.
     ///   - transform: A closure that transforms the generator's output to an optional value.
-    /// - Returns: A generator that produces non-nil transformed values.
-    public func retryMap<Output>(
+    /// - Returns: A generator that produces the transformed value, or nil when no attempt succeeded.
+    public func retryMap<Output: Sendable>(
         maxAttempts: Int = 10,
-        fallbackStrategy: RandomGenerators.AttemptBounded<Self>.FallbackStrategy = .useLast,
+        fallbackStrategy: RandomGenerators.AttemptBounded<RandomGenerators.Map<Self, Output?>>.FallbackStrategy = .useLast,
         _ transform: @Sendable @escaping (Element) -> Output?
-    ) -> RandomGenerators.Map<RandomGenerators.Retry<Self>, Output> {
-        // First, retry until we get a value that transforms to non-nil
-        let retryGen = self.retry(
+    ) -> RandomGenerators.Retry<RandomGenerators.Map<Self, Output?>> {
+        self.map(transform).retry(
             maxAttempts: maxAttempts,
             fallbackStrategy: fallbackStrategy,
-            until: { transform($0) != nil }
+            until: { $0 != nil }
         )
-        
-        // Then map to extract the non-nil value
-        return retryGen.map { transform($0)! }
     }
     
     /// Returns a generator that retries if an error is thrown.
     ///
     /// This is useful for generators whose values might need validation that can throw.
+    /// The transformation runs once per generated value, and the result is delivered
+    /// as a `Result`: `.success` when an attempt succeeds, or the last `.failure`
+    /// when the attempt budget is exhausted (with the default `.useLast` fallback).
     ///
     /// Example usage:
     /// ```swift
@@ -132,40 +133,26 @@ extension RandomGenerator {
     ///         }
     ///         return value
     ///     }
+    /// let number = try numberGen.run().get()
     /// ```
     ///
     /// - Parameters:
     ///   - maxAttempts: Maximum number of retry attempts.
     ///   - fallbackStrategy: What to do if max attempts are reached without success.
     ///   - transform: A throwing closure that validates or transforms the generator's output.
-    /// - Returns: A generator that produces values that don't throw errors when transformed.
-    public func retryThrowing<Output>(
+    /// - Returns: A generator that produces a `Result` of the transformation.
+    public func retryThrowing<Output: Sendable>(
         maxAttempts: Int = 10,
-        fallbackStrategy: RandomGenerators.AttemptBounded<Self>.FallbackStrategy = .useLast,
+        fallbackStrategy: RandomGenerators.AttemptBounded<RandomGenerators.TryMap<Self, Output>>.FallbackStrategy = .useLast,
         _ transform: @Sendable @escaping (Element) throws -> Output
-    ) -> RandomGenerators.Map<RandomGenerators.Retry<Self>, Output> {
-        // First, retry until we get a value that doesn't throw
-        let retryGen = self.retry(
+    ) -> RandomGenerators.Retry<RandomGenerators.TryMap<Self, Output>> {
+        self.tryMap(transform).retry(
             maxAttempts: maxAttempts,
             fallbackStrategy: fallbackStrategy,
-            until: { value in
-              do {
-                _ = try transform(value)
-                return true
-              } catch {
+            until: { result in
+                if case .success = result { return true }
                 return false
-              }
             }
         )
-        
-        // Then map to apply the transformation (which we know won't throw now)
-        return retryGen.map { value in
-            do {
-                return try transform(value)
-            } catch {
-                // This should never happen since we're only mapping values that passed the retry check
-                fatalError("Unexpected error during retryThrowing: \(error)")
-            }
-        }
     }
-} 
+}

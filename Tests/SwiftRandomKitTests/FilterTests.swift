@@ -142,9 +142,18 @@ final class FilterTests: XCTestCase {
         
         // This should eventually succeed but after several attempts
         let result = intGenerator.run(using: &rng)
-        
+
         // Result should be 123
         XCTAssertEqual(result, 123)
+    }
+
+    func testCompactMapReturnsNilWhenAttemptsExhausted() {
+        // A transform that can never succeed used to force-unwrap nil and
+        // crash; it now produces nil once the attempt budget is exhausted.
+        let neverParses = Always("not a number").compactMap(maxAttempts: 5) { Int($0) }
+
+        var rng = LCRNG(seed: 1)
+        XCTAssertNil(neverParses.run(using: &rng))
     }
     
     // MARK: - Custom Filtering Logic
