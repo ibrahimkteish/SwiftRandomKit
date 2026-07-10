@@ -3,13 +3,18 @@ import Foundation
 extension RandomGenerators {
     /// A generator that avoids returning the same value twice in a row.
     ///
-    /// This generator maintains state between runs. Basic thread safety is implemented 
+    /// This generator maintains state between runs. Basic thread safety is implemented
     /// to protect access to the internal state, but the overall duplicate-avoidance behavior
     /// may not work as expected in highly concurrent scenarios where multiple threads
     /// are simultaneously generating values from the same instance.
-    /// 
+    ///
     /// For best results in multi-threaded environments, create separate generator
     /// instances for each thread.
+    ///
+    /// > Important: Although this is a struct, its last-value state lives in a shared
+    /// > reference. Copies of a `RemoveDuplicates` generator share that state: a value
+    /// > generated through one copy also counts as "the previous value" for every other
+    /// > copy. Create a fresh generator (not a copy) for independent duplicate tracking.
     public struct RemoveDuplicates<Upstream: RandomGenerator>: RandomGenerator {
         public typealias Element = Upstream.Element
         
