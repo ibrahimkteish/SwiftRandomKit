@@ -9,7 +9,7 @@ extension RandomGenerators {
         ///
         ///
         /// > Warning: Using the keepTrying strategy may result in an infinite loop if the condition can never be satisfied.
-        /// > For example, `Always(5).retry(until: { $0.isMultiple(of: 2) })` will hang indefinitely
+        /// > For example, `Always(5).retry(fallbackStrategy: .keepTrying, until: { $0.isMultiple(of: 2) })` will hang indefinitely
         /// > because 5 will never be divisible by 2.
         public enum FallbackStrategy: Sendable {
             /// Return the last generated value, even if it doesn't satisfy the condition.

@@ -7,7 +7,7 @@
 /// Example usage:
 /// ```swift
 /// // Basic integer generator
-/// let diceGen = IntGenerator(1...6)
+/// let diceGen = IntGenerator(in: 1...6)
 /// let roll = diceGen.run() // 4
 ///
 /// // Combining generators

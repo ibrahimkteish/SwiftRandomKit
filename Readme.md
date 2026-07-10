@@ -85,7 +85,7 @@ This syntax provides a more concise and natural way to generate random values, m
 ### Core Generators
 - `IntGenerator`: Generate random integers within a range
 - `FloatGenerator`: Generate random floating-point numbers
-- `BoolRandomGenerator`: Generate random boolean values
+- `BoolGenerator`: Generate random boolean values
 - `AnyRandomGenerator`: Type-erased container for any random generator
 
 ### Character and String
@@ -103,7 +103,6 @@ This syntax provides a more concise and natural way to generate random values, m
 - `ArrayGenerator`: Generate arrays with random size
 - `Dictionary`: Generate dictionaries with random key-value pairs
 - `Element`: Pick random elements from collections
-- `Set`: Generate sets of random elements
 - `Collection`: Generate custom collections of random elements
 - `Shuffled`: Generate shuffled versions of collections
 
@@ -154,7 +153,7 @@ let doubledDice = diceGen.map { $0 * 2 }
 let result = doubledDice.run() // 2, 4, 6, 8, 10, or 12
 
 // Use flatMap for dependent generators
-let coinFlip = BoolRandomGenerator()
+let coinFlip = BoolGenerator()
 let weightedDice = coinFlip.flatMap { isHeads in
     isHeads ? IntGenerator(in: 1...6) : IntGenerator(in: 4...9)
 }
@@ -186,7 +185,7 @@ let mixedNumbers = [smallNumberGen, mediumNumberGen, largeNumberGen].collect().r
 let alwaysSix = Always(6)
 
 // Can be combined with other generators using flatMap
-let loadedDice = BoolRandomGenerator().flatMap { isLoaded in
+let loadedDice = BoolGenerator().flatMap { isLoaded in
     isLoaded ? alwaysSix.eraseToAnyRandomGenerator() : IntGenerator(in: 1...6).eraseToAnyRandomGenerator()
 }
 
@@ -204,7 +203,7 @@ func createDiceGenerator() -> AnyRandomGenerator<Int> {
 // Store different generator types in a collection
 let generators: [AnyRandomGenerator<Int>] = [
     IntGenerator(in: 1...100).eraseToAnyRandomGenerator(),
-    BoolRandomGenerator().map { $0 == true ? 1 : 0 }.eraseToAnyRandomGenerator()
+    BoolGenerator().map { $0 == true ? 1 : 0 }.eraseToAnyRandomGenerator()
 ]
 
 print(generators.collect().run())
@@ -258,7 +257,7 @@ let evenNumber = evenNumbers.run() // Always an even number
 
 // Retry until a condition is met
 let diceGen = IntGenerator(in: 1...6)
-let sixGenerator = diceGen.retry(until: { $0 == 6 }, maxAttempts: 10)
+let sixGenerator = diceGen.retry(maxAttempts: 10, until: { $0 == 6 })
 let result = sixGenerator.run() // Will be 6 if found within 10 attempts
 
 // Filter with fallback for maximum attempts
@@ -290,7 +289,7 @@ let highRoll = diceGen.attemptBounded(
 let highDiceRoll = highRoll.run() // 5 or 6, or always 6 if not found in 3 attempts
 ```
 
-> ⚠️ **Warning**: Be careful when using the `.keepTrying` fallback strategy, as it can lead to infinite loops if the condition can never be satisfied. For example, `Always(5).retry(until: { $0.isMultiple(of: 2) })` will hang indefinitely.
+> ⚠️ **Warning**: Be careful when using the `.keepTrying` fallback strategy, as it can lead to infinite loops if the condition can never be satisfied. For example, `Always(5).retry(fallbackStrategy: .keepTrying, until: { $0.isMultiple(of: 2) })` will hang indefinitely.
 
 ### Create a Custom Generator
 

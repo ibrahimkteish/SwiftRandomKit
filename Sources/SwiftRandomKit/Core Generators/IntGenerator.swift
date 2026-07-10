@@ -37,7 +37,9 @@ public struct IntGenerator<Element: Sendable>: RandomGenerator where Element: Fi
     /// can generate the values 1, 2, 3, 4, 5, and 6 (but not 7).
     ///
     /// - Parameter openRange: The half-open range of possible values to generate.
+    /// - Precondition: The range must not be empty.
     public init(in openRange: Range<Element>) {
+        precondition(!openRange.isEmpty, "IntGenerator requires a non-empty range, got \(openRange)")
         self.init(in: openRange.toClosedRange())
     }
 

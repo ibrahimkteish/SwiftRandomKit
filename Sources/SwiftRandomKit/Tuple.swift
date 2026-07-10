@@ -4,7 +4,7 @@ extension RandomGenerators {
     /// Example usage:
     /// ```swift
     /// // Create a generator for random integers between 1 and 6 (dice)
-    /// let diceGen = IntGenerator(1...6)
+    /// let diceGen = IntGenerator(in: 1...6)
     /// 
     /// // Create a tuple generator to roll two dice at once
     /// let twoDice = diceGen.tuple()
@@ -13,7 +13,7 @@ extension RandomGenerators {
     /// let (die1, die2) = twoDice.run() // e.g., (4, 6)
     /// 
     /// // You can also chain it directly:
-    /// let coordinates = IntGenerator(0...100).tuple().run() // e.g., (42, 73)
+    /// let coordinates = IntGenerator(in: 0...100).tuple().run() // e.g., (42, 73)
     /// ```
     public struct Tuple<Upstream: RandomGenerator>: RandomGenerator {
         let upstream: Upstream
