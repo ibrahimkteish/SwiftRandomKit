@@ -6,29 +6,31 @@ public enum CreditCardType: Sendable {
     case mastercard
     case amex
     case discover
-    
-    var prefix: AnyRandomGenerator<[Int]> {
+
+    /// The issuer prefixes a generated number may start with.
+    var prefixes: [Int] {
         switch self {
-        case .visa: Always([4]).eraseToAnyRandomGenerator()
-        case .mastercard: Always([51, 52, 53, 54, 55]).eraseToAnyRandomGenerator()
-        case .amex: Always([34, 37]).eraseToAnyRandomGenerator()
-        case .discover: Always([6011, 644, 645, 646, 647, 648, 649, 65]).eraseToAnyRandomGenerator()
+        case .visa: [4]
+        case .mastercard: [51, 52, 53, 54, 55]
+        case .amex: [34, 37]
+        case .discover: [6011, 644, 645, 646, 647, 648, 649, 65]
         }
     }
-    
-    var length: [Int] {
+
+    /// The total number of digits, including the check digit.
+    var length: Int {
         switch self {
-        case .visa: [16]
-        case .mastercard: [16]
-        case .amex: [15]
-        case .discover: [16]
+        case .visa: 16
+        case .mastercard: 16
+        case .amex: 15
+        case .discover: 16
         }
     }
 }
 
 public struct CreditCardGenerator: RandomGenerator {
-    public typealias Generated = String
-    
+    public typealias Element = String
+
     private let type: CreditCardType
     
     public init(type: CreditCardType = .visa) {
@@ -74,17 +76,12 @@ public struct CreditCardGenerator: RandomGenerator {
     }
 
     public func run<RNG: RandomNumberGenerator>(using rng: inout RNG) -> String {
-        // Get random prefix for the card type
-        let prefixes = type.prefix.run(using: &rng)
-        guard let prefixValue = prefixes.randomElement(using: &rng),
-              let cardLength = type.length.randomElement(using: &rng) else {
-            fatalError("Invalid card type configuration")
-        }
-        
+        // The prefix lists are non-empty by construction, so randomElement cannot return nil.
+        let prefixValue = type.prefixes.randomElement(using: &rng)!
         let prefixDigits = digitsFrom(number: prefixValue)
-        
+
         // Generate random digits for the number (excluding the check digit)
-        let remainingLength = cardLength - prefixDigits.count - 1
+        let remainingLength = type.length - prefixDigits.count - 1
         
         let remainingDigits: [Int] = IntGenerator(in: 0...9).array(remainingLength).run(using: &rng)
         
