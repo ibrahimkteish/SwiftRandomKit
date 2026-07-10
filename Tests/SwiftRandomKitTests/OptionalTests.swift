@@ -90,4 +90,49 @@ final class OptionalTests: XCTestCase {
             XCTAssertEqual(value, expected)
         }
     }
+
+    // MARK: - OrNil
+
+    func testOrNilNeverNilAtZeroProbability() {
+        var rng = LCRNG(seed: 1)
+        let generator = IntGenerator(in: 1...100).orNil(probability: 0)
+
+        for _ in 0..<50 {
+            XCTAssertNotNil(generator.run(using: &rng))
+        }
+    }
+
+    func testOrNilAlwaysNilAtFullProbability() {
+        var rng = LCRNG(seed: 1)
+        let generator = IntGenerator(in: 1...100).orNil(probability: 1)
+
+        for _ in 0..<50 {
+            XCTAssertNil(generator.run(using: &rng))
+        }
+    }
+
+    func testOrNilMixesNilAndValues() {
+        var rng = LCRNG(seed: 42)
+        let generator = IntGenerator(in: 1...100).orNil(probability: 0.5)
+
+        var nils = 0
+        var values = 0
+        for _ in 0..<200 {
+            if generator.run(using: &rng) == nil { nils += 1 } else { values += 1 }
+        }
+
+        // Loose statistical bounds around 50/50
+        XCTAssertGreaterThan(nils, 50)
+        XCTAssertGreaterThan(values, 50)
+    }
+
+    func testOrNilIsDeterministic() {
+        var rng1 = LCRNG(seed: 42)
+        var rng2 = LCRNG(seed: 42)
+        let generator = IntGenerator(in: 1...100).orNil(probability: 0.5)
+
+        for _ in 0..<20 {
+            XCTAssertEqual(generator.run(using: &rng1), generator.run(using: &rng2))
+        }
+    }
 } 
