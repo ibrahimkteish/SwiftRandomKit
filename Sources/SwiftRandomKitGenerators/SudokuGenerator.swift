@@ -147,3 +147,5 @@ public extension RandomGenerators {
         SudokuGenerator(difficulty: difficulty)
     }
 }
+
+extension SudokuGenerator: Sendable {}

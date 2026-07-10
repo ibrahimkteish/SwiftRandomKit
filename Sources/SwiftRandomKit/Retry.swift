@@ -21,7 +21,7 @@ extension RandomGenerators {
         public init(
             _ upstream: Upstream, 
             maxAttempts: Int = 10, 
-            until condition: @Sendable @escaping (Upstream.Element) -> Bool,
+            until condition: @escaping (Upstream.Element) -> Bool,
             fallbackStrategy: AttemptBounded<Upstream>.FallbackStrategy = .useLast
         ) {
             self.attempter = AttemptBounded(
@@ -70,7 +70,7 @@ extension RandomGenerator {
     public func retry(
         maxAttempts: Int = 10,
         fallbackStrategy: RandomGenerators.AttemptBounded<Self>.FallbackStrategy = .useLast,
-        until condition: @Sendable @escaping (Element) -> Bool
+        until condition: @escaping (Element) -> Bool
     ) -> RandomGenerators.Retry<Self> {
         .init(
             self,
@@ -102,10 +102,10 @@ extension RandomGenerator {
     ///   - fallbackStrategy: What to do if max attempts are reached without success.
     ///   - transform: A closure that transforms the generator's output to an optional value.
     /// - Returns: A generator that produces the transformed value, or nil when no attempt succeeded.
-    public func retryMap<Output: Sendable>(
+    public func retryMap<Output>(
         maxAttempts: Int = 10,
         fallbackStrategy: RandomGenerators.AttemptBounded<RandomGenerators.Map<Self, Output?>>.FallbackStrategy = .useLast,
-        _ transform: @Sendable @escaping (Element) -> Output?
+        _ transform: @escaping (Element) -> Output?
     ) -> RandomGenerators.Retry<RandomGenerators.Map<Self, Output?>> {
         self.map(transform).retry(
             maxAttempts: maxAttempts,
@@ -141,10 +141,10 @@ extension RandomGenerator {
     ///   - fallbackStrategy: What to do if max attempts are reached without success.
     ///   - transform: A throwing closure that validates or transforms the generator's output.
     /// - Returns: A generator that produces a `Result` of the transformation.
-    public func retryThrowing<Output: Sendable>(
+    public func retryThrowing<Output>(
         maxAttempts: Int = 10,
         fallbackStrategy: RandomGenerators.AttemptBounded<RandomGenerators.TryMap<Self, Output>>.FallbackStrategy = .useLast,
-        _ transform: @Sendable @escaping (Element) throws -> Output
+        _ transform: @escaping (Element) throws -> Output
     ) -> RandomGenerators.Retry<RandomGenerators.TryMap<Self, Output>> {
         self.tryMap(transform).retry(
             maxAttempts: maxAttempts,

@@ -19,7 +19,7 @@ extension RandomGenerators {
     ///     isHeads ? Always("Heads") : Always("Tails")
     /// }
     /// ```
-    public struct Always<Element: Sendable>: RandomGenerator {
+    public struct Always<Element>: RandomGenerator {
         /// The value that this generator will always produce
         public let value: Element
 
@@ -97,8 +97,8 @@ extension Always {
     ///
     /// - Parameter transform: A function that transforms the generator's value.
     /// - Returns: A new Always generator that produces the transformed value.
-    public func map<ElementOfResult: Sendable>(
-      _ transform: @Sendable (Element) -> ElementOfResult
+    public func map<ElementOfResult>(
+      _ transform: (Element) -> ElementOfResult
     ) -> Always<ElementOfResult> {
         return .init(transform(value))
     }

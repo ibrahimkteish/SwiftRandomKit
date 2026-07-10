@@ -28,3 +28,5 @@ public struct IPAddressGenerator: RandomGenerator {
         }
     }
 }
+
+extension IPAddressGenerator: Sendable {}

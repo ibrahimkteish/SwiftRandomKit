@@ -50,3 +50,5 @@ extension RandomGenerators {
         }
     }
 }
+
+extension RandomGenerators.UnicodeScalar: Sendable {}

@@ -43,4 +43,6 @@ extension ColorGenerator {
     }
 }
 #endif
+extension ColorGenerator: Sendable {}
+
 #endif // End of Apple platforms

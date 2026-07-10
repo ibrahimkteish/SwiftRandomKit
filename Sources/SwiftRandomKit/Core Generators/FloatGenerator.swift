@@ -51,3 +51,5 @@ extension RandomGenerator {
         .init(in: range)
     }
 }
+
+extension FloatGenerator: Sendable {}

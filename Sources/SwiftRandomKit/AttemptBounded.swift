@@ -11,7 +11,7 @@ extension RandomGenerators {
         /// > Warning: Using the keepTrying strategy may result in an infinite loop if the condition can never be satisfied.
         /// > For example, `Always(5).retry(fallbackStrategy: .keepTrying, until: { $0.isMultiple(of: 2) })` will hang indefinitely
         /// > because 5 will never be divisible by 2.
-        public enum FallbackStrategy: Sendable {
+        public enum FallbackStrategy {
             /// Return the last generated value, even if it doesn't satisfy the condition.
             case useLast
             /// Return a specific default value.
@@ -19,14 +19,14 @@ extension RandomGenerators {
             /// Continue trying until a condition is met (no bound).
             case keepTrying
             /// Use a custom generator as fallback.
-            case useAnotherGenerator(@Sendable () -> Upstream.Element)
+            case useAnotherGenerator(() -> Upstream.Element)
         }
 
         /// The upstream generator to wrap.
         let upstream: Upstream
         
         /// The condition that must be satisfied.
-        let condition: @Sendable (Upstream.Element) -> Bool
+        let condition: (Upstream.Element) -> Bool
         
         /// Maximum number of attempts before applying the fallback strategy.
         let maxAttempts: Int
@@ -44,7 +44,7 @@ extension RandomGenerators {
         public init(
             _ upstream: Upstream,
             maxAttempts: Int,
-            condition: @Sendable @escaping (Upstream.Element) -> Bool,
+            condition: @escaping (Upstream.Element) -> Bool,
             fallbackStrategy: FallbackStrategy = .useLast
         ) {
             precondition(maxAttempts >= 1, "maxAttempts must be at least 1, got \(maxAttempts)")
@@ -101,7 +101,7 @@ extension RandomGenerator {
     /// - Returns: A generator that tries to produce values satisfying the condition.
     public func attemptBounded(
         maxAttempts: Int,
-        condition: @Sendable @escaping (Element) -> Bool,
+        condition: @escaping (Element) -> Bool,
         fallbackStrategy: RandomGenerators.AttemptBounded<Self>.FallbackStrategy = .useLast
     ) -> RandomGenerators.AttemptBounded<Self> {
         .init(self, maxAttempts: maxAttempts, condition: condition, fallbackStrategy: fallbackStrategy)

@@ -25,3 +25,5 @@ public struct LCRNG: RandomNumberGenerator {
     return seed
   }
 }
+
+extension LCRNG: Sendable {}

@@ -14,3 +14,5 @@ public struct SafariPasswordGenerator: RandomGenerator {
 fileprivate func charsToString(_ chars: [Character]) -> String {
     chars.map(String.init).joined()
 }
+
+extension SafariPasswordGenerator: Sendable {}

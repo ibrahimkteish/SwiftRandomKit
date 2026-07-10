@@ -74,3 +74,5 @@ extension Range where Bound: Comparable & Strideable {
         self.lowerBound...self.upperBound.advanced(by: -1)
     }
 }
+
+extension IntGenerator: Sendable {}

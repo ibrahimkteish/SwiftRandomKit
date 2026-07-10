@@ -19,9 +19,14 @@
 /// let lengthGen = wordGen.map { $0.count }
 /// let length = lengthGen.run() // 3
 /// ```
-public protocol RandomGenerator<Element>: Sendable {
+/// > Concurrency: `RandomGenerator` does not require `Sendable`. Generators are
+/// > ordinary values, confined to the isolation domain where they are built and run;
+/// > conformers may hold non-Sendable state and produce non-Sendable elements. The
+/// > library's simple leaf generators (`IntGenerator`, `BoolGenerator`, `Always`, ...)
+/// > declare `Sendable` themselves, so they can still be shared across domains.
+public protocol RandomGenerator<Element> {
     /// The type of value this generator produces.
-  associatedtype Element: Sendable
+    associatedtype Element
 
     /// Generates a random value using the provided random number generator.
     /// - Parameter rng: The random number generator to use.

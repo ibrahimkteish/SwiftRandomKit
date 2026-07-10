@@ -54,3 +54,5 @@ public struct VersionNumberGenerator: RandomGenerator {
         return version
     }
 }
+
+extension VersionNumberGenerator: Sendable {}

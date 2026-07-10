@@ -152,3 +152,5 @@ public extension RandomGenerators {
             .map { Swift.Character(Swift.UnicodeScalar($0)!) }
     }
 }
+
+extension RandomGenerators.Character: Sendable {}

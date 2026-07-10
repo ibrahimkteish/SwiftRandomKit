@@ -16,10 +16,19 @@ SwiftRandomKit is a powerful Swift library that provides a composable, protocol-
 
 ## Concurrency Safety
 
-SwiftRandomKit is designed with Swift's concurrency model in mind:
+SwiftRandomKit works with Swift's isolation model instead of against it. Generators are
+ordinary values, confined to the isolation domain where you build and run them:
 
-- ✅ All generators conform to `Sendable` for safe use in concurrent contexts
-- 🔒 You can enable strict concurrency checking while using it
+- The `RandomGenerator` protocol does **not** require `Sendable`. Your own generators can
+  hold non-Sendable state and produce non-Sendable values, and transform closures like
+  `map { }` are not `@Sendable`, so they can capture anything the surrounding context can.
+- Simple leaf generators (`IntGenerator`, `FloatGenerator`, `BoolGenerator`, `Always`, and
+  the ready-made generators like `Dice` or `UUIDGenerator`) conform to `Sendable` and can
+  be shared across isolation domains freely.
+- Composed pipelines (anything built with `map`, `flatMap`, `filter`, ...) are not
+  `Sendable`. Moving one into a `Task` works when its region is disconnected — Swift's
+  region isolation checks the transfer. To use a pipeline from several tasks, build one
+  per task: generators are cheap, immutable descriptions.
 
 ## Installation
 

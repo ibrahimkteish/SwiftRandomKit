@@ -22,7 +22,7 @@ extension RandomGenerators {
         public init(
             _ upstream: Upstream, 
             maxAttempts: Int = 100, 
-            predicate: @Sendable @escaping (Upstream.Element) -> Bool,
+            predicate: @escaping (Upstream.Element) -> Bool,
             fallbackStrategy: AttemptBounded<Upstream>.FallbackStrategy = .useLast
         ) {
           self.attempter = upstream.attemptBounded(maxAttempts: maxAttempts,
@@ -62,7 +62,7 @@ extension RandomGenerator {
     /// - Returns: A generator that only produces values that satisfy the predicate.
     public func filter(
         maxAttempts: Int = 100,
-        _ predicate: @Sendable @escaping (Element) -> Bool,
+        _ predicate: @escaping (Element) -> Bool,
         fallbackStrategy: RandomGenerators.AttemptBounded<Self>.FallbackStrategy = .useLast
     ) -> RandomGenerators.Filter<Self> {
         .init(
@@ -93,10 +93,10 @@ extension RandomGenerator {
     ///   - fallbackStrategy: What to do if max attempts are reached without success.
     ///   - transform: A closure that transforms values and can return nil.
     /// - Returns: A generator that produces the transformed value, or nil when no attempt succeeded.
-    public func compactMap<Output: Sendable>(
+    public func compactMap<Output>(
         maxAttempts: Int = 100,
         fallbackStrategy: RandomGenerators.AttemptBounded<RandomGenerators.Map<Self, Output?>>.FallbackStrategy = .useLast,
-        _ transform: @Sendable @escaping (Element) -> Output?
+        _ transform: @escaping (Element) -> Output?
     ) -> RandomGenerators.Retry<RandomGenerators.Map<Self, Output?>> {
         self.map(transform).retry(
             maxAttempts: maxAttempts,

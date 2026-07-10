@@ -23,3 +23,5 @@ extension RandomGenerator where Self == BoolGenerator {
     /// `let flip: some RandomGenerator<Bool> = .bool`
     public static var bool: BoolGenerator { BoolGenerator() }
 }
+
+extension BoolGenerator: Sendable {}

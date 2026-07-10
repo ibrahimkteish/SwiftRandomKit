@@ -81,8 +81,8 @@ extension RandomGenerators.Zip {
   /// multi-parameter closure, so the generic `map(_:)` cannot be called as
   /// `{ a, b, c in ... }` on a zip of three generators; this overload keeps
   /// that spelling working.
-  public func map<T: Sendable>(
-    _ transform: @Sendable @escaping (repeat (each R).Element) -> T
+  public func map<T>(
+    _ transform: @escaping (repeat (each R).Element) -> T
   ) -> RandomGenerators.Map<Self, T> {
     .init(self) { element in
       transform(repeat each element)
@@ -108,7 +108,7 @@ extension RandomGenerator {
   ///   - other: Another generator to combine with this one.
   ///   - transform: A function that transforms the tuple of results into a new value.
   /// - Returns: A generator that produces values transformed from the combined results.
-  public func zip<R: RandomGenerator, T>(_ other: R, _ transform: @Sendable @escaping (Self.Element, R.Element) -> T) -> RandomGenerators.Map<RandomGenerators.Zip<Self, R>, T> {
+  public func zip<R: RandomGenerator, T>(_ other: R, _ transform: @escaping (Self.Element, R.Element) -> T) -> RandomGenerators.Map<RandomGenerators.Zip<Self, R>, T> {
     .init(.init(self, other), transform)
   }
 }

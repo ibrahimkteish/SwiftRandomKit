@@ -20,3 +20,5 @@ public struct LatLongGenerator: RandomGenerator {
         return (latitude: latitude, longitude: longitude)
     }
 }
+
+extension LatLongGenerator: Sendable {}

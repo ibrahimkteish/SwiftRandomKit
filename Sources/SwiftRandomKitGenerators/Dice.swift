@@ -47,3 +47,5 @@ extension Dice {
     /// A hundred-sided die.
     public static let d100 = Dice(sides: 100)
 }
+
+extension Dice: Sendable {}

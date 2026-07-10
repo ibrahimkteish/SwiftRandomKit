@@ -31,3 +31,5 @@ public struct UUIDGenerator: RandomGenerator {
         return String(uuidString)
     }
 }
+
+extension UUIDGenerator: Sendable {}
