@@ -37,25 +37,27 @@ extension RandomGenerators {
         /// Creates a new attempt-bounded generator.
         /// - Parameters:
         ///   - upstream: The generator to wrap.
-        ///   - maxAttempts: Maximum number of attempts to make.
+        ///   - maxAttempts: Maximum total number of times the upstream generator is run,
+        ///     including the first attempt. Must be at least 1.
         ///   - condition: A closure that returns true if the value is acceptable.
         ///   - fallbackStrategy: Strategy to use if max attempts are reached.
         public init(
-            _ upstream: Upstream, 
-            maxAttempts: Int, 
+            _ upstream: Upstream,
+            maxAttempts: Int,
             condition: @Sendable @escaping (Upstream.Element) -> Bool,
             fallbackStrategy: FallbackStrategy = .useLast
         ) {
+            precondition(maxAttempts >= 1, "maxAttempts must be at least 1, got \(maxAttempts)")
             self.upstream = upstream
             self.maxAttempts = maxAttempts
             self.condition = condition
             self.fallbackStrategy = fallbackStrategy
         }
-        
+
         public func run<RNG: RandomNumberGenerator>(using rng: inout RNG) -> Upstream.Element {
-            var attempts = 0
+            var attempts = 1
             var lastValue = upstream.run(using: &rng)
-            
+
             // Try to find a value that satisfies the condition
             while !condition(lastValue) && attempts < maxAttempts {
                 lastValue = upstream.run(using: &rng)
@@ -92,7 +94,8 @@ extension RandomGenerator {
     /// Bounds this generator to a maximum number of attempts, returning a value that satisfies a condition.
     ///
     /// - Parameters:
-    ///   - maxAttempts: Maximum number of attempts to make.
+    ///   - maxAttempts: Maximum total number of times this generator is run,
+    ///     including the first attempt. Must be at least 1.
     ///   - condition: A closure that returns true if the value is acceptable.
     ///   - fallbackStrategy: Strategy to use if max attempts are reached.
     /// - Returns: A generator that tries to produce values satisfying the condition.
