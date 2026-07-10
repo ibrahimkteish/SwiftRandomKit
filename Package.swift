@@ -10,6 +10,9 @@ let package = Package(
         .library(name: "SwiftRandomKit", targets: ["SwiftRandomKit"]),
         .library(name: "SwiftRandomKitGenerators", targets: ["SwiftRandomKitGenerators"])
     ],
+    dependencies: [
+        .package(url: "https://github.com/swiftlang/swift-docc-plugin", from: "1.4.0")
+    ],
     targets: [
         .target(name: "SwiftRandomKit"),
         .target(name: "SwiftRandomKitGenerators", dependencies: ["SwiftRandomKit"]),

@@ -16,7 +16,7 @@ extension RandomGenerators {
         /// - Parameters:
         ///   - upstream: The generator to retry.
         ///   - maxAttempts: Maximum number of retry attempts (defaults to 10).
-        ///   - until: A closure that returns true when a retry is no longer needed.
+        ///   - condition: A closure that returns true when a retry is no longer needed.
         ///   - fallbackStrategy: What to do if max attempts are reached without success.
         public init(
             _ upstream: Upstream, 
