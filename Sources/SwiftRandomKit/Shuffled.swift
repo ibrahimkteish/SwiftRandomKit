@@ -41,3 +41,5 @@ public extension RandomGenerator where Element: MutableCollection & RandomAccess
         .init(self)
     }
 }
+
+extension RandomGenerators.Shuffled: Sendable where Upstream: Sendable {}

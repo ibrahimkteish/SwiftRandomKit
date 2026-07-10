@@ -67,3 +67,5 @@ extension RandomGenerator where Element: Swift.Collection {
         .init(self)
     }
 }
+
+extension RandomGenerators.Element: Sendable where Upstream: Sendable {}

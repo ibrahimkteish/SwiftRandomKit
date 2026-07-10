@@ -61,3 +61,5 @@ extension RandomGenerator {
         .init(self, countGenerator)
     }
 }
+
+extension RandomGenerators.Dictionary: Sendable where Upstream: Sendable, C: Sendable {}

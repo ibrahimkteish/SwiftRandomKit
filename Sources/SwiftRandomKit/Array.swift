@@ -134,3 +134,6 @@ extension RandomGenerator {
         .init(self, countGenerator)
     }
 }
+
+extension RandomGenerators.Array: Sendable where Upstream: Sendable {}
+extension RandomGenerators.ArrayGenerator: Sendable where Upstream: Sendable, C: Sendable {}

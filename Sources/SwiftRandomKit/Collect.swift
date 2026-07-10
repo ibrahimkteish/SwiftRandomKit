@@ -75,3 +75,5 @@ public extension Array where Element: RandomGenerator {
 
 /// Type alias for easier access to the Collect generator.
 public typealias Collect = RandomGenerators.Collect
+
+extension RandomGenerators.Collect: Sendable where Upstream: Sendable {}

@@ -98,3 +98,5 @@ public extension RandomGenerators {
         Frequency(distribution)
     }
 }
+
+extension RandomGenerators.Frequency: Sendable where Upstream: Sendable {}

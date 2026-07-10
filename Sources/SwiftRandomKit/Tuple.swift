@@ -41,3 +41,5 @@ extension RandomGenerator {
         .init(self)
     }
 }
+
+extension RandomGenerators.Tuple: Sendable where Upstream: Sendable {}

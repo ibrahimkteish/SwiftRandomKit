@@ -60,3 +60,5 @@ extension RandomGenerator {
         .init(self, prefix: prefix)
     }
 }
+
+extension RandomGenerators.Print: Sendable where Upstream: Sendable {}

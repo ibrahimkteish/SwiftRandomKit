@@ -107,3 +107,6 @@ extension RandomGenerator {
         .init(self, probability: probability)
     }
 }
+
+extension RandomGenerators.OptionalGenerator: Sendable where R: Sendable {}
+extension RandomGenerators.OrNil: Sendable where Upstream: Sendable {}

@@ -112,3 +112,6 @@ extension RandomGenerator {
     .init(.init(self, other), transform)
   }
 }
+
+@available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
+extension RandomGenerators.Zip: Sendable where repeat each R: Sendable {}

@@ -122,3 +122,5 @@ extension Array: Concatable {}
 
 // Add conformance for other standard library types that support concatenation
 extension Data: Concatable {}
+
+extension RandomGenerators.Concat: Sendable where First: Sendable, Second: Sendable, First.Element: Sendable {}
