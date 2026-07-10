@@ -34,7 +34,6 @@ extension ColorGenerator {
 
 #if canImport(SwiftUI)
 import SwiftUI
-@available(macOS 10.15, iOS 13.0, *)
 extension ColorGenerator {
     /// Generates a random SwiftUI `Color`. The opacity comes from the
     /// generator's `alpha` value provided at initialization.

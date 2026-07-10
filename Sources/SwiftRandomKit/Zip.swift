@@ -44,6 +44,7 @@ extension RandomGenerators {
   ///
   /// let card = cardGen.run() // e.g., "Q♠️"
   /// ```
+  @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
   public struct Zip<each R: RandomGenerator>: RandomGenerator {
     public typealias Element = (repeat (each R).Element)
 
@@ -65,6 +66,7 @@ extension RandomGenerators {
   }
 }
 
+@available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
 extension RandomGenerators.Zip {
   /// Transforms the zipped results, receiving each generator's value as a
   /// separate closure argument instead of a single tuple.
@@ -88,6 +90,7 @@ extension RandomGenerators.Zip {
   }
 }
 
+@available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
 extension RandomGenerator {
   /// Combines this generator with another generator to produce tuples of their results.
   ///
