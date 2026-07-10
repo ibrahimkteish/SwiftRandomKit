@@ -1,36 +1,68 @@
 import Foundation
 import SwiftRandomKit
 
+/// A generator that produces valid Sudoku puzzles with configurable difficulty.
+///
+/// This generator creates a complete Sudoku solution and then removes numbers
+/// based on the specified difficulty level to create a playable puzzle.
+///
+/// Example usage:
+/// ```swift
+/// // Create a generator for medium difficulty Sudoku puzzles
+/// let sudokuGen = SudokuGenerator(difficulty: .medium)
+/// 
+/// // Generate a new puzzle
+/// let puzzle = sudokuGen.run()
+/// 
+/// // Print the puzzle
+/// for row in puzzle {
+///     print(row.map { $0 == 0 ? "." : "\($0)" }.joined(separator: " "))
+/// }
+/// ```
 public struct SudokuGenerator: RandomGenerator {
     public typealias Element = [[Int]]
 
-  public enum Difficulty: Sendable {
+    /// Difficulty levels for Sudoku puzzles, determining the number of initial clues.
+    public enum Difficulty: Sendable {
         case easy      // 35-40 givens
         case medium    // 30-34 givens
         case hard      // 25-29 givens
         case expert    // 22-24 givens
+        
+        /// Returns a random generator for the number of clues appropriate for this difficulty level.
+        fileprivate var cluesGenerator: some RandomGenerator<Int> {
+            switch self {
+            case .easy:   return IntGenerator(in: 35...40)
+            case .medium: return IntGenerator(in: 30...34)
+            case .hard:   return IntGenerator(in: 25...29)
+            case .expert: return IntGenerator(in: 22...24)
+            }
+        }
     }
 
     private let difficulty: Difficulty
-    private let numberGenerator = IntGenerator(in: 1...9)
-    private let positionGenerator = IntGenerator(in: 0..<9)
-
+    
+    /// Creates a new Sudoku puzzle generator with the specified difficulty.
+    ///
+    /// - Parameter difficulty: The difficulty level of the generated puzzles.
     public init(difficulty: Difficulty = .medium) {
         self.difficulty = difficulty
     }
 
+    /// Generates a random Sudoku puzzle.
+    ///
+    /// - Parameter rng: The random number generator to use.
+    /// - Returns: A 9x9 grid representing a Sudoku puzzle, with 0s indicating empty cells.
     public func run<RNG: RandomNumberGenerator>(using rng: inout RNG) -> Element {
         // Generate a complete, valid Sudoku grid
         var grid = Array(repeating: Array(repeating: 0, count: 9), count: 9)
         _ = fillGrid(&grid, using: &rng)
 
         // Remove numbers based on difficulty
-        let clues = numberOfClues(for: difficulty, using: &rng)
+        let clues = difficulty.cluesGenerator.run(using: &rng)
         removeNumbers(from: &grid, leaving: clues, using: &rng)
 
-        // Convert zeros to nils for optional representation
-        let optionalGrid = grid
-        return optionalGrid
+        return grid
     }
 
     private func fillGrid<RNG: RandomNumberGenerator>(_ grid: inout [[Int]], using rng: inout RNG) -> Bool {
@@ -38,7 +70,9 @@ public struct SudokuGenerator: RandomGenerator {
         for row in 0..<9 {
             for col in 0..<9 {
                 if grid[row][col] == 0 {
-                    // Try numbers 1-9 in random order
+                    // Try numbers 1-9 in random order. This runs inside the
+                    // backtracking hot path, so shuffle in place rather than
+                    // allocating a generator per cell visit.
                     var numbers = Array(1...9)
                     numbers.shuffle(using: &rng)
                     for number in numbers {
@@ -81,12 +115,14 @@ public struct SudokuGenerator: RandomGenerator {
     }
 
     private func removeNumbers<RNG: RandomNumberGenerator>(from grid: inout [[Int]], leaving clues: Int, using rng: inout RNG) {
+        // Create all possible positions
         var positions = [(Int, Int)]()
         for row in 0..<9 {
             for col in 0..<9 {
                 positions.append((row, col))
             }
         }
+        
         positions.shuffle(using: &rng)
 
         let cellsToRemove = 81 - clues
@@ -95,13 +131,16 @@ public struct SudokuGenerator: RandomGenerator {
             grid[row][col] = 0
         }
     }
+}
 
-    private func numberOfClues<RNG: RandomNumberGenerator>(for difficulty: Difficulty, using rng: inout RNG) -> Int {
-        switch difficulty {
-        case .easy:   return IntGenerator(in: 35...40).run(using: &rng)
-        case .medium: return IntGenerator(in: 30...34).run(using: &rng)
-        case .hard:   return IntGenerator(in: 25...29).run(using: &rng)
-        case .expert: return IntGenerator(in: 22...24).run(using: &rng)
-        }
+// MARK: - Convenience Extensions
+
+public extension RandomGenerators {
+    /// Creates a generator for Sudoku puzzles with the specified difficulty.
+    ///
+    /// - Parameter difficulty: The difficulty level of the generated puzzles.
+    /// - Returns: A generator that produces Sudoku puzzles.
+    static func sudoku(difficulty: SudokuGenerator.Difficulty = .medium) -> SudokuGenerator {
+        SudokuGenerator(difficulty: difficulty)
     }
 }
