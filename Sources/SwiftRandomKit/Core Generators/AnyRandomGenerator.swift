@@ -54,6 +54,9 @@ public struct AnyRandomGenerator<Element: Sendable>: RandomGenerator {
     @inline(__always)
     public func run<RNG: RandomNumberGenerator>(using rng: inout RNG) -> Element {
         var anyRNG: any RandomNumberGenerator = rng
+        // Write the advanced state back to the caller's RNG, otherwise every
+        // call replays the same state and seeded RNGs repeat values.
+        defer { rng = anyRNG as! RNG }
         return _run(&anyRNG)
     }
     

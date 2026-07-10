@@ -78,7 +78,7 @@ final class CollectTests: XCTestCase {
         
         XCTAssertEqual(result.count, 2)
         XCTAssertEqual(result[0], 2)
-        XCTAssertEqual(result[1], 12)
+        XCTAssertEqual(result[1], 17)
     }
     
     func testCollectDifferentTypes() {

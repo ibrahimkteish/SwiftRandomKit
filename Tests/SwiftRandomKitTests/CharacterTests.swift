@@ -17,18 +17,18 @@ final class CharacterTests: XCTestCase {
         let char3 = lowercaseGen.run(using: &rng)
         
         XCTAssertEqual(char1, "z", "First character with seed 42 should be 'z'")
-        XCTAssertEqual(char2, "z", "Second character with seed 42 should be 'z'")
-        XCTAssertEqual(char3, "z", "Third character with seed 42 should be 'z'")
-        
+        XCTAssertEqual(char2, "e", "Second character with seed 42 should be 'e'")
+        XCTAssertEqual(char3, "d", "Third character with seed 42 should be 'd'")
+
         // Test with digit range
         let digitRange = Character("0")...Character("9")
         let digitGen = RandomGenerators.character(in: digitRange)
-        
+
         let digit1 = digitGen.run(using: &rng)
         let digit2 = digitGen.run(using: &rng)
-        
-        XCTAssertEqual(digit1, "9", "First digit with seed 42 should be '9'")
-        XCTAssertEqual(digit2, "9", "Second digit with seed 42 should be '9'")
+
+        XCTAssertEqual(digit1, "5", "First digit with seed 42 should be '5'")
+        XCTAssertEqual(digit2, "0", "Second digit with seed 42 should be '0'")
         
         // Make sure characters are within the range
         for _ in 1...20 {
@@ -50,8 +50,8 @@ final class CharacterTests: XCTestCase {
         let digit3 = numberGen.run(using: &rng)
         
         XCTAssertEqual(digit1, "9", "First digit with seed 42 should be '9'")
-        XCTAssertEqual(digit2, "9", "Second digit with seed 42 should be '9'")
-        XCTAssertEqual(digit3, "9", "Third digit with seed 42 should be '9'")
+        XCTAssertEqual(digit2, "1", "Second digit with seed 42 should be '1'")
+        XCTAssertEqual(digit3, "1", "Third digit with seed 42 should be '1'")
         
         // Verify all outputs are digits
         for _ in 1...20 {
@@ -72,8 +72,8 @@ final class CharacterTests: XCTestCase {
         let char3 = uppercaseGen.run(using: &rng)
         
         XCTAssertEqual(char1, "Z", "First uppercase letter with seed 42 should be 'Z'")
-        XCTAssertEqual(char2, "Z", "Second uppercase letter with seed 42 should be 'Z'")
-        XCTAssertEqual(char3, "Z", "Third uppercase letter with seed 42 should be 'Z'")
+        XCTAssertEqual(char2, "E", "Second uppercase letter with seed 42 should be 'E'")
+        XCTAssertEqual(char3, "D", "Third uppercase letter with seed 42 should be 'D'")
         
         // Verify all outputs are uppercase letters
         for _ in 1...20 {
@@ -94,8 +94,8 @@ final class CharacterTests: XCTestCase {
         let char3 = lowercaseGen.run(using: &rng)
         
         XCTAssertEqual(char1, "z", "First lowercase letter with seed 42 should be 'z'")
-        XCTAssertEqual(char2, "z", "Second lowercase letter with seed 42 should be 'z'")
-        XCTAssertEqual(char3, "z", "Third lowercase letter with seed 42 should be 'z'")
+        XCTAssertEqual(char2, "e", "Second lowercase letter with seed 42 should be 'e'")
+        XCTAssertEqual(char3, "d", "Third lowercase letter with seed 42 should be 'd'")
         
         // Verify all outputs are lowercase letters
         for _ in 1...20 {
@@ -277,7 +277,7 @@ final class CharacterTests: XCTestCase {
         let digits = digitArrayGen.run(using: &rng)
         
         XCTAssertEqual(digits.count, 5, "Should generate 5 digits")
-        XCTAssertEqual(digits, ["9", "9", "9", "9", "9"], "Should generate the expected sequence of digits")
+        XCTAssertEqual(digits, ["9", "1", "1", "5", "0"], "Should generate the expected sequence of digits")
         
         // Test with the letterOrNumber generator
         let alphanumericGen = RandomGenerators.letterOrNumber
@@ -287,6 +287,6 @@ final class CharacterTests: XCTestCase {
         let alphanumeric = alphanumericArrayGen.run(using: &rng)
         
         XCTAssertEqual(alphanumeric.count, 8, "Should generate 8 alphanumeric characters")
-        XCTAssertEqual(alphanumeric, ["G", "9", "K", "U", "h", "o", "P", "2"], "Should generate the expected sequence")
+        XCTAssertEqual(alphanumeric, ["o", "P", "2", "6", "a", "g", "A", "V"], "Should generate the expected sequence")
     }
 } 
