@@ -1,8 +1,8 @@
-import XCTest
+import Testing
 import SwiftRandomKit
 
-final class UnicodeScalarTests: XCTestCase {
-    func testUnicodeScalarInRange() {
+struct UnicodeScalarTests {
+    @Test func unicodeScalarInRange() {
         // Create a UnicodeScalar generator for ASCII range
         let asciiRange: ClosedRange<UnicodeScalar> = UnicodeScalar(65)...UnicodeScalar(90) // A-Z
         let generator = RandomGenerators.UnicodeScalar(in: asciiRange)
@@ -15,15 +15,15 @@ final class UnicodeScalarTests: XCTestCase {
 
         for expected in expectedSequence {
             let scalar = generator.run(using: &rng)
-            XCTAssertEqual(scalar.value, expected)
+            #expect(scalar.value == expected)
 
             // Convert to Character for better debugging
             let char = Character(scalar)
-            XCTAssertEqual(char, Character(UnicodeScalar(expected)!))
+            #expect(char == Character(UnicodeScalar(expected)!))
         }
     }
 
-    func testUnicodeScalarLowercase() {
+    @Test func unicodeScalarLowercase() {
         // Create a UnicodeScalar generator for lowercase letters
         let lowercaseRange: ClosedRange<UnicodeScalar> = UnicodeScalar(97)...UnicodeScalar(122) // a-z
         let generator = RandomGenerators.UnicodeScalar(in: lowercaseRange)
@@ -36,15 +36,15 @@ final class UnicodeScalarTests: XCTestCase {
 
         for expected in expectedSequence {
             let scalar = generator.run(using: &rng)
-            XCTAssertEqual(scalar.value, expected)
+            #expect(scalar.value == expected)
 
             // Convert to Character for better debugging
             let char = Character(scalar)
-            XCTAssertEqual(char, Character(UnicodeScalar(expected)!))
+            #expect(char == Character(UnicodeScalar(expected)!))
         }
     }
 
-    func testUnicodeScalarDigits() {
+    @Test func unicodeScalarDigits() {
         // Create a UnicodeScalar generator for digits
         let digitRange: ClosedRange<UnicodeScalar> = UnicodeScalar(48)...UnicodeScalar(57) // 0-9
         let generator = RandomGenerators.UnicodeScalar(in: digitRange)
@@ -57,15 +57,15 @@ final class UnicodeScalarTests: XCTestCase {
 
         for expected in expectedSequence {
             let scalar = generator.run(using: &rng)
-            XCTAssertEqual(scalar.value, expected)
+            #expect(scalar.value == expected)
 
             // Convert to Character for better debugging
             let char = Character(scalar)
-            XCTAssertEqual(char, Character(UnicodeScalar(expected)!))
+            #expect(char == Character(UnicodeScalar(expected)!))
         }
     }
 
-    func testUnicodeScalarSkipsSurrogateGap() {
+    @Test func unicodeScalarSkipsSurrogateGap() {
         // U+D800...U+DFFF are surrogate code points, not valid scalars. A range
         // spanning the gap must never produce one and must not be biased toward
         // any fallback value.
@@ -76,13 +76,13 @@ final class UnicodeScalarTests: XCTestCase {
         var seen = Set<UInt32>()
         for _ in 0..<200 {
             let scalar = generator.run(using: &rng)
-            XCTAssertFalse((0xD800...0xDFFF).contains(scalar.value), "Surrogates are not valid scalars")
-            XCTAssertTrue(range.contains(scalar))
+            #expect(!((0xD800...0xDFFF).contains(scalar.value)), "Surrogates are not valid scalars")
+            #expect(range.contains(scalar))
             seen.insert(scalar.value)
         }
 
         // Only four valid scalars exist in this range; a uniform draw over 200
         // runs should hit all of them.
-        XCTAssertEqual(seen, [0xD7FE, 0xD7FF, 0xE000, 0xE001])
+        #expect(seen == [0xD7FE, 0xD7FF, 0xE000, 0xE001])
     }
 }

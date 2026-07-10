@@ -1,9 +1,10 @@
-import XCTest
+import Foundation
+import Testing
 @testable import SwiftRandomKit
 
-final class ConcatTests: XCTestCase {
+struct ConcatTests {
     
-    func testConcatStrings() {
+    @Test func concatStrings() {
         // Test concatenation of string generators
         var rng = LCRNG(seed: 42)
         
@@ -12,18 +13,18 @@ final class ConcatTests: XCTestCase {
         
         // Test with a space separator
         let fullNameGen = firstNameGen.concat(lastNameGen, separator: " ")
-        XCTAssertEqual(fullNameGen.run(using: &rng), "John Smith", "String concatenation with space separator should work")
+        #expect(fullNameGen.run(using: &rng) == "John Smith", "String concatenation with space separator should work")
         
         // Test with a different separator
         let hyphenatedNameGen = firstNameGen.concat(lastNameGen, separator: "-")
-        XCTAssertEqual(hyphenatedNameGen.run(using: &rng), "John-Smith", "String concatenation with hyphen separator should work")
+        #expect(hyphenatedNameGen.run(using: &rng) == "John-Smith", "String concatenation with hyphen separator should work")
         
         // Test with an empty separator
         let noSeparatorGen = firstNameGen.concat(lastNameGen, separator: "")
-        XCTAssertEqual(noSeparatorGen.run(using: &rng), "JohnSmith", "String concatenation with empty separator should work")
+        #expect(noSeparatorGen.run(using: &rng) == "JohnSmith", "String concatenation with empty separator should work")
     }
     
-    func testConcatWithVariableGenerators() {
+    @Test func concatWithVariableGenerators() {
         // Test concatenation with generators that produce different values
         var rng = LCRNG(seed: 42)
         
@@ -56,11 +57,11 @@ final class ConcatTests: XCTestCase {
         }
         
         // Expected results
-        XCTAssertEqual(titleGen.run(using: &rng), "Wise Developer", "First concatenation should match expected value")
-        XCTAssertEqual(titleGen.run(using: &rng), "Bold Engineer", "Second concatenation should match expected value")
+        #expect(titleGen.run(using: &rng) == "Wise Developer", "First concatenation should match expected value")
+        #expect(titleGen.run(using: &rng) == "Bold Engineer", "Second concatenation should match expected value")
     }
     
-    func testConcatArrays() {
+    @Test func concatArrays() {
         // Test concatenation of array generators
         var rng = LCRNG(seed: 42)
         
@@ -69,18 +70,18 @@ final class ConcatTests: XCTestCase {
         
         // Test with no separator
         let combinedArrayGen = firstArrayGen.concat(secondArrayGen, separator: [])
-        XCTAssertEqual(combinedArrayGen.run(using: &rng), [1, 2, 3, 4, 5, 6], "Array concatenation with empty separator should work")
+        #expect(combinedArrayGen.run(using: &rng) == [1, 2, 3, 4, 5, 6], "Array concatenation with empty separator should work")
         
         // Test with a separator array
         let separatedArrayGen = firstArrayGen.concat(secondArrayGen, separator: [0])
-        XCTAssertEqual(separatedArrayGen.run(using: &rng), [1, 2, 3, 0, 4, 5, 6], "Array concatenation with separator should work")
+        #expect(separatedArrayGen.run(using: &rng) == [1, 2, 3, 0, 4, 5, 6], "Array concatenation with separator should work")
         
         // Test with multiple elements in separator
         let multiSeparatorArrayGen = firstArrayGen.concat(secondArrayGen, separator: [99, 100])
-        XCTAssertEqual(multiSeparatorArrayGen.run(using: &rng), [1, 2, 3, 99, 100, 4, 5, 6], "Array concatenation with multi-element separator should work")
+        #expect(multiSeparatorArrayGen.run(using: &rng) == [1, 2, 3, 99, 100, 4, 5, 6], "Array concatenation with multi-element separator should work")
     }
     
-    func testConcatWithMap() {
+    @Test func concatWithMap() {
         // Test combining concat with map
         var rng = LCRNG(seed: 42)
         
@@ -94,11 +95,11 @@ final class ConcatTests: XCTestCase {
         let combinedNumGen = numStringGen1.concat(numStringGen2, separator: "+")
         
         // Expected value using deterministic RNG (seed 42)
-        XCTAssertEqual(combinedNumGen.run(using: &rng), "6+20", "Concatenation with mapped values should work")
-        XCTAssertEqual(combinedNumGen.run(using: &rng), "6+18", "Second run should produce expected values")
+        #expect(combinedNumGen.run(using: &rng) == "6+20", "Concatenation with mapped values should work")
+        #expect(combinedNumGen.run(using: &rng) == "6+18", "Second run should produce expected values")
     }
     
-    func testConcatWithDynamicSeparator() {
+    @Test func concatWithDynamicSeparator() {
         // Test using different separators dynamically
         var rng = LCRNG(seed: 42)
         
@@ -122,11 +123,11 @@ final class ConcatTests: XCTestCase {
         }
         
         // Expected values
-        XCTAssertEqual(dynamicSeparatorGen.run(using: &rng), "hello:world", "First run should use the expected separator")
-        XCTAssertEqual(dynamicSeparatorGen.run(using: &rng), "hello-world", "Second run should use a different separator")
+        #expect(dynamicSeparatorGen.run(using: &rng) == "hello:world", "First run should use the expected separator")
+        #expect(dynamicSeparatorGen.run(using: &rng) == "hello-world", "Second run should use a different separator")
     }
     
-    func testConcatMultipleGenerators() {
+    @Test func concatMultipleGenerators() {
         // Test chaining multiple concatenations
         var rng = LCRNG(seed: 42)
         
@@ -139,7 +140,7 @@ final class ConcatTests: XCTestCase {
             .concat(gen2, separator: "-")
             .concat(gen3, separator: "-")
         
-        XCTAssertEqual(chainedGen.run(using: &rng), "begin-middle-end", "Chained concatenation should work correctly")
+        #expect(chainedGen.run(using: &rng) == "begin-middle-end", "Chained concatenation should work correctly")
         
         // Different pattern of chaining
         let nestedGen = gen1.concat(
@@ -147,10 +148,10 @@ final class ConcatTests: XCTestCase {
             separator: "/"
         )
         
-        XCTAssertEqual(nestedGen.run(using: &rng), "begin/middle.end", "Nested concatenation should respect the grouping")
+        #expect(nestedGen.run(using: &rng) == "begin/middle.end", "Nested concatenation should respect the grouping")
     }
     
-    func testConcatWithDifferentTypes() {
+    @Test func concatWithDifferentTypes() {
         // Test concat with different concatable types
         var rng = LCRNG(seed: 42)
         
@@ -163,7 +164,7 @@ final class ConcatTests: XCTestCase {
         
         // Check the result as array of bytes
         let byteArray = [UInt8](result)
-        XCTAssertEqual(byteArray, [0x01, 0x02, 0x03, 0x04], "Data concatenation should work correctly")
+        #expect(byteArray == [0x01, 0x02, 0x03, 0x04], "Data concatenation should work correctly")
         
         // Test with separator
         let separatorDataGen = data1Gen.concat(data2Gen, separator: Data([0xFF]))
@@ -171,6 +172,6 @@ final class ConcatTests: XCTestCase {
         
         // Check the result with separator
         let separatedByteArray = [UInt8](separatedResult)
-        XCTAssertEqual(separatedByteArray, [0x01, 0x02, 0xFF, 0x03, 0x04], "Data concatenation with separator should work correctly")
+        #expect(separatedByteArray == [0x01, 0x02, 0xFF, 0x03, 0x04], "Data concatenation with separator should work correctly")
     }
 } 

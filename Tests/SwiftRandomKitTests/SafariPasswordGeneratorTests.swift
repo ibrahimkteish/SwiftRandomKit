@@ -1,13 +1,13 @@
-import XCTest
+import Testing
 import SwiftRandomKit
 import SwiftRandomKitGenerators
 
-final class SafariPasswordGeneratorTests: XCTestCase {
-    func testSafariPassword() {
+struct SafariPasswordGeneratorTests {
+    @Test func safariPassword() {
         let safariPasswordGenerator = SafariPasswordGenerator()
         var rng = LCRNG(seed: 1)
 
         let password = safariPasswordGenerator.run(using: &rng)
-        XCTAssertEqual(password, "jN2cpg-2FB5Hx-6rigDv")
+        #expect(password == "jN2cpg-2FB5Hx-6rigDv")
     }
 }

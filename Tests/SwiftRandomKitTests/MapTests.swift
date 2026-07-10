@@ -1,26 +1,26 @@
-import XCTest
+import Testing
 import SwiftRandomKit
 
-final class MapTests: XCTestCase {
-    func testMap() {
+struct MapTests {
+    @Test func map() {
         let intGenerator = IntGenerator<Int>(in: 0...10)
         let mapped = intGenerator.map { $0 * 2 }
         var rng = LCRNG(seed: 1)
 
-        XCTAssertEqual(mapped.run(using: &rng), 2)
-        XCTAssertEqual(mapped.run(using: &rng), 14)
+        #expect(mapped.run(using: &rng) == 2)
+        #expect(mapped.run(using: &rng) == 14)
     }
 
-    func testMapString() {
+    @Test func mapString() {
         let intGenerator = IntGenerator<Int>(in: 0...10)
         let mapped = intGenerator.map { String($0) }
         var rng = LCRNG(seed: 1)
 
-        XCTAssertEqual(mapped.run(using: &rng), "1")
-        XCTAssertEqual(mapped.run(using: &rng), "7")
+        #expect(mapped.run(using: &rng) == "1")
+        #expect(mapped.run(using: &rng) == "7")
     }
         
-    func testMapChaining() {
+    @Test func mapChaining() {
         // Test the optimized map chaining method on RandomGenerators.Map
         let intGenerator = IntGenerator<Int>(in: 0...10)
         
@@ -34,11 +34,11 @@ final class MapTests: XCTestCase {
         var rng = LCRNG(seed: 1)
         
         // Verify the results
-        XCTAssertEqual(formattedGenerator(using: &rng), "Value: 2")
-        XCTAssertEqual(formattedGenerator(using: &rng), "Value: 14")
+        #expect(formattedGenerator(using: &rng) == "Value: 2")
+        #expect(formattedGenerator(using: &rng) == "Value: 14")
     }
     
-    func testMultipleMapChaining() {
+    @Test func multipleMapChaining() {
         // Test multiple levels of map chaining
         let intGenerator = IntGenerator<Int>(in: 0...10)
         
@@ -53,11 +53,11 @@ final class MapTests: XCTestCase {
         var rng = LCRNG(seed: 1)
         
         // Verify the results
-        XCTAssertEqual(result.run(using: &rng), "Result: 12")
-        XCTAssertEqual(result.run(using: &rng), "Result: 24")
+        #expect(result.run(using: &rng) == "Result: 12")
+        #expect(result.run(using: &rng) == "Result: 24")
     }
     
-    func testMapWithComplexTransformations() {
+    @Test func mapWithComplexTransformations() {
         // Test map with more complex transformations
         let tupleGenerator = IntGenerator<Int>(in: 1...10).tuple()
         
@@ -70,7 +70,7 @@ final class MapTests: XCTestCase {
         var rng = LCRNG(seed: 1)
         
         // Verify the results
-        XCTAssertEqual(formattedGenerator.run(using: &rng), "Coordinates: (2, 7)")
-        XCTAssertEqual(formattedGenerator.run(using: &rng), "Coordinates: (9, 1)")
+        #expect(formattedGenerator.run(using: &rng) == "Coordinates: (2, 7)")
+        #expect(formattedGenerator.run(using: &rng) == "Coordinates: (9, 1)")
     }
 }

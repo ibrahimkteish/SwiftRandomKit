@@ -1,10 +1,10 @@
-import XCTest
+import Testing
 @testable import SwiftRandomKit
 
-@available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
-final class ZipTests: XCTestCase {
+struct ZipTests {
     
-    func testZipTwoGenerators() {
+    @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
+    @Test func zipTwoGenerators() {
         var rng = LCRNG(seed: 1)
         
         let intGenerator = IntGenerator(in: 1...100)
@@ -15,11 +15,12 @@ final class ZipTests: XCTestCase {
         let result = zipGenerator.run(using: &rng)
         
         // Expected values based on the seed
-        XCTAssertEqual(result.0, 16)
-        XCTAssertEqual(result.1, "N")
+        #expect(result.0 == 16)
+        #expect(result.1 == "N")
     }
     
-    func testZipThreeGenerators() {
+    @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
+    @Test func zipThreeGenerators() {
         var rng = LCRNG(seed: 1)
         
         let intGenerator = IntGenerator(in: 1...100)
@@ -30,12 +31,13 @@ final class ZipTests: XCTestCase {
         
         let result = zipGenerator.run(using: &rng)
         
-        XCTAssertEqual(result.0, 16)
-        XCTAssertEqual(result.1, 0.6390517027105214)
-        XCTAssertEqual(result.2, false)
+        #expect(result.0 == 16)
+        #expect(result.1 == 0.6390517027105214)
+        #expect(result.2 == false)
     }
     
-    func testZipFourGenerators() {
+    @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
+    @Test func zipFourGenerators() {
         var rng = LCRNG(seed: 1)
         
         let intGenerator = IntGenerator(in: 1...100)
@@ -47,13 +49,14 @@ final class ZipTests: XCTestCase {
         
         let result = zipGenerator.run(using: &rng)
         
-        XCTAssertEqual(result.0, 16)
-        XCTAssertEqual(result.1, 0.6390517027105214)
-        XCTAssertEqual(result.2, "2")
-        XCTAssertEqual(result.3, false)
+        #expect(result.0 == 16)
+        #expect(result.1 == 0.6390517027105214)
+        #expect(result.2 == "2")
+        #expect(result.3 == false)
     }
 
-    func testZipExtensionMethod() {
+    @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
+    @Test func zipExtensionMethod() {
         var rng = LCRNG(seed: 1)
         
         let intGenerator = IntGenerator(in: 1...100)
@@ -63,11 +66,12 @@ final class ZipTests: XCTestCase {
         
         let result = zipGenerator.run(using: &rng)
         
-        XCTAssertEqual(result.0, 16)
-        XCTAssertEqual(result.1, 0.6390517027105214)
+        #expect(result.0 == 16)
+        #expect(result.1 == 0.6390517027105214)
     }
     
-    func testZipWithTransform() {
+    @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
+    @Test func zipWithTransform() {
         var rng = LCRNG(seed: 1)
         
         let intGenerator = IntGenerator(in: 1...100)
@@ -79,10 +83,11 @@ final class ZipTests: XCTestCase {
         
         let result = zipGenerator.run(using: &rng)
         
-        XCTAssertEqual(result, "16: 0.6390517027105214")
+        #expect(result == "16: 0.6390517027105214")
     }
         
-    func testZip3WithTransform() {
+    @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
+    @Test func zip3WithTransform() {
         var rng = LCRNG(seed: 1)
         
         let intGenerator = IntGenerator(in: 1...100)
@@ -95,10 +100,11 @@ final class ZipTests: XCTestCase {
         
         let result = zipGenerator.run(using: &rng)
         
-        XCTAssertEqual(result, "16: 0.6390517027105214: false")
+        #expect(result == "16: 0.6390517027105214: false")
     }
     
-    func testZip4WithTransform() {
+    @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
+    @Test func zip4WithTransform() {
         var rng = LCRNG(seed: 1)
         
         let intGenerator = IntGenerator(in: 1...100)
@@ -112,10 +118,11 @@ final class ZipTests: XCTestCase {
         
         let result = zipGenerator.run(using: &rng)
         
-        XCTAssertEqual(result, "16: 0.6390517027105214: 2: false")
+        #expect(result == "16: 0.6390517027105214: 2: false")
     }
     
-    func testZipSameTypeGenerators() {
+    @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
+    @Test func zipSameTypeGenerators() {
         var rng = LCRNG(seed: 1)
         
         let intGenerator1 = IntGenerator(in: 1...50)
@@ -125,11 +132,12 @@ final class ZipTests: XCTestCase {
         
         let result = zipGenerator.run(using: &rng)
         
-        XCTAssertEqual(result.0, 8)
-        XCTAssertEqual(result.1, 82)
+        #expect(result.0 == 8)
+        #expect(result.1 == 82)
     }
     
-    func testCollectReplacesZipArray() {
+    @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
+    @Test func collectReplacesZipArray() {
         var rng = LCRNG(seed: 1)
 
         // Same-type generators combine into an array via collect()
@@ -141,9 +149,9 @@ final class ZipTests: XCTestCase {
 
         let result = generators.collect().run(using: &rng)
 
-        XCTAssertEqual(result.count, 3)
-        XCTAssertEqual(result[0], 2)
-        XCTAssertEqual(result[1], 17)
-        XCTAssertEqual(result[2], 29)
+        #expect(result.count == 3)
+        #expect(result[0] == 2)
+        #expect(result[1] == 17)
+        #expect(result[2] == 29)
     }
 }

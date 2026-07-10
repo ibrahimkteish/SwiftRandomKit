@@ -1,9 +1,9 @@
-import XCTest
+import Testing
 import SwiftRandomKit
 
-@available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
-final class DictionaryTests: XCTestCase {
-    func testDictionaryWithFixedCount() {
+struct DictionaryTests {
+    @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
+    @Test func dictionaryWithFixedCount() {
         // Create a generator for key-value pairs
         let keyGen = ["name", "age", "score", "level"].randomGeneratorElement()
         let valueGen = IntGenerator(in: 1...100)
@@ -18,15 +18,16 @@ final class DictionaryTests: XCTestCase {
         
         // With seed 42, we can predict the exact output
         let expectedDict = ["score": 76, "name": 24]
-        XCTAssertEqual(result, expectedDict)
+        #expect(result == expectedDict)
         
         // Run again with the same seed to verify determinism
         var rng2 = LCRNG(seed: 42)
         let result2 = dictGen.run(using: &rng2)
-        XCTAssertEqual(result, result2)
+        #expect(result == result2)
     }
     
-    func testDictionaryWithVariableCount() {
+    @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
+    @Test func dictionaryWithVariableCount() {
         // Create a generator for key-value pairs
         let keyGen = ["name", "age", "score", "level"].randomGeneratorElement()
         let valueGen = IntGenerator(in: 1...100)
@@ -44,10 +45,11 @@ final class DictionaryTests: XCTestCase {
         // IntGenerator(1...4) with seed 42 produces 2
         // So we'll get 2 key-value pairs
         let expectedDict = ["name": 67, "level": 13]
-        XCTAssertEqual(result, expectedDict)
+        #expect(result == expectedDict)
     }
     
-    func testDictionaryWithDuplicateKeys() {
+    @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
+    @Test func dictionaryWithDuplicateKeys() {
         // Create a generator that always produces the same key but different values
         let keyGen = Always("key")
         let valueGen = IntGenerator(in: 1...100)
@@ -63,10 +65,11 @@ final class DictionaryTests: XCTestCase {
         // Since all keys are the same, the dictionary should have only one entry
         // The last value generated will be kept
         let expectedDict = ["key": 59]
-        XCTAssertEqual(result, expectedDict)
+        #expect(result == expectedDict)
     }
     
-    func testEmptyDictionary() {
+    @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
+    @Test func emptyDictionary() {
         // Create a generator for key-value pairs
         let keyGen = ["name", "age", "score", "level"].randomGeneratorElement()
         let valueGen = IntGenerator(in: 1...100)
@@ -80,6 +83,6 @@ final class DictionaryTests: XCTestCase {
         let result = dictGen.run(using: &rng)
         
         // The dictionary should be empty
-        XCTAssertEqual(result, [:])
+        #expect(result == [:])
     }
 } 

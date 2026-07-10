@@ -1,14 +1,14 @@
-import XCTest
+import Testing
 import SwiftRandomKit
 
-final class TryMapTests: XCTestCase {
+struct TryMapTests {
     // Define a custom error type for testing
     enum TestError: Error, Equatable {
         case invalidValue
         case outOfRange
     }
     
-    func testTryMapSuccess() {
+    @Test func tryMapSuccess() throws {
         // Create a generator that produces valid strings for conversion
         let stringGenerator = ["123", "456", "789"].randomGeneratorElement()
         
@@ -25,17 +25,17 @@ final class TryMapTests: XCTestCase {
         let result = intGenerator.run(using: &rng)
         
         // With seed 42, we should get the correct value
-        XCTAssertEqual(try result.get(), 456)
+        #expect(try result.get() == 456)
         
         // Generate a sequence of values and verify they match expected values
         let expectedSequence = [789, 456, 789, 123]
         for expected in expectedSequence {
             let value = intGenerator.run(using: &rng)
-            XCTAssertEqual(try value.get(), expected)
+            #expect(try value.get() == expected)
         }
     }
     
-    func testTryMapFailure() {
+    @Test func tryMapFailure() throws {
         // Create a generator that produces both valid and invalid strings
         let stringGenerator = ["123", "abc", "456"].randomGeneratorElement()
         
@@ -52,20 +52,18 @@ final class TryMapTests: XCTestCase {
         
         // First value should be valid
         let firstResult = intGenerator.run(using: &rng)
-        XCTAssertEqual(try firstResult.get(), 123)
+        #expect(try firstResult.get() == 123)
         
         // Second value should be invalid
         let secondResult = intGenerator.run(using: &rng)
-        XCTAssertThrowsError(try secondResult.get()) { error in
-            XCTAssertEqual(error as? TestError, TestError.invalidValue)
-        }
+        #expect(throws: TestError.invalidValue) { try secondResult.get() }
         
         // Third value should be valid again
         let thirdResult = intGenerator.run(using: &rng)
-        XCTAssertEqual(try thirdResult.get(), 456)
+        #expect(try thirdResult.get() == 456)
     }
     
-    func testTryMapWithCondition() {
+    @Test func tryMapWithCondition() throws {
         // Create a generator that produces integers
         let intGenerator = IntGenerator(in: 1...10)
         
@@ -85,32 +83,30 @@ final class TryMapTests: XCTestCase {
         
         // First value should succeed
         let firstResult = evenGenerator.run(using: &rng)
-        XCTAssertEqual(try firstResult.get(), 6)
+        #expect(try firstResult.get() == 6)
         
         // Second value should succeed
         let secondResult = evenGenerator.run(using: &rng)
-        XCTAssertEqual(try secondResult.get(), 10)
+        #expect(try secondResult.get() == 10)
         
         // Third value should succeed
         let thirdResult = evenGenerator.run(using: &rng)
-        XCTAssertEqual(try thirdResult.get(), 6)
+        #expect(try thirdResult.get() == 6)
         
         // Fourth value should succeed
         let fourthResult = evenGenerator.run(using: &rng)
-        XCTAssertEqual(try fourthResult.get(), 8)
+        #expect(try fourthResult.get() == 8)
         
         // Fifth value should succeed
         let fifthResult = evenGenerator.run(using: &rng)
-        XCTAssertEqual(try fifthResult.get(), 2)
+        #expect(try fifthResult.get() == 2)
         
         // Sixth value should fail
         let sixthResult = evenGenerator.run(using: &rng)
-        XCTAssertThrowsError(try sixthResult.get()) { error in
-            XCTAssertEqual(error as? TestError, TestError.invalidValue)
-        }
+        #expect(throws: TestError.invalidValue) { try sixthResult.get() }
     }
     
-    func testTryMapWithMultipleErrorTypes() {
+    @Test func tryMapWithMultipleErrorTypes() throws {
         // Create a generator that produces integers
         let intGenerator = IntGenerator(in: -5...15)
         
@@ -136,26 +132,22 @@ final class TryMapTests: XCTestCase {
         
         // First value should succeed
         let firstResult = validatedGenerator.run(using: &rng)
-        XCTAssertEqual(try firstResult.get(), 5)
+        #expect(try firstResult.get() == 5)
         
         // Second value should fail with outOfRange
         let secondResult = validatedGenerator.run(using: &rng)
-        XCTAssertThrowsError(try secondResult.get()) { error in
-            XCTAssertEqual(error as? TestError, TestError.outOfRange)
-        }
+        #expect(throws: TestError.outOfRange) { try secondResult.get() }
         
         // Third value should succeed
         let thirdResult = validatedGenerator.run(using: &rng)
-        XCTAssertEqual(try thirdResult.get(), 7)
+        #expect(try thirdResult.get() == 7)
         
         // Fourth value should succeed
         let fourthResult = validatedGenerator.run(using: &rng)
-        XCTAssertEqual(try fourthResult.get(), 10)
+        #expect(try fourthResult.get() == 10)
         
         // Fifth value should fail with invalidValue
         let fifthResult = validatedGenerator.run(using: &rng)
-        XCTAssertThrowsError(try fifthResult.get()) { error in
-            XCTAssertEqual(error as? TestError, TestError.invalidValue)
-        }
+        #expect(throws: TestError.invalidValue) { try fifthResult.get() }
     }
 } 

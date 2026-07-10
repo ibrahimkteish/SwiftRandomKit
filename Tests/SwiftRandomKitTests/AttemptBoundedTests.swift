@@ -1,7 +1,7 @@
-import XCTest
+import Testing
 import SwiftRandomKit
 
-final class AttemptBoundedTests: XCTestCase {
+struct AttemptBoundedTests {
 
     /// A generator that counts how many times it runs.
     private func countingGenerator(_ counter: LockIsolated<Int>) -> AnyRandomGenerator<Int> {
@@ -11,7 +11,7 @@ final class AttemptBoundedTests: XCTestCase {
         }
     }
 
-    func testMaxAttemptsBoundsTotalRuns() {
+    @Test func maxAttemptsBoundsTotalRuns() {
         let counter = LockIsolated(0)
         let bounded = countingGenerator(counter).attemptBounded(
             maxAttempts: 3,
@@ -22,11 +22,11 @@ final class AttemptBoundedTests: XCTestCase {
         var rng = LCRNG(seed: 1)
         let result = bounded.run(using: &rng)
 
-        XCTAssertEqual(result, 0, "Fallback default should be used when no value satisfies")
-        XCTAssertEqual(counter.value, 3, "maxAttempts is the total number of upstream runs, including the first")
+        #expect(result == 0, "Fallback default should be used when no value satisfies")
+        #expect(counter.value == 3, "maxAttempts is the total number of upstream runs, including the first")
     }
 
-    func testStopsAtFirstSatisfyingValue() {
+    @Test func stopsAtFirstSatisfyingValue() {
         let counter = LockIsolated(0)
         let bounded = countingGenerator(counter).attemptBounded(
             maxAttempts: 100,
@@ -36,10 +36,10 @@ final class AttemptBoundedTests: XCTestCase {
         var rng = LCRNG(seed: 1)
         _ = bounded.run(using: &rng)
 
-        XCTAssertEqual(counter.value, 1, "A satisfying first value should stop immediately")
+        #expect(counter.value == 1, "A satisfying first value should stop immediately")
     }
 
-    func testUseLastReturnsLastGeneratedValue() {
+    @Test func useLastReturnsLastGeneratedValue() {
         var rng1 = LCRNG(seed: 42)
         var rng2 = LCRNG(seed: 42)
 
@@ -53,10 +53,10 @@ final class AttemptBoundedTests: XCTestCase {
         // Replaying the same seed, the bounded generator's result must equal
         // the fourth draw of the raw upstream.
         let expected = (0..<4).map { _ in upstream.run(using: &rng1) }.last
-        XCTAssertEqual(bounded.run(using: &rng2), expected)
+        #expect(bounded.run(using: &rng2) == expected)
     }
 
-    func testUseAnotherGeneratorFallback() {
+    @Test func useAnotherGeneratorFallback() {
         var rng = LCRNG(seed: 1)
         let bounded = IntGenerator(in: 1...6).attemptBounded(
             maxAttempts: 2,
@@ -64,6 +64,6 @@ final class AttemptBoundedTests: XCTestCase {
             fallbackStrategy: .useAnotherGenerator { 99 }
         )
 
-        XCTAssertEqual(bounded.run(using: &rng), 99)
+        #expect(bounded.run(using: &rng) == 99)
     }
 }

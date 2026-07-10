@@ -1,11 +1,11 @@
-import XCTest
+import Testing
 @testable import SwiftRandomKit
 
-final class RetryTests: XCTestCase {
+struct RetryTests {
     
     // MARK: - Basic Retry Testing
     
-    func testBasicRetry() {
+    @Test func basicRetry() {
         // Create a generator for numbers 1-10
         let intGenerator = IntGenerator(in: 1...10)
         
@@ -20,17 +20,17 @@ final class RetryTests: XCTestCase {
         let result3 = greaterThanFiveGen.run(using: &rng)
         
         // Verify all results are > 5
-        XCTAssertGreaterThan(result1, 5)
-        XCTAssertGreaterThan(result2, 5)
-        XCTAssertGreaterThan(result3, 5)
+        #expect(result1 > 5)
+        #expect(result2 > 5)
+        #expect(result3 > 5)
         
         // Verify we get the expected sequence based on our seed
-        XCTAssertEqual(result1, 6) 
-        XCTAssertEqual(result2, 10)
-        XCTAssertEqual(result3, 6)
+        #expect(result1 == 6) 
+        #expect(result2 == 10)
+        #expect(result3 == 6)
     }
     
-    func testRetryWithAlwaysFailing() {
+    @Test func retryWithAlwaysFailing() {
         // Create a generator for integers
         let intGenerator = IntGenerator(in: 1...100)
         
@@ -49,11 +49,11 @@ final class RetryTests: XCTestCase {
         let result = impossibleGenerator.run(using: &rng)
 
         // The result should be within our range since it's the fallback value
-        XCTAssertGreaterThanOrEqual(result, 1)
-        XCTAssertLessThanOrEqual(result, 100)
+        #expect(result >= 1)
+        #expect(result <= 100)
     }
     
-    func testRetryWithDefaultFallback() {
+    @Test func retryWithDefaultFallback() {
         // Create a generator for integers
         let intGenerator = IntGenerator(in: 1...100)
         
@@ -72,10 +72,10 @@ final class RetryTests: XCTestCase {
         let result = impossibleGenerator.run(using: &rng)
         
         // The result should be our default value
-        XCTAssertEqual(result, 42)
+        #expect(result == 42)
     }
     
-    func testRetryWithKeepTryingFallback() {
+    @Test func retryWithKeepTryingFallback() {
         // Create a generator that sometimes satisfies a condition
         let diceGenerator = IntGenerator(in: 1...6)
         
@@ -103,14 +103,14 @@ final class RetryTests: XCTestCase {
         let result = eventuallyGenerator.run(using: &rng)
         
         // We should get a 6
-        XCTAssertEqual(result, 6)
+        #expect(result == 6)
         // We should have made more than the initial maxAttempts
-        XCTAssertGreaterThan(attemptsToGenerate6.value, 0, "Should have made at least one attempt")
+        #expect(attemptsToGenerate6.value > 0, "Should have made at least one attempt")
     }
     
     // MARK: - Specialized Retry Functions
     
-    func testRetryMap() {
+    @Test func retryMap() {
         // Create a generator for strings, some of which can be parsed as integers
         let stringGenerator = ["abc", "123", "xyz", "456", "qwerty"].randomGeneratorElement()
         
@@ -124,10 +124,10 @@ final class RetryTests: XCTestCase {
         let result = intGenerator.run(using: &rng)
         
         // Verify we get a numeric value
-        XCTAssertEqual(result, 456)
+        #expect(result == 456)
     }
     
-    func testRetryThrowing() throws {
+    @Test func retryThrowing() throws {
         // Define a simple error
         enum TestError: Error { case notEven }
 
@@ -151,17 +151,17 @@ final class RetryTests: XCTestCase {
         let result3 = try evenGenerator.run(using: &rng).get()
 
         // Verify all results are even
-        XCTAssertEqual(result1 % 2, 0)
-        XCTAssertEqual(result2 % 2, 0)
-        XCTAssertEqual(result3 % 2, 0)
+        #expect(result1 % 2 == 0)
+        #expect(result2 % 2 == 0)
+        #expect(result3 % 2 == 0)
 
         // Verify the expected sequence
-        XCTAssertEqual(result1, 6)
-        XCTAssertEqual(result2, 10)
-        XCTAssertEqual(result3, 6)
+        #expect(result1 == 6)
+        #expect(result2 == 10)
+        #expect(result3 == 6)
     }
 
-    func testRetryThrowingReturnsFailureWhenAttemptsExhausted() {
+    @Test func retryThrowingReturnsFailureWhenAttemptsExhausted() {
         // A transform that always throws used to hit a fatalError; it now
         // surfaces the last failure as a Result once attempts are exhausted.
         enum TestError: Error { case alwaysFails }
@@ -173,12 +173,12 @@ final class RetryTests: XCTestCase {
         var rng = LCRNG(seed: 1)
         let result = alwaysFailing.run(using: &rng)
 
-        XCTAssertThrowsError(try result.get())
+        #expect(throws: (any Error).self) { try result.get() }
     }
     
     // MARK: - Complex Scenarios
     
-    func testRetryWithAnotherGeneratorFallback() {
+    @Test func retryWithAnotherGeneratorFallback() {
         // Create a generator for integers 1-50
         let intGenerator = IntGenerator(in: 1...50)
         
@@ -202,10 +202,10 @@ final class RetryTests: XCTestCase {
         let result = impossibleGenerator.run(using: &rng)
         
         // The result should be the value from our fallback generator
-        XCTAssertEqual(result, 999)
+        #expect(result == 999)
     }
     
-    func testRetryWithIncreasingProbability() {
+    @Test func retryWithIncreasingProbability() {
         // Create a generator that returns true with increasing probability
       let attemptCount = LockIsolated(0)
       let increasingProbabilityGenerator = IntGenerator(in: 0...10).map { _ -> Bool in
@@ -228,9 +228,9 @@ final class RetryTests: XCTestCase {
         let result = eventualSuccessGenerator.run(using: &rng)
         
         // We should get a true result
-        XCTAssertTrue(result)
+        #expect(result)
         
         // We should have made several attempts (8 or more since probability is attemptCount/10 > 0.7)
-      XCTAssertGreaterThanOrEqual(attemptCount.value, 8)
+      #expect(attemptCount.value >= 8)
     }
 } 

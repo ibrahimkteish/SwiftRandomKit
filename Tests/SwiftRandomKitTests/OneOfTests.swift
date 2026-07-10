@@ -1,9 +1,9 @@
-import XCTest
+import Testing
 import SwiftRandomKit
 
-final class OneOfTests: XCTestCase {
+struct OneOfTests {
 
-    func testPicksFromAllSources() {
+    @Test func picksFromAllSources() {
         var rng = LCRNG(seed: 1)
         // Three disjoint sources of different concrete types
         let mixed = RandomGenerators.oneOf(
@@ -19,16 +19,16 @@ final class OneOfTests: XCTestCase {
             case 1...5: sawLow = true
             case 50: sawConstant = true
             case 100...105: sawHigh = true
-            default: XCTFail("Value \(value) outside all sources")
+            default: Issue.record("Value \(value) outside all sources")
             }
         }
 
-        XCTAssertTrue(sawLow, "Should select the first generator")
-        XCTAssertTrue(sawConstant, "Should select the second generator")
-        XCTAssertTrue(sawHigh, "Should select the third generator")
+        #expect(sawLow, "Should select the first generator")
+        #expect(sawConstant, "Should select the second generator")
+        #expect(sawHigh, "Should select the third generator")
     }
 
-    func testSelectionIsRoughlyUniform() {
+    @Test func selectionIsRoughlyUniform() {
         var rng = LCRNG(seed: 42)
         let mixed = RandomGenerators.oneOf(Always(1), Always(2), Always(3))
 
@@ -38,32 +38,32 @@ final class OneOfTests: XCTestCase {
         }
 
         for (source, count) in counts {
-            XCTAssertGreaterThan(count, 220, "Source \(source) should be picked ~1/3 of the time")
-            XCTAssertLessThan(count, 380, "Source \(source) should be picked ~1/3 of the time")
+            #expect(count > 220, "Source \(source) should be picked ~1/3 of the time")
+            #expect(count < 380, "Source \(source) should be picked ~1/3 of the time")
         }
     }
 
-    func testTwoAndFourArities() {
+    @Test func twoAndFourArities() {
         var rng = LCRNG(seed: 7)
 
         let pair = RandomGenerators.oneOf(Always("a"), Always("b"))
         var seenPair = Set<String>()
         for _ in 0..<50 { seenPair.insert(pair.run(using: &rng)) }
-        XCTAssertEqual(seenPair, ["a", "b"])
+        #expect(seenPair == ["a", "b"])
 
         let quad = RandomGenerators.oneOf(Always(1), Always(2), Always(3), Always(4))
         var seenQuad = Set<Int>()
         for _ in 0..<100 { seenQuad.insert(quad.run(using: &rng)) }
-        XCTAssertEqual(seenQuad, [1, 2, 3, 4])
+        #expect(seenQuad == [1, 2, 3, 4])
     }
 
-    func testDeterministicWithSameSeed() {
+    @Test func deterministicWithSameSeed() {
         var rng1 = LCRNG(seed: 42)
         var rng2 = LCRNG(seed: 42)
         let mixed = RandomGenerators.oneOf(IntGenerator(in: 1...6), IntGenerator(in: 10...60))
 
         for _ in 0..<20 {
-            XCTAssertEqual(mixed.run(using: &rng1), mixed.run(using: &rng2))
+            #expect(mixed.run(using: &rng1) == mixed.run(using: &rng2))
         }
     }
 }

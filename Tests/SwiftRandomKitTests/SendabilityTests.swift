@@ -1,14 +1,14 @@
-import XCTest
+import Testing
 import SwiftRandomKit
 import SwiftRandomKitGenerators
 
 /// Compile-time checks: closure-free combinators of Sendable generators are Sendable,
 /// so leaf-only compositions can be shared across isolation domains.
-final class SendabilityTests: XCTestCase {
+struct SendabilityTests {
 
     private func requiresSendable<T: Sendable>(_: T) {}
 
-    func testClosureFreeCombinatorsOfSendableLeavesAreSendable() {
+    @Test func closureFreeCombinatorsOfSendableLeavesAreSendable() {
         requiresSendable(IntGenerator(in: 1...6))
         requiresSendable(FloatGenerator<Double>(in: 0...1))
         requiresSendable(BoolGenerator())

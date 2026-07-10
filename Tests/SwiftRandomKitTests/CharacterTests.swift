@@ -1,9 +1,9 @@
-import XCTest
+import Testing
 @testable import SwiftRandomKit
 
-final class CharacterTests: XCTestCase {
+struct CharacterTests {
     
-    func testCharacterInRange() {
+    @Test func characterInRange() {
         // Test character generation within a range
         var rng = LCRNG(seed: 42)
         
@@ -16,9 +16,9 @@ final class CharacterTests: XCTestCase {
         let char2 = lowercaseGen.run(using: &rng)
         let char3 = lowercaseGen.run(using: &rng)
         
-        XCTAssertEqual(char1, "z", "First character with seed 42 should be 'z'")
-        XCTAssertEqual(char2, "e", "Second character with seed 42 should be 'e'")
-        XCTAssertEqual(char3, "d", "Third character with seed 42 should be 'd'")
+        #expect(char1 == "z", "First character with seed 42 should be 'z'")
+        #expect(char2 == "e", "Second character with seed 42 should be 'e'")
+        #expect(char3 == "d", "Third character with seed 42 should be 'd'")
 
         // Test with digit range
         let digitRange = Character("0")...Character("9")
@@ -27,18 +27,18 @@ final class CharacterTests: XCTestCase {
         let digit1 = digitGen.run(using: &rng)
         let digit2 = digitGen.run(using: &rng)
 
-        XCTAssertEqual(digit1, "5", "First digit with seed 42 should be '5'")
-        XCTAssertEqual(digit2, "0", "Second digit with seed 42 should be '0'")
+        #expect(digit1 == "5", "First digit with seed 42 should be '5'")
+        #expect(digit2 == "0", "Second digit with seed 42 should be '0'")
         
         // Make sure characters are within the range
         for _ in 1...20 {
             let char = lowercaseGen.run(using: &rng)
-            XCTAssertGreaterThanOrEqual(char, Character("a"), "Character should be >= 'a'")
-            XCTAssertLessThanOrEqual(char, Character("z"), "Character should be <= 'z'")
+            #expect(char >= Character("a"), "Character should be >= 'a'")
+            #expect(char <= Character("z"), "Character should be <= 'z'")
         }
     }
     
-    func testNumberGenerator() {
+    @Test func numberGenerator() {
         // Test the number character generator (0-9)
         var rng = LCRNG(seed: 42)
         
@@ -49,18 +49,18 @@ final class CharacterTests: XCTestCase {
         let digit2 = numberGen.run(using: &rng)
         let digit3 = numberGen.run(using: &rng)
         
-        XCTAssertEqual(digit1, "9", "First digit with seed 42 should be '9'")
-        XCTAssertEqual(digit2, "1", "Second digit with seed 42 should be '1'")
-        XCTAssertEqual(digit3, "1", "Third digit with seed 42 should be '1'")
+        #expect(digit1 == "9", "First digit with seed 42 should be '9'")
+        #expect(digit2 == "1", "Second digit with seed 42 should be '1'")
+        #expect(digit3 == "1", "Third digit with seed 42 should be '1'")
         
         // Verify all outputs are digits
         for _ in 1...20 {
             let digit = numberGen.run(using: &rng)
-            XCTAssertTrue((Character("0")...Character("9")).contains(digit), "Character should be a digit (0-9)")
+            #expect((Character("0")...Character("9")).contains(digit), "Character should be a digit (0-9)")
         }
     }
     
-    func testUppercaseLetterGenerator() {
+    @Test func uppercaseLetterGenerator() {
         // Test the uppercase letter generator (A-Z)
         var rng = LCRNG(seed: 42)
         
@@ -71,18 +71,18 @@ final class CharacterTests: XCTestCase {
         let char2 = uppercaseGen.run(using: &rng)
         let char3 = uppercaseGen.run(using: &rng)
         
-        XCTAssertEqual(char1, "Z", "First uppercase letter with seed 42 should be 'Z'")
-        XCTAssertEqual(char2, "E", "Second uppercase letter with seed 42 should be 'E'")
-        XCTAssertEqual(char3, "D", "Third uppercase letter with seed 42 should be 'D'")
+        #expect(char1 == "Z", "First uppercase letter with seed 42 should be 'Z'")
+        #expect(char2 == "E", "Second uppercase letter with seed 42 should be 'E'")
+        #expect(char3 == "D", "Third uppercase letter with seed 42 should be 'D'")
         
         // Verify all outputs are uppercase letters
         for _ in 1...20 {
             let letter = uppercaseGen.run(using: &rng)
-            XCTAssertTrue((Character("A")...Character("Z")).contains(letter), "Character should be an uppercase letter (A-Z)")
+            #expect((Character("A")...Character("Z")).contains(letter), "Character should be an uppercase letter (A-Z)")
         }
     }
     
-    func testLowercaseLetterGenerator() {
+    @Test func lowercaseLetterGenerator() {
         // Test the lowercase letter generator (a-z)
         var rng = LCRNG(seed: 42)
         
@@ -93,18 +93,18 @@ final class CharacterTests: XCTestCase {
         let char2 = lowercaseGen.run(using: &rng)
         let char3 = lowercaseGen.run(using: &rng)
         
-        XCTAssertEqual(char1, "z", "First lowercase letter with seed 42 should be 'z'")
-        XCTAssertEqual(char2, "e", "Second lowercase letter with seed 42 should be 'e'")
-        XCTAssertEqual(char3, "d", "Third lowercase letter with seed 42 should be 'd'")
+        #expect(char1 == "z", "First lowercase letter with seed 42 should be 'z'")
+        #expect(char2 == "e", "Second lowercase letter with seed 42 should be 'e'")
+        #expect(char3 == "d", "Third lowercase letter with seed 42 should be 'd'")
         
         // Verify all outputs are lowercase letters
         for _ in 1...20 {
             let letter = lowercaseGen.run(using: &rng)
-            XCTAssertTrue((Character("a")...Character("z")).contains(letter), "Character should be a lowercase letter (a-z)")
+            #expect((Character("a")...Character("z")).contains(letter), "Character should be a lowercase letter (a-z)")
         }
     }
     
-    func testLetterGenerator() {
+    @Test func letterGenerator() {
         // Test the letter generator (combines uppercase and lowercase)
         var rng = LCRNG(seed: 42)
         
@@ -115,16 +115,16 @@ final class CharacterTests: XCTestCase {
         let char2 = letterGen.run(using: &rng)
         let char3 = letterGen.run(using: &rng)
         
-        XCTAssertEqual(char1, "A", "First letter with seed 42 should be 'A'")
-        XCTAssertEqual(char2, "Z", "Second letter with seed 42 should be 'Z'")
-        XCTAssertEqual(char3, "E", "Third letter with seed 42 should be 'E'")
+        #expect(char1 == "A", "First letter with seed 42 should be 'A'")
+        #expect(char2 == "Z", "Second letter with seed 42 should be 'Z'")
+        #expect(char3 == "E", "Third letter with seed 42 should be 'E'")
         
         // Verify all outputs are letters
         for _ in 1...50 {
             let letter = letterGen.run(using: &rng)
             let isLetter = ((Character("a")...Character("z")).contains(letter) || 
                            (Character("A")...Character("Z")).contains(letter))
-            XCTAssertTrue(isLetter, "Character should be a letter (a-z or A-Z)")
+            #expect(isLetter, "Character should be a letter (a-z or A-Z)")
         }
         
         // Check distribution of letters over many iterations
@@ -143,11 +143,11 @@ final class CharacterTests: XCTestCase {
         }
         
         // Should have a reasonable distribution between uppercase and lowercase
-        XCTAssertGreaterThan(uppercaseCount, iterations / 10, "Should have a significant number of uppercase letters")
-        XCTAssertGreaterThan(lowercaseCount, iterations / 10, "Should have a significant number of lowercase letters")
+        #expect(uppercaseCount > iterations / 10, "Should have a significant number of uppercase letters")
+        #expect(lowercaseCount > iterations / 10, "Should have a significant number of lowercase letters")
     }
     
-    func testLetterOrNumberGenerator() {
+    @Test func letterOrNumberGenerator() {
         // Test the alphanumeric generator (a-z, A-Z, 0-9)
         var rng = LCRNG(seed: 42)
         
@@ -158,9 +158,9 @@ final class CharacterTests: XCTestCase {
         let char2 = alphanumericGen.run(using: &rng)
         let char3 = alphanumericGen.run(using: &rng)
         
-        XCTAssertEqual(char1, "G", "First alphanumeric char with seed 42 should be 'G'")
-        XCTAssertEqual(char2, "9", "Second alphanumeric char with seed 42 should be '9'")
-        XCTAssertEqual(char3, "K", "Third alphanumeric char with seed 42 should be 'K'")
+        #expect(char1 == "G", "First alphanumeric char with seed 42 should be 'G'")
+        #expect(char2 == "9", "Second alphanumeric char with seed 42 should be '9'")
+        #expect(char3 == "K", "Third alphanumeric char with seed 42 should be 'K'")
         
         // Verify all outputs are alphanumeric
         for _ in 1...50 {
@@ -168,7 +168,7 @@ final class CharacterTests: XCTestCase {
             let isAlphanumeric = ((Character("a")...Character("z")).contains(char) || 
                                   (Character("A")...Character("Z")).contains(char) ||
                                   (Character("0")...Character("9")).contains(char))
-            XCTAssertTrue(isAlphanumeric, "Character should be alphanumeric")
+            #expect(isAlphanumeric, "Character should be alphanumeric")
         }
         
         // Check distribution of character types over many iterations
@@ -190,12 +190,12 @@ final class CharacterTests: XCTestCase {
         }
         
         // Should have a reasonable distribution among all character types
-        XCTAssertGreaterThan(uppercaseCount, iterations / 10, "Should have a significant number of uppercase letters")
-        XCTAssertGreaterThan(lowercaseCount, iterations / 10, "Should have a significant number of lowercase letters")
-        XCTAssertGreaterThan(digitCount, iterations / 10, "Should have a significant number of digits")
+        #expect(uppercaseCount > iterations / 10, "Should have a significant number of uppercase letters")
+        #expect(lowercaseCount > iterations / 10, "Should have a significant number of lowercase letters")
+        #expect(digitCount > iterations / 10, "Should have a significant number of digits")
     }
     
-    func testAsciiGenerator() {
+    @Test func asciiGenerator() {
         // Test the ASCII generator (0-127)
         var rng = LCRNG(seed: 42)
         
@@ -211,19 +211,19 @@ final class CharacterTests: XCTestCase {
         let scalar2 = char2.unicodeScalars.first!.value
         let scalar3 = char3.unicodeScalars.first!.value
         
-        XCTAssertEqual(scalar1, 124, "First ASCII char with seed 42 should have scalar value 124")
-        XCTAssertEqual(scalar2, 23, "Second ASCII char with seed 42 should have scalar value 23")
-        XCTAssertEqual(scalar3, 17, "Third ASCII char with seed 42 should have scalar value 17")
+        #expect(scalar1 == 124, "First ASCII char with seed 42 should have scalar value 124")
+        #expect(scalar2 == 23, "Second ASCII char with seed 42 should have scalar value 23")
+        #expect(scalar3 == 17, "Third ASCII char with seed 42 should have scalar value 17")
         
         // Verify all outputs are within ASCII range
         for _ in 1...50 {
             let char = asciiGen.run(using: &rng)
             let scalar = char.unicodeScalars.first!.value
-            XCTAssertLessThanOrEqual(scalar, 127, "Character should be within ASCII range (0-127)")
+            #expect(scalar <= 127, "Character should be within ASCII range (0-127)")
         }
     }
     
-    func testLatin1Generator() {
+    @Test func latin1Generator() {
         // Test the Latin-1 generator (0-255)
         var rng = LCRNG(seed: 42)
         
@@ -239,19 +239,19 @@ final class CharacterTests: XCTestCase {
         let scalar2 = char2.unicodeScalars.first!.value
         let scalar3 = char3.unicodeScalars.first!.value
         
-        XCTAssertEqual(scalar1, 248, "First Latin-1 char with seed 42 should have scalar value 248")
-        XCTAssertEqual(scalar2, 46, "Second Latin-1 char with seed 42 should have scalar value 46")
-        XCTAssertEqual(scalar3, 34, "Third Latin-1 char with seed 42 should have scalar value 34")
+        #expect(scalar1 == 248, "First Latin-1 char with seed 42 should have scalar value 248")
+        #expect(scalar2 == 46, "Second Latin-1 char with seed 42 should have scalar value 46")
+        #expect(scalar3 == 34, "Third Latin-1 char with seed 42 should have scalar value 34")
         
         // Verify all outputs are within Latin-1 range
         for _ in 1...50 {
             let char = latin1Gen.run(using: &rng)
             let scalar = char.unicodeScalars.first!.value
-            XCTAssertLessThanOrEqual(scalar, 255, "Character should be within Latin-1 range (0-255)")
+            #expect(scalar <= 255, "Character should be within Latin-1 range (0-255)")
         }
     }
     
-    func testCharacterGeneratorStruct() {
+    @Test func characterGeneratorStruct() {
         // Test constructing the Character generator directly
         var rng = LCRNG(seed: 42)
 
@@ -260,10 +260,10 @@ final class CharacterTests: XCTestCase {
         // Run the generator and verify the output
         let result = rangeGen.run(using: &rng)
 
-        XCTAssertEqual(result, "z", "Character generator with seed 42 should produce 'z'")
+        #expect(result == "z", "Character generator with seed 42 should produce 'z'")
     }
     
-    func testCharacterWithArrays() {
+    @Test func characterWithArrays() {
         // Test generating arrays of characters
         var rng = LCRNG(seed: 42)
         
@@ -274,8 +274,8 @@ final class CharacterTests: XCTestCase {
         // Run the generator and verify the output
         let digits = digitArrayGen.run(using: &rng)
         
-        XCTAssertEqual(digits.count, 5, "Should generate 5 digits")
-        XCTAssertEqual(digits, ["9", "1", "1", "5", "0"], "Should generate the expected sequence of digits")
+        #expect(digits.count == 5, "Should generate 5 digits")
+        #expect(digits == ["9", "1", "1", "5", "0"], "Should generate the expected sequence of digits")
         
         // Test with the letterOrNumber generator
         let alphanumericGen = RandomGenerators.letterOrNumber
@@ -284,7 +284,7 @@ final class CharacterTests: XCTestCase {
         // Run the generator and verify the output
         let alphanumeric = alphanumericArrayGen.run(using: &rng)
         
-        XCTAssertEqual(alphanumeric.count, 8, "Should generate 8 alphanumeric characters")
-        XCTAssertEqual(alphanumeric, ["o", "P", "2", "6", "a", "g", "A", "V"], "Should generate the expected sequence")
+        #expect(alphanumeric.count == 8, "Should generate 8 alphanumeric characters")
+        #expect(alphanumeric == ["o", "P", "2", "6", "a", "g", "A", "V"], "Should generate the expected sequence")
     }
 } 

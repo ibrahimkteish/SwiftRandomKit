@@ -1,11 +1,11 @@
-import XCTest
+import Testing
 @testable import SwiftRandomKit
 
-final class ShuffledTests: XCTestCase {
+struct ShuffledTests {
     
     // MARK: - Basic Shuffling
     
-    func testBasicShuffling() {
+    @Test func basicShuffling() {
         // Create a generator with a fixed array
         let originalArray = [1, 2, 3, 4, 5]
         let numbers = RandomGenerators.Always(originalArray)
@@ -24,22 +24,22 @@ final class ShuffledTests: XCTestCase {
 
         // Verify properties that should hold after shuffling:
         // 1. The shuffled array should have the same length
-        XCTAssertEqual(result1.count, originalArray.count)
-        XCTAssertEqual(result2.count, originalArray.count)
-        XCTAssertEqual(result3.count, originalArray.count)
+        #expect(result1.count == originalArray.count)
+        #expect(result2.count == originalArray.count)
+        #expect(result3.count == originalArray.count)
 
         // Verify that the shuffled result contains all the original elements in a different order
-        XCTAssertEqual(result1, [1,4,5,2,3])
-        XCTAssertEqual(result2, [2,1,5,3,4])
-        XCTAssertEqual(result3, [3,5,4,1,2])
+        #expect(result1 == [1,4,5,2,3])
+        #expect(result2 == [2,1,5,3,4])
+        #expect(result3 == [3,5,4,1,2])
 
         // 3. Different calls should produce different shuffles
-        XCTAssertNotEqual(result1, result2)
-        XCTAssertNotEqual(result2, result3)
-        XCTAssertNotEqual(result1, result3)
+        #expect(result1 != result2)
+        #expect(result2 != result3)
+        #expect(result1 != result3)
     }
     
-    func testShufflingEmptyArray() {
+    @Test func shufflingEmptyArray() {
         // Create a generator with an empty array
         let emptyArray = RandomGenerators.Always([Int]())
         
@@ -52,10 +52,10 @@ final class ShuffledTests: XCTestCase {
         // Shuffling an empty array should return an empty array
         let result = shuffled.run(using: &rng)
         
-        XCTAssertEqual(result, [])
+        #expect(result == [])
     }
     
-    func testShufflingSingleElementArray() {
+    @Test func shufflingSingleElementArray() {
         // Create a generator with a single-element array
         let singleElement = RandomGenerators.Always([42])
         
@@ -68,12 +68,12 @@ final class ShuffledTests: XCTestCase {
         // Shuffling a single-element array should return the same array
         let result = shuffled.run(using: &rng)
         
-        XCTAssertEqual(result, [42])
+        #expect(result == [42])
     }
     
     // MARK: - Complex Shuffling
     
-    func testShufflingWithArrayGenerator() {
+    @Test func shufflingWithArrayGenerator() {
         // Create some distinct arrays to better test shuffling
         let array1 = [1, 2, 3]
         let array2 = [4, 5, 6]
@@ -93,17 +93,17 @@ final class ShuffledTests: XCTestCase {
         let result = shuffled.run(using: &rng)
         
         // Verify that we got an array of arrays
-        XCTAssertEqual(result.count, arrays.count)
+        #expect(result.count == arrays.count)
 
         // Verify result is different from original order
-        XCTAssertEqual(result, [[1,2,3], [7,8,9], [4,5,6]])
+        #expect(result == [[1,2,3], [7,8,9], [4,5,6]])
         
         // If the arrays are distinct, and the result is different from the original order,
         // then shuffling occurred
-        XCTAssertNotEqual(result, arrays, "Arrays should have been shuffled")
+        #expect(result != arrays, "Arrays should have been shuffled")
     }
     
-    func testShufflingStrings() {
+    @Test func shufflingStrings() {
         // Create a generator with a fixed string (treated as [Character])
         let originalString = "hello"
         let stringGen = RandomGenerators.Always(originalString.map { $0 })
@@ -123,7 +123,7 @@ final class ShuffledTests: XCTestCase {
         let resultString2 = String(result2)
 
         // Verify result is different from original order
-        XCTAssertEqual(resultString1, "hloel")
-        XCTAssertEqual(resultString2, "eholl")
+        #expect(resultString1 == "hloel")
+        #expect(resultString2 == "eholl")
     }
 }

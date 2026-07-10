@@ -1,11 +1,11 @@
-import XCTest
+import Testing
 @testable import SwiftRandomKit
 
-final class FilterTests: XCTestCase {
+struct FilterTests {
     
     // MARK: - Basic Filtering
     
-    func testBasicFiltering() {
+    @Test func basicFiltering() {
         // Create a generator for integers 1-10
         let intGenerator = IntGenerator(in: 1...10)
         
@@ -21,17 +21,17 @@ final class FilterTests: XCTestCase {
         let result3 = evenGenerator.run(using: &rng)
         
         // Verify all results are even
-        XCTAssertEqual(result1 % 2, 0)
-        XCTAssertEqual(result2 % 2, 0)
-        XCTAssertEqual(result3 % 2, 0)
+        #expect(result1 % 2 == 0)
+        #expect(result2 % 2 == 0)
+        #expect(result3 % 2 == 0)
         
         // Verify we get the expected sequence based on our seed
-        XCTAssertEqual(result1, 2)
-        XCTAssertEqual(result2, 2)
-        XCTAssertEqual(result3, 6)
+        #expect(result1 == 2)
+        #expect(result2 == 2)
+        #expect(result3 == 6)
     }
     
-    func testFilterWithAlwaysFailing() {
+    @Test func filterWithAlwaysFailing() {
         // Create a generator for integers
         let intGenerator = IntGenerator(in: 1...100)
         
@@ -50,11 +50,11 @@ final class FilterTests: XCTestCase {
         let result = impossibleGenerator.run(using: &rng)
         
         // The result should be within our range since it's the fallback value
-        XCTAssertGreaterThanOrEqual(result, 1)
-        XCTAssertLessThanOrEqual(result, 100)
+        #expect(result >= 1)
+        #expect(result <= 100)
     }
     
-    func testFilterWithCustomFallback() {
+    @Test func filterWithCustomFallback() {
         // Create a generator for integers
         let intGenerator = IntGenerator(in: 1...100)
         
@@ -73,12 +73,12 @@ final class FilterTests: XCTestCase {
         let result = impossibleGenerator.run(using: &rng)
         
         // The result should be our default value
-        XCTAssertEqual(result, 42)
+        #expect(result == 42)
     }
     
     // MARK: - Edge Cases
     
-    func testFilterWithHighProbabilityOfSuccess() {
+    @Test func filterWithHighProbabilityOfSuccess() {
         // Create a generator for integers 1-100
         let intGenerator = IntGenerator(in: 1...100)
         
@@ -96,16 +96,16 @@ final class FilterTests: XCTestCase {
         
         // All results should be > 10
         for result in allResults {
-            XCTAssertGreaterThan(result, 10)
+            #expect(result > 10)
         }
         
         // We should have 10 different values
-        XCTAssertEqual(allResults.count, 10)
+        #expect(allResults.count == 10)
     }
     
     // MARK: - CompactMap
     
-    func testCompactMap() {
+    @Test func compactMap() {
         // Create a generator for strings, some of which can be parsed as integers
         let stringGenerator = ["123", "abc", "456", "xyz", "789"].randomGeneratorElement()
         
@@ -123,13 +123,13 @@ final class FilterTests: XCTestCase {
        
 
         // Results should be the numeric values
-        XCTAssertEqual(result1, 123)
-        XCTAssertEqual(result2, 789)
-        XCTAssertEqual(result3, 456)
+        #expect(result1 == 123)
+        #expect(result2 == 789)
+        #expect(result3 == 456)
 
     }
     
-    func testCompactMapWithLowSuccessRate() {
+    @Test func compactMapWithLowSuccessRate() {
         // Create an array with mostly values that will yield nil
         let values = ["not a number", "invalid", "error", "123", "not an int"]
         let stringGenerator = values.randomGeneratorElement()
@@ -144,21 +144,21 @@ final class FilterTests: XCTestCase {
         let result = intGenerator.run(using: &rng)
 
         // Result should be 123
-        XCTAssertEqual(result, 123)
+        #expect(result == 123)
     }
 
-    func testCompactMapReturnsNilWhenAttemptsExhausted() {
+    @Test func compactMapReturnsNilWhenAttemptsExhausted() {
         // A transform that can never succeed used to force-unwrap nil and
         // crash; it now produces nil once the attempt budget is exhausted.
         let neverParses = Always("not a number").compactMap(maxAttempts: 5) { Int($0) }
 
         var rng = LCRNG(seed: 1)
-        XCTAssertNil(neverParses.run(using: &rng))
+        #expect(neverParses.run(using: &rng) == nil)
     }
     
     // MARK: - Custom Filtering Logic
     
-    func testFilterWithCustomPredicate() {
+    @Test func filterWithCustomPredicate() {
         // Create a generator for characters
         let charGenerator = RandomGenerators.letterOrNumber
         
@@ -178,7 +178,7 @@ final class FilterTests: XCTestCase {
         
         // All results should be letters
         for char in results {
-            XCTAssertTrue(char.isLetter)
+            #expect(char.isLetter)
         }
     }
 } 

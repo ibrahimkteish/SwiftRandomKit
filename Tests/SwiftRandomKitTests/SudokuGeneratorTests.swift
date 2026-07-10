@@ -1,14 +1,14 @@
-import XCTest
+import Testing
 import SwiftRandomKit
 import SwiftRandomKitGenerators
 
-final class SudokuGeneratorTests: XCTestCase {
+struct SudokuGeneratorTests {
 
     /// Asserts no row, column or 3x3 box contains a duplicate non-zero value.
-    private func assertValidPuzzle(_ grid: [[Int]], file: StaticString = #filePath, line: UInt = #line) {
-        XCTAssertEqual(grid.count, 9, "9 rows", file: file, line: line)
+    private func assertValidPuzzle(_ grid: [[Int]], sourceLocation: SourceLocation = #_sourceLocation) {
+        #expect(grid.count == 9, "9 rows", sourceLocation: sourceLocation)
         for row in grid {
-            XCTAssertEqual(row.count, 9, "9 columns", file: file, line: line)
+            #expect(row.count == 9, "9 columns", sourceLocation: sourceLocation)
         }
 
         for i in 0..<9 {
@@ -17,12 +17,12 @@ final class SudokuGeneratorTests: XCTestCase {
             for j in 0..<9 {
                 let rowValue = grid[i][j]
                 let colValue = grid[j][i]
-                XCTAssertTrue((0...9).contains(rowValue), file: file, line: line)
+                #expect((0...9).contains(rowValue), sourceLocation: sourceLocation)
                 if rowValue != 0 {
-                    XCTAssertTrue(rowSeen.insert(rowValue).inserted, "Duplicate \(rowValue) in row \(i)", file: file, line: line)
+                    #expect(rowSeen.insert(rowValue).inserted, "Duplicate \(rowValue) in row \(i)", sourceLocation: sourceLocation)
                 }
                 if colValue != 0 {
-                    XCTAssertTrue(colSeen.insert(colValue).inserted, "Duplicate \(colValue) in column \(i)", file: file, line: line)
+                    #expect(colSeen.insert(colValue).inserted, "Duplicate \(colValue) in column \(i)", sourceLocation: sourceLocation)
                 }
             }
         }
@@ -34,7 +34,7 @@ final class SudokuGeneratorTests: XCTestCase {
                     for c in boxCol..<(boxCol + 3) {
                         let value = grid[r][c]
                         if value != 0 {
-                            XCTAssertTrue(boxSeen.insert(value).inserted, "Duplicate \(value) in box (\(boxRow),\(boxCol))", file: file, line: line)
+                            #expect(boxSeen.insert(value).inserted, "Duplicate \(value) in box (\(boxRow),\(boxCol))", sourceLocation: sourceLocation)
                         }
                     }
                 }
@@ -42,7 +42,7 @@ final class SudokuGeneratorTests: XCTestCase {
         }
     }
 
-    func testGeneratedPuzzlesAreValid() {
+    @Test func generatedPuzzlesAreValid() {
         var rng = LCRNG(seed: 1)
         let generator = SudokuGenerator(difficulty: .medium)
 
@@ -51,7 +51,7 @@ final class SudokuGeneratorTests: XCTestCase {
         }
     }
 
-    func testClueCountsMatchDifficulty() {
+    @Test func clueCountsMatchDifficulty() {
         var rng = LCRNG(seed: 42)
         let expectations: [(SudokuGenerator.Difficulty, ClosedRange<Int>)] = [
             (.easy, 35...40),
@@ -63,15 +63,15 @@ final class SudokuGeneratorTests: XCTestCase {
         for (difficulty, range) in expectations {
             let puzzle = SudokuGenerator(difficulty: difficulty).run(using: &rng)
             let clues = puzzle.flatMap { $0 }.filter { $0 != 0 }.count
-            XCTAssertTrue(range.contains(clues), "\(difficulty) should leave \(range) clues, left \(clues)")
+            #expect(range.contains(clues), "\(difficulty) should leave \(range) clues, left \(clues)")
         }
     }
 
-    func testDeterministicWithSameSeed() {
+    @Test func deterministicWithSameSeed() {
         var rng1 = LCRNG(seed: 7)
         var rng2 = LCRNG(seed: 7)
         let generator = SudokuGenerator(difficulty: .easy)
 
-        XCTAssertEqual(generator.run(using: &rng1), generator.run(using: &rng2))
+        #expect(generator.run(using: &rng1) == generator.run(using: &rng2))
     }
 }

@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.1.0] - 2026-07-10
+
+No library changes. The test suite (37 suites, 179 tests) is migrated from XCTest to
+Swift Testing: `@Test` functions with `#expect`/`#require`, value-type suites, per-test
+seeded RNGs, and parallel execution by default. Availability-gated suites (`Zip`) carry
+`@available` per test function, and the Sudoku validity helper threads `sourceLocation`
+so failures point at the calling test.
+
+
 ## [2.0.0] - 2026-07-10
 
 A major release: critical correctness fixes, a rework of the library's concurrency

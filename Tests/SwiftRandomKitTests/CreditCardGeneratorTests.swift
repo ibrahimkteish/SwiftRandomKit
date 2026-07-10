@@ -1,8 +1,8 @@
-import XCTest
+import Testing
 import SwiftRandomKit
 import SwiftRandomKitGenerators
 
-final class CreditCardGeneratorTests: XCTestCase {
+struct CreditCardGeneratorTests {
 
     /// Standard Luhn checksum validation over a full card number.
     private func isValidLuhn(_ number: String) -> Bool {
@@ -20,61 +20,61 @@ final class CreditCardGeneratorTests: XCTestCase {
         return sum % 10 == 0
     }
 
-    func testVisaNumbersAreValid() {
+    @Test func visaNumbersAreValid() {
         var rng = LCRNG(seed: 1)
         let generator = CreditCardGenerator(type: .visa)
 
         for _ in 0..<20 {
             let number = generator.run(using: &rng)
-            XCTAssertEqual(number.count, 16)
-            XCTAssertTrue(number.hasPrefix("4"), "Visa numbers start with 4, got \(number)")
-            XCTAssertTrue(isValidLuhn(number), "Luhn check failed for \(number)")
+            #expect(number.count == 16)
+            #expect(number.hasPrefix("4"), "Visa numbers start with 4, got \(number)")
+            #expect(isValidLuhn(number), "Luhn check failed for \(number)")
         }
     }
 
-    func testMastercardNumbersAreValid() {
+    @Test func mastercardNumbersAreValid() {
         var rng = LCRNG(seed: 2)
         let generator = CreditCardGenerator(type: .mastercard)
 
         for _ in 0..<20 {
             let number = generator.run(using: &rng)
-            XCTAssertEqual(number.count, 16)
+            #expect(number.count == 16)
             let prefix = Int(number.prefix(2))!
-            XCTAssertTrue((51...55).contains(prefix), "Mastercard numbers start with 51-55, got \(number)")
-            XCTAssertTrue(isValidLuhn(number), "Luhn check failed for \(number)")
+            #expect((51...55).contains(prefix), "Mastercard numbers start with 51-55, got \(number)")
+            #expect(isValidLuhn(number), "Luhn check failed for \(number)")
         }
     }
 
-    func testAmexNumbersAreValid() {
+    @Test func amexNumbersAreValid() {
         var rng = LCRNG(seed: 3)
         let generator = CreditCardGenerator(type: .amex)
 
         for _ in 0..<20 {
             let number = generator.run(using: &rng)
-            XCTAssertEqual(number.count, 15)
-            XCTAssertTrue(number.hasPrefix("34") || number.hasPrefix("37"), "Amex numbers start with 34 or 37, got \(number)")
-            XCTAssertTrue(isValidLuhn(number), "Luhn check failed for \(number)")
+            #expect(number.count == 15)
+            #expect(number.hasPrefix("34") || number.hasPrefix("37"), "Amex numbers start with 34 or 37, got \(number)")
+            #expect(isValidLuhn(number), "Luhn check failed for \(number)")
         }
     }
 
-    func testDiscoverNumbersAreValid() {
+    @Test func discoverNumbersAreValid() {
         var rng = LCRNG(seed: 4)
         let generator = CreditCardGenerator(type: .discover)
         let prefixes = ["6011", "644", "645", "646", "647", "648", "649", "65"]
 
         for _ in 0..<20 {
             let number = generator.run(using: &rng)
-            XCTAssertEqual(number.count, 16)
-            XCTAssertTrue(prefixes.contains { number.hasPrefix($0) }, "Unexpected Discover prefix in \(number)")
-            XCTAssertTrue(isValidLuhn(number), "Luhn check failed for \(number)")
+            #expect(number.count == 16)
+            #expect(prefixes.contains { number.hasPrefix($0) }, "Unexpected Discover prefix in \(number)")
+            #expect(isValidLuhn(number), "Luhn check failed for \(number)")
         }
     }
 
-    func testDeterministicWithSameSeed() {
+    @Test func deterministicWithSameSeed() {
         var rng1 = LCRNG(seed: 42)
         var rng2 = LCRNG(seed: 42)
         let generator = CreditCardGenerator(type: .visa)
 
-        XCTAssertEqual(generator.run(using: &rng1), generator.run(using: &rng2))
+        #expect(generator.run(using: &rng1) == generator.run(using: &rng2))
     }
 }
