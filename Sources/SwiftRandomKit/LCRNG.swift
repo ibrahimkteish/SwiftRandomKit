@@ -6,6 +6,11 @@
 /// - a = 2862933555777941757 (multiplier)
 /// - c = 3037000493 (increment)
 /// - m = 2^64 (modulus, implicit due to 64-bit integer overflow)
+///
+/// > Note: LCRNGs are statistically weak — in particular the low-order bits have short
+/// > cycles. `LCRNG` is fine for deterministic tests, where only reproducibility matters,
+/// > but for simulations prefer ``Xoshiro256`` or ``PCG``, and for anything
+/// > security-sensitive use `SystemRandomNumberGenerator`.
 public struct LCRNG: RandomNumberGenerator {
   /// The current state of the generator
   var seed: UInt64
