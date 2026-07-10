@@ -52,6 +52,14 @@ public struct IntGenerator<Element: Sendable>: RandomGenerator where Element: Fi
     }
 }
 
+extension RandomGenerator {
+    /// A generator of random integers in the given range, for dot-syntax usage:
+    /// `let roll: some RandomGenerator<Int> = .int(in: 1...6)`
+    public static func int<T>(in range: ClosedRange<T>) -> IntGenerator<T> where Self == IntGenerator<T> {
+        .init(in: range)
+    }
+}
+
 /// Extension to convert a half-open range to a closed range.
 extension Range where Bound: Comparable & Strideable {
     /// Converts a half-open range (like `0..<10`) to a closed range (like `0...9`).

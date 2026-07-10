@@ -43,3 +43,11 @@ public struct FloatGenerator<Element: Sendable>: RandomGenerator where Element: 
         .random(in: range, using: &rng)
     }
 }
+
+extension RandomGenerator {
+    /// A generator of random floating-point values in the given range, for dot-syntax usage:
+    /// `let probability: some RandomGenerator<Double> = .float(in: 0...1)`
+    public static func float<T>(in range: ClosedRange<T>) -> FloatGenerator<T> where Self == FloatGenerator<T> {
+        .init(in: range)
+    }
+}

@@ -51,7 +51,7 @@ extension RandomGenerator {
     /// Example usage:
     /// ```swift
     /// // Generate 10 random boolean values
-    /// let boolArrayGen = BoolRandomGenerator().array(10)
+    /// let boolArrayGen = BoolGenerator().array(10)
     /// let randomBools = boolArrayGen.run() // e.g., [true, false, true, true, false, ...]
     ///
     /// // Generate a random string of 8 alphanumeric characters

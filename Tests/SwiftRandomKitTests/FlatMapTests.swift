@@ -63,7 +63,7 @@ final class FlatMapTests: XCTestCase {
     /*
     func testFlatMapWithDifferentTypes() {
         // Create a generator that produces booleans
-        let boolGenerator = BoolRandomGenerator()
+        let boolGenerator = BoolGenerator()
         
         // Create a flatMap generator that produces different types based on the boolean
         let flatMapGenerator = boolGenerator.flatMap { isTrue in

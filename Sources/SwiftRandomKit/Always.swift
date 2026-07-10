@@ -14,7 +14,7 @@ extension RandomGenerators {
     /// let value = constantGen.run() // Always 42
     ///
     /// // Combine with other generators
-    /// let coinFlipGen = BoolRandomGenerator()
+    /// let coinFlipGen = BoolGenerator()
     /// let combinedGen = coinFlipGen.flatMap { isHeads in
     ///     isHeads ? Always("Heads") : Always("Tails")
     /// }

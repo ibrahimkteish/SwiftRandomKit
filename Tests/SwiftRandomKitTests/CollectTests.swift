@@ -84,7 +84,7 @@ final class CollectTests: XCTestCase {
     func testCollectDifferentTypes() {
         // Test collecting values from generators of different types using type erasure and Any
         let intGen = IntGenerator(in: 1...100).map { $0 as AnySendable}.eraseToAnyRandomGenerator()
-        let boolGen = BoolRandomGenerator().map { $0 as AnySendable}.eraseToAnyRandomGenerator()
+        let boolGen = BoolGenerator().map { $0 as AnySendable}.eraseToAnyRandomGenerator()
         let stringGen = Always("random").map { $0 as AnySendable}.eraseToAnyRandomGenerator()
         
         let generators = [intGen, boolGen, stringGen]

@@ -9,7 +9,7 @@ extension RandomGenerators {
   /// ```swift
   /// // Create two separate generators
   /// let diceGen = IntGenerator(in: 1...6)
-  /// let coinGen = BoolRandomGenerator()
+  /// let coinGen = BoolGenerator()
   ///
   /// // Combine them with zip
   /// let game = diceGen.zip(coinGen)
@@ -71,7 +71,7 @@ extension RandomGenerators.Zip {
   ///
   /// Example:
   /// ```swift
-  /// let gen = RandomGenerators.Zip(IntGenerator(in: 1...6), BoolRandomGenerator())
+  /// let gen = RandomGenerators.Zip(IntGenerator(in: 1...6), BoolGenerator())
   ///     .map { roll, flip in "\(roll)-\(flip)" }
   /// ```
   ///
