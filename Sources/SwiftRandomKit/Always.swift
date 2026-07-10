@@ -42,27 +42,6 @@ extension RandomGenerators {
     }
 }
 
-extension RandomGenerator {
-    /// Creates a generator that always produces the given value.
-    ///
-    /// This convenience method allows you to easily create an `Always` generator from any value.
-    ///
-    /// Example usage:
-    /// ```swift
-    /// // Create a generator that always returns "Hello"
-    /// let greetingGen = RandomGenerators.BoolRandomGenerator().flatMap { isHello in
-    ///     isHello ? Always("Hello") : Always("Goodbye")
-    /// }
-    /// ```
-    ///
-    /// - Parameter value: The value that will be returned every time the generator runs.
-    /// - Returns: A generator that always produces the given value.
-    @inlinable
-    public func always(_ value: Element) -> RandomGenerators.Always<Element> {
-        .init(value)
-    }
-}
-
 /// Type alias for easier access to the Always generator.
 public typealias Always<Element> = RandomGenerators.Always<Element>
 

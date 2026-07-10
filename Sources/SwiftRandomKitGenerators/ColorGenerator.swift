@@ -20,13 +20,6 @@ public struct ColorGenerator: RandomGenerator {
     }
 }
 
-extension RandomGenerator {
-    @inlinable
-    public func colorGenerator(alpha: CGFloat = 1) -> ColorGenerator {
-        .init(alpha: alpha)
-    }
-}
-
 #if canImport(UIKit)
 import UIKit
 extension ColorGenerator {

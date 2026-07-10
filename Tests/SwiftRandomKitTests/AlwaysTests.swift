@@ -117,15 +117,13 @@ final class AlwaysTests: XCTestCase {
         XCTAssertTrue(true, "Always<Void> should run without errors")
     }
     
-    func testAlwaysWithExtensionMethod() {
-        // Test the always() extension method on RandomGenerator
-        let intGenerator = IntGenerator(in: 1...10)
-        let constantGenerator = intGenerator.always(99)
-        
+    func testAlwaysIgnoresRng() {
+        let constantGenerator = Always(99)
+
         var rng = LCRNG(seed: 42)
         let result = constantGenerator.run(using: &rng)
-        
-        XCTAssertEqual(result, 99, "RandomGenerator.always() should create an Always generator")
+
+        XCTAssertEqual(result, 99, "Always should produce its value regardless of the RNG")
     }
     
     func testAlwaysWithCollections() {
