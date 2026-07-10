@@ -14,6 +14,29 @@ extension RandomGenerators {
   }
 }
 
+extension RandomGenerators.Zip {
+  /// Transforms the zipped results, receiving each generator's value as a
+  /// separate closure argument instead of a single tuple.
+  ///
+  /// Example:
+  /// ```swift
+  /// let gen = RandomGenerators.Zip(IntGenerator(in: 1...6), BoolRandomGenerator())
+  ///     .map { roll, flip in "\(roll)-\(flip)" }
+  /// ```
+  ///
+  /// Newer Swift compilers no longer destructure a pack-expansion tuple into a
+  /// multi-parameter closure, so the generic `map(_:)` cannot be called as
+  /// `{ a, b, c in ... }` on a zip of three generators; this overload keeps
+  /// that spelling working.
+  public func map<T: Sendable>(
+    _ transform: @Sendable @escaping (repeat (each R).Element) -> T
+  ) -> RandomGenerators.Map<Self, T> {
+    .init(self) { element in
+      transform(repeat each element)
+    }
+  }
+}
+
 // MARK: - Variadic Support
 
 // A generator that produces arrays of elements
