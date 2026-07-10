@@ -6,6 +6,9 @@ import SwiftRandomKit
 /// This generator creates a complete Sudoku solution and then removes numbers
 /// based on the specified difficulty level to create a playable puzzle.
 ///
+/// > Note: Cells are removed without checking that the remaining clues determine
+/// > a single solution, so generated puzzles may admit more than one solution.
+///
 /// Example usage:
 /// ```swift
 /// // Create a generator for medium difficulty Sudoku puzzles
