@@ -41,10 +41,69 @@ extension RandomGenerator {
     /// Creates a generator that wraps the output in an Optional type.
     ///
     /// This method is useful when you need to integrate with code that expects optional values.
+    /// The resulting generator never actually produces nil; to sometimes generate nil,
+    /// use ``orNil(probability:)``.
     ///
     /// - Returns: A generator that produces optional values.
     @inline(__always)
     public func optional() -> RandomGenerators.OptionalGenerator<Self> {
         .init(self)
+    }
+}
+
+extension RandomGenerators {
+    /// A generator that produces nil with a given probability, and otherwise
+    /// a value from the upstream generator.
+    ///
+    /// Example usage:
+    /// ```swift
+    /// // A middle name is present ~30% of the time
+    /// let middleName = ["James", "Marie", "Lee"].randomGeneratorElement()
+    /// let sometimesMiddleName = middleName.orNil(probability: 0.7)
+    /// ```
+    public struct OrNil<Upstream: RandomGenerator>: RandomGenerator {
+        public typealias Element = Upstream.Element?
+
+        /// The generator that produces values when the draw is not nil.
+        let upstream: Upstream
+
+        /// The chance of producing nil, from 0 (never) to 1 (always).
+        let probability: Double
+
+        /// Creates a generator that produces nil with the given probability.
+        ///
+        /// - Parameters:
+        ///   - upstream: The generator to draw values from.
+        ///   - probability: The chance of producing nil, from 0 (never) to 1 (always).
+        public init(_ upstream: Upstream, probability: Double) {
+            precondition((0...1).contains(probability), "probability must be within 0...1, got \(probability)")
+            self.upstream = upstream
+            self.probability = probability
+        }
+
+        /// Generates nil or a value from the upstream generator.
+        ///
+        /// The nil coin is flipped first; when it comes up nil the upstream
+        /// generator is not run and consumes no randomness.
+        ///
+        /// - Parameter rng: The random number generator to use.
+        /// - Returns: nil with the configured probability, otherwise an upstream value.
+        public func run<RNG: RandomNumberGenerator>(using rng: inout RNG) -> Upstream.Element? {
+            if Double.random(in: 0..<1, using: &rng) < probability {
+                return nil
+            }
+            return upstream.run(using: &rng)
+        }
+    }
+}
+
+extension RandomGenerator {
+    /// Returns a generator that produces nil with the given probability, and
+    /// otherwise a value from this generator.
+    ///
+    /// - Parameter probability: The chance of producing nil, from 0 (never) to 1 (always).
+    /// - Returns: A generator that produces optional values, sometimes nil.
+    public func orNil(probability: Double) -> RandomGenerators.OrNil<Self> {
+        .init(self, probability: probability)
     }
 }
