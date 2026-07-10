@@ -57,6 +57,7 @@ extension RandomGenerator {
     ///
     /// - Parameter value: The value that will be returned every time the generator runs.
     /// - Returns: A generator that always produces the given value.
+    @available(*, deprecated, message: "Removed in 2.0: the receiver is ignored. Construct Always(_:) directly.")
     @inlinable
     public func always(_ value: Element) -> RandomGenerators.Always<Element> {
         .init(value)

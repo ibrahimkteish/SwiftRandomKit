@@ -7,3 +7,6 @@ public struct BoolRandomGenerator: RandomGenerator {
         return Bool.random(using: &rng)
     }
 }
+
+/// The 2.0 name for this generator, available now for forward-compatible code.
+public typealias BoolGenerator = BoolRandomGenerator

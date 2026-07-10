@@ -41,6 +41,7 @@ extension RandomGenerators.Zip {
 
 // A generator that produces arrays of elements
 extension RandomGenerators {
+    @available(*, deprecated, message: "ZipArrayGenerator duplicates Collect and will be removed in 2.0. Use [generators].collect() instead.")
     public struct ZipArrayGenerator<G: RandomGenerator>: RandomGenerator {
         public typealias Element = [G.Element]
         
@@ -69,12 +70,14 @@ extension RandomGenerator {
 // Variadic array support
 extension Array where Element: RandomGenerator {
     // Create a generator that produces arrays from multiple generators of the same type
+    @available(*, deprecated, message: "Removed in 2.0. Use collect() instead.")
     public func zipAll() -> RandomGenerators.ZipArrayGenerator<Element> {
         RandomGenerators.ZipArrayGenerator(generators: self)
     }
 }
 
 // Factory function for combining any number of generators of the same type
+@available(*, deprecated, message: "Removed in 2.0. Use [generators].collect() instead.")
 public func zipGenerators<G: RandomGenerator>(_ generators: G...) -> RandomGenerators.ZipArrayGenerator<G> {
     RandomGenerators.ZipArrayGenerator(generators: generators)
 } 

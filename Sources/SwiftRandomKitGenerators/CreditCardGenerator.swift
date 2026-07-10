@@ -27,7 +27,10 @@ public enum CreditCardType: Sendable {
 }
 
 public struct CreditCardGenerator: RandomGenerator {
+    @available(*, deprecated, renamed: "Element")
     public typealias Generated = String
+
+    public typealias Element = String
     
     private let type: CreditCardType
     

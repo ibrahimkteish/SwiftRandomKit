@@ -21,6 +21,7 @@ extension RandomGenerators {
 }
 
 public extension RandomGenerator where Element == Swift.UnicodeScalar {
+    @available(*, deprecated, message: "Removed in 2.0: the upstream generator is ignored. Use RandomGenerators.UnicodeScalar(in:) from 2.0, or IntGenerator over scalar values.")
     func unicodeScalar(in range: ClosedRange<Swift.UnicodeScalar>) -> RandomGenerators.UnicodeScalar<Self> {
         .init(self, in: range)
     }

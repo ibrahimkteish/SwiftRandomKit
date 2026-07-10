@@ -21,6 +21,7 @@ public struct ColorGenerator: RandomGenerator {
 }
 
 extension RandomGenerator {
+    @available(*, deprecated, message: "Removed in 2.0: the receiver is ignored. Construct ColorGenerator(alpha:) directly.")
     @inlinable
     public func colorGenerator(alpha: CGFloat = 1) -> ColorGenerator {
         .init(alpha: alpha)
@@ -30,7 +31,15 @@ extension RandomGenerator {
 #if canImport(UIKit)
 import UIKit
 extension ColorGenerator {
+    @available(*, deprecated, message: "Removed in 2.0: the alpha parameter is silently ignored. Use uiColor(using:) and set alpha at initialization.")
     public func uiColor(alpha: CGFloat = 1, using rng: inout some RandomNumberGenerator) -> UIColor {
+        let (red, green, blue, alpha) = self.run(using: &rng)
+        return UIColor(red: red, green: green, blue: blue, alpha: alpha)
+    }
+
+    /// Generates a random `UIColor`. The alpha component comes from the
+    /// generator's `alpha` value provided at initialization.
+    public func uiColor(using rng: inout some RandomNumberGenerator) -> UIColor {
         let (red, green, blue, alpha) = self.run(using: &rng)
         return UIColor(red: red, green: green, blue: blue, alpha: alpha)
     }
@@ -41,7 +50,15 @@ extension ColorGenerator {
 import SwiftUI
 @available(macOS 10.15, iOS 13.0, *)
 extension ColorGenerator {
+    @available(*, deprecated, message: "Removed in 2.0: the alpha parameter is silently ignored. Use swiftUIColor(using:) and set alpha at initialization.")
     public func swiftUIColor(alpha: CGFloat = 1, using rng: inout some RandomNumberGenerator) -> Color {
+        let (red, green, blue, alpha) = self.run(using: &rng)
+        return Color(red: Double(red), green: Double(green), blue: Double(blue), opacity: Double(alpha))
+    }
+
+    /// Generates a random SwiftUI `Color`. The opacity comes from the
+    /// generator's `alpha` value provided at initialization.
+    public func swiftUIColor(using rng: inout some RandomNumberGenerator) -> Color {
         let (red, green, blue, alpha) = self.run(using: &rng)
         return Color(red: Double(red), green: Double(green), blue: Double(blue), opacity: Double(alpha))
     }

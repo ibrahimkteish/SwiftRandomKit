@@ -42,6 +42,7 @@ public extension RandomGenerator where Element == Swift.Character {
     ///
     /// - Parameter range: The range of characters to generate from.
     /// - Returns: A generator that produces random characters within the specified range.
+    @available(*, deprecated, message: "Removed in 2.0: the upstream generator is ignored. Use RandomGenerators.character(in:) instead.")
     func character(in range: ClosedRange<Swift.Character>) -> RandomGenerators.Character<Self> {
         .init(self, in: range)
     }

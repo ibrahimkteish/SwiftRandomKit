@@ -58,7 +58,18 @@ public extension RandomGenerator {
     /// - Parameter distribution: An array of tuples where each tuple contains a frequency (weight)
     ///   and a generator. Generators with higher frequency values will be selected more often.
     /// - Returns: A generator that produces values from the weighted selection of generators.
+    @available(*, deprecated, message: "Removed in 2.0: the receiver is ignored and never included in the distribution. Use RandomGenerators.frequency(_:) instead.")
     func frequency(_ distribution: [(Int, Self)]) -> RandomGenerators.Frequency<Self> {
         .init(distribution)
+    }
+}
+public extension RandomGenerators {
+    /// Creates a generator that selects from multiple generators with different frequencies.
+    ///
+    /// - Parameter distribution: An array of tuples where each tuple contains a frequency (weight)
+    ///   and a generator. Generators with higher frequency values will be selected more often.
+    /// - Returns: A generator that produces values from the weighted selection of generators.
+    static func frequency<G: RandomGenerator>(_ distribution: [(Int, G)]) -> Frequency<G> {
+        Frequency(distribution)
     }
 }
