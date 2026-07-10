@@ -16,7 +16,7 @@ extension RandomGenerators {
     /// let multiShuffle = numbers.array(3).shuffled().run()
     /// // Might produce: [[2, 4, 1, 5, 3], [5, 1, 3, 2, 4], [3, 5, 2, 1, 4]]
     /// ```
-    public struct Shuffled<Upstream: RandomGenerator>: RandomGenerator where Upstream.Element: Swift.Collection, Upstream.Element: MutableCollection, Upstream.Element: RandomAccessCollection, Upstream.Element.Element: Equatable {
+    public struct Shuffled<Upstream: RandomGenerator>: RandomGenerator where Upstream.Element: MutableCollection, Upstream.Element: RandomAccessCollection {
         public typealias Element = Upstream.Element
         public let generator: Upstream
 
@@ -35,7 +35,7 @@ extension RandomGenerators {
     }
 }
 
-public extension RandomGenerator where Element: Collection & MutableCollection & RandomAccessCollection, Element.Element: Equatable {
+public extension RandomGenerator where Element: MutableCollection & RandomAccessCollection {
     @inlinable
     func shuffled() -> RandomGenerators.Shuffled<Self> {
         .init(self)
