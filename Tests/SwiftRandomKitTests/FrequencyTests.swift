@@ -21,7 +21,7 @@ final class FrequencyTests: XCTestCase {
             (highWeight, gen3)
         ]
         
-        let frequencyGen = gen1.frequency(distribution)
+        let frequencyGen = RandomGenerators.frequency(distribution)
         
         // Run the generator many times to check frequency distribution
         var distributionRng = LCRNG(seed: 100)
@@ -63,7 +63,7 @@ final class FrequencyTests: XCTestCase {
             (1, onlyOption)
         ]
         
-        let frequencyGen = onlyOption.frequency(distribution)
+        let frequencyGen = RandomGenerators.frequency(distribution)
         
         // Even with different seeds, should always return the same single value
         var rng1 = LCRNG(seed: 1)
@@ -92,7 +92,7 @@ final class FrequencyTests: XCTestCase {
             (3, int3)
         ]
         
-        let frequencyGen = int1.frequency(distribution)
+        let frequencyGen = RandomGenerators.frequency(distribution)
         
         // Test distribution properties with many iterations
         var distributionRng = LCRNG(seed: 456)
@@ -139,7 +139,7 @@ final class FrequencyTests: XCTestCase {
             (1, alwaysSelect)
         ]
         
-        let frequencyGen = neverSelect.frequency(distribution)
+        let frequencyGen = RandomGenerators.frequency(distribution)
         
         // With any seed, zero-weighted items should never be selected
         var rng1 = LCRNG(seed: 1)
@@ -166,7 +166,7 @@ final class FrequencyTests: XCTestCase {
             (1, diceGen2)
         ]
         
-        let frequencyGen = diceGen1.frequency(distribution)
+        let frequencyGen = RandomGenerators.frequency(distribution)
         
         // Check we get values from both dice ranges
         var rng = LCRNG(seed: 42) // Reset RNG for clarity
