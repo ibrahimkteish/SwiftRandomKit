@@ -17,7 +17,6 @@ extension RandomGenerators {
             /// Return a specific default value.
             case useDefault(Upstream.Element)
             /// Continue trying until a condition is met (no bound).
-
             case keepTrying
             /// Use a custom generator as fallback.
             case useAnotherGenerator(@Sendable () -> Upstream.Element)
