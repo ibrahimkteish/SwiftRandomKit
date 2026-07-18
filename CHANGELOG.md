@@ -1,5 +1,34 @@
 # Changelog
 
+## [2.2.0] - Unreleased
+
+### Added: `RandomGenerable` and the opt-in `@RandomGenerable` derivation macro
+
+- New `RandomGenerable` protocol (always available, no trait required): a type exposes
+  a canonical `static var generator`. The standard types come pre-conformed with
+  simple, documented defaults — fixed-width integers (full range), `Double`/`Float`
+  (`0...1`), `Bool`, `String` (8 alphanumerics), `Character` (ASCII letter),
+  `Optional` (`nil` half the time), and `Array` (0–10 elements).
+- New `Derive` package trait (off by default). Enabling it unlocks the
+  `@RandomGenerable` macro, which derives a `RandomGenerable` conformance for structs
+  (via the memberwise initializer) and enums (uniform case selection, associated
+  values included), plus the `@Gen(...)` attribute to override the generator for a
+  single stored property. Derived generators are ordinary generators: all combinators
+  and seeded RNGs apply.
+- The macro's swift-syntax dependency is only built by consumers who enable the
+  trait; with the trait off (the default), SwiftRandomKit remains a
+  zero-build-cost dependency. swift-syntax is still *fetched* during dependency
+  resolution on current SwiftPM versions, but never compiled.
+
+### Changed
+
+- `swift-tools-version` bumped from 6.0 to 6.1, required for package traits.
+  Consumers need a Swift 6.1+ toolchain (Xcode 16.3+); older toolchains keep
+  resolving 2.1.0.
+- CI now runs the test suite in both trait configurations, and the pinned
+  minimum-toolchain job moves from Swift 6.0.2 to 6.1.
+
+
 ## [2.1.0] - 2026-07-10
 
 No library changes. The test suite (37 suites, 179 tests) is migrated from XCTest to

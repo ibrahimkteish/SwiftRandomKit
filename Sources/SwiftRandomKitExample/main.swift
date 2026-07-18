@@ -65,3 +65,52 @@ print("Sudoku (easy):")
 for row in puzzle {
     print(row.map { $0 == 0 ? "." : "\($0)" }.joined(separator: " "))
 }
+
+// MARK: - Derived generators (Derive trait)
+
+#if Derive
+// Fixtures in one attribute: every stored property uses its type's default
+// generator unless a @Gen override says otherwise.
+@RandomGenerable
+struct User: Equatable {
+    @Gen(["Ana", "Karl", "Ines", "Omar", "Mona", "Luis"].randomGeneratorElement().map { $0! })
+    var name: String
+    @Gen(IntGenerator(in: 18...99))
+    var age: Int
+    var isAdmin: Bool
+    var referralCode: String   // String default: 8 alphanumeric characters
+    var nickname: String?      // Optional default: nil half the time
+}
+
+@RandomGenerable
+struct Loot {
+    @Gen(IntGenerator(in: 1...500)) var coins: Int
+    @Gen(FloatGenerator(in: 0...1)) var dropChance: Double
+}
+
+// Enums derive too: a case is picked uniformly at random, and associated
+// values are generated the same way as struct properties.
+@RandomGenerable
+enum Reward {
+    case loot(Loot)
+    case badge(name: String)
+    case nothing
+}
+
+print("\n--- Derived generators (Derive trait enabled) ---")
+print("User:", User.generator.run(using: &rng))
+print("Team:", User.generator.array(3).run(using: &rng).map(\.name))
+print("Rewards:", Reward.generator.array(4).run(using: &rng))
+
+// Derived generators are ordinary generators, so every combinator applies.
+let seniorAdmin = User.generator.filter { $0.isAdmin && $0.age >= 60 }
+print("Senior admin:", seniorAdmin.run(using: &rng))
+
+// And they stay reproducible with a seeded RNG.
+var replayA = LCRNG(seed: 7)
+var replayB = LCRNG(seed: 7)
+print(
+    "Same seed, same user:",
+    User.generator.run(using: &replayA) == User.generator.run(using: &replayB)
+)
+#endif
