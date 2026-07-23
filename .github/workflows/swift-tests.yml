@@ -24,12 +24,12 @@ jobs:
       matrix:
         # 'system' uses the Xcode toolchain preinstalled on macos-latest,
         # so breakage on current compilers surfaces even while the pinned
-        # version keeps validating the minimum supported toolchain.
-        # The pinned toolchain must run on an older image: Swift 6.0.2
-        # cannot compile against the newer SDKs of current Xcode.
+        # version keeps validating the minimum supported toolchain (6.1,
+        # the floor imposed by package traits). The pinned toolchain runs
+        # on macos-15, whose default Xcode SDK matches the Swift 6.1 era.
         include:
-          - swift: '6.0.2'
-            runner: macos-14
+          - swift: '6.1'
+            runner: macos-15
           - swift: 'system'
             runner: macos-latest
     steps:
@@ -40,13 +40,18 @@ jobs:
         uses: swift-actions/setup-swift@v2
         with:
           swift-version: ${{ matrix.swift }}
-      
+
       - name: Build
         run: swift build -v
-      
+
       - name: Run tests
         run: swift test -v
-      
+
+      # MacroTesting links swift-syntax as a library, which is incompatible
+      # with SwiftPM's prebuilt swift-syntax binaries — build from source.
+      - name: Run tests (Derive trait)
+        run: swift test -v --traits Derive --disable-experimental-prebuilts
+
       - name: Run tests (release)
         run: swift test -c release -v
 
@@ -55,17 +60,23 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        # 'latest' tracks the newest stable Swift release image.
-        swift: ['6.0.2', 'latest']
+        # 'latest' tracks the newest stable Swift release image; 6.1 is the
+        # minimum supported toolchain (the floor imposed by package traits).
+        swift: ['6.1', 'latest']
     container: swift:${{ matrix.swift }}
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Build
         run: swift build -v
-      
+
       - name: Run tests
         run: swift test --parallel
-      
+
+      # MacroTesting links swift-syntax as a library, which is incompatible
+      # with SwiftPM's prebuilt swift-syntax binaries — build from source.
+      - name: Run tests (Derive trait)
+        run: swift test --parallel --traits Derive --disable-experimental-prebuilts
+
       - name: Run tests (release)
-        run: swift test -c release --parallel 
+        run: swift test -c release --parallel
